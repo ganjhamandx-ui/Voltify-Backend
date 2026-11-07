@@ -1,0 +1,2123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+<title>Voltify</title>
+<link
+rel="stylesheet"
+href="{% static 'css/voltify.css' %}"
+>
+<link
+rel="stylesheet"
+href="{% static 'css/dashboard.css' %}"
+>
+<style>
+.public-body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    background: #060d18;
+    color: #f4f7ff;
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+.public-home,
+.public-home * {
+    box-sizing: border-box;
+}
+
+.public-home {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 14% 16%,
+            rgba(47, 140, 255, 0.15),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 86% 28%,
+            rgba(55, 213, 255, 0.07),
+            transparent 25%
+        ),
+        linear-gradient(
+            135deg,
+            #07101d 0%,
+            #07101f 50%,
+            #050c17 100%
+        );
+}
+
+.public-home::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.42;
+    background-image:
+        linear-gradient(
+            rgba(47, 140, 255, 0.024) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(47, 140, 255, 0.024) 1px,
+            transparent 1px
+        );
+    background-size: 48px 48px;
+}
+
+.public-home::after {
+    content: "";
+    position: absolute;
+    width: 560px;
+    height: 560px;
+    right: -220px;
+    top: 90px;
+    border-radius: 50%;
+    background: rgba(47, 140, 255, 0.075);
+    filter: blur(105px);
+    pointer-events: none;
+}
+
+/* Barra superior pública */
+
+.public-nav {
+    position: relative;
+    z-index: 5;
+    width: calc(100vw - 48px);
+    max-width: none;
+    height: 66px;
+    margin: 0 24px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom:
+        1px solid
+        rgba(74, 122, 192, 0.11);
+}
+
+.public-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.public-brand-logo {
+    width: 35px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.public-brand-logo svg {
+    width: 32px;
+    height: 40px;
+    fill: none;
+    stroke: #438cff;
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+    filter:
+        drop-shadow(
+            0 0 10px
+            rgba(47, 140, 255, 0.30)
+        );
+}
+
+.public-brand-name {
+    margin: 0;
+    color: #f4f7ff;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.public-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.public-btn {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 17px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px !important;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.public-btn-primary {
+    border:
+        1px solid
+        rgba(75, 157, 255, 0.42) !important;
+    background:
+        linear-gradient(
+            135deg,
+            #2f8cff,
+            #376fe8
+        ) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 10px 28px
+        rgba(47, 140, 255, 0.19) !important;
+}
+
+.public-btn-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.07);
+}
+
+.public-btn-secondary {
+    border:
+        1px solid
+        rgba(87, 120, 169, 0.22) !important;
+    background:
+        rgba(9, 22, 42, 0.64) !important;
+    color: #b7c7dd !important;
+    box-shadow: none !important;
+}
+
+.public-btn-secondary:hover {
+    transform: translateY(-1px);
+    border-color:
+        rgba(47, 140, 255, 0.34) !important;
+    background:
+        rgba(47, 140, 255, 0.07) !important;
+    color: #e2ebf8 !important;
+}
+
+/* Estructura principal pública */
+
+.public-main {
+    position: relative;
+    z-index: 2;
+    width: calc(100vw - 48px) !important;
+    max-width: none !important;
+    height: calc(100vh - 66px);
+    margin: 0 24px !important;
+    padding: 10px 0 8px !important;
+    display: grid !important;
+
+    grid-template-rows:
+        minmax(0, 1fr)
+        205px
+        22px;
+
+    gap: 10px;
+}
+
+/* Evita que los estilos generales de section deformen la landing */
+
+.public-home .public-hero,
+.public-home .public-feature-strip {
+    margin: 0 !important;
+    overflow: hidden;
+    backdrop-filter: none;
+}
+
+.public-home .public-hero::before,
+.public-home .public-feature-strip::before {
+    display: none;
+}
+
+/* Hero */
+
+.public-home .public-hero {
+    min-height: 0;
+    padding: 16px 28px !important;
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.05fr)
+        minmax(500px, 0.95fr);
+
+    align-items: center;
+    gap: clamp(32px, 4vw, 70px);
+
+    border:
+        1px solid
+        rgba(70, 121, 195, 0.18);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(9, 22, 39, 0.66),
+            rgba(5, 15, 29, 0.74)
+        );
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.022);
+}
+
+.public-hero-copy {
+    min-width: 0;
+
+    transform: translateX(18px);
+}
+
+.public-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    color: #65a8ff;
+    font-size: 11px;
+    font-weight: 760;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.public-kicker::before {
+    content: "";
+    width: 30px;
+    height: 1px;
+    background: #4b9dff;
+}
+
+.public-hero h1 {
+    max-width: 760px;
+    margin: 0 0 16px;
+    color: #f7f9ff;
+
+    font-size:
+        clamp(
+            48px,
+            4.6vw,
+            72px
+        );
+
+    line-height: 0.98;
+    font-weight: 820;
+    letter-spacing: -0.055em;
+}
+
+.public-hero h1 span {
+    display: block;
+    margin-top: 6px;
+    color: #4b9dff;
+}
+
+.public-hero-description {
+    max-width: 700px;
+    margin: 0 0 18px;
+    color: #8d9bb3;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.public-value-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.public-value-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    padding: 0 11px;
+
+    border:
+        1px solid
+        rgba(74, 125, 199, 0.17);
+
+    border-radius: 8px;
+    background:
+        rgba(7, 18, 35, 0.52);
+
+    color: #8493ad;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.public-value-pill svg {
+    color: #5ba9ff;
+}
+
+/* Vista previa del panel */
+
+.public-preview-wrap {
+    position: relative;
+    min-width: 0;
+    width: 100%;
+    
+    transform: translateX(-20px);
+}
+
+.public-preview-glow {
+    position: absolute;
+    width: 74%;
+    height: 74%;
+    left: 13%;
+    top: 13%;
+
+    background:
+        rgba(47, 140, 255, 0.12);
+
+    filter: blur(85px);
+    pointer-events: none;
+}
+
+.public-preview {
+    position: relative;
+    width: 100%;
+    padding: 14px;
+
+    border:
+        1px solid
+        rgba(69, 131, 222, 0.24);
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12, 26, 49, 0.98),
+            rgba(6, 15, 29, 0.98)
+        );
+
+    box-shadow:
+        0 30px 70px
+        rgba(0, 0, 0, 0.30),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.025);
+
+    overflow: hidden;
+}
+
+.public-preview::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 18%;
+    width: 64%;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(75, 157, 255, 0.65),
+            transparent
+        );
+}
+
+.preview-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 2px 10px;
+}
+
+.preview-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #d8e3f3;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.preview-title-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(47, 140, 255, 0.20);
+
+    border-radius: 7px;
+
+    background:
+        rgba(47, 140, 255, 0.08);
+
+    color: #61aaff;
+}
+
+.preview-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #637592;
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.preview-status::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #37d5ff;
+
+    box-shadow:
+        0 0 8px
+        rgba(55, 213, 255, 0.48);
+}
+
+.preview-kpis {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.preview-kpi {
+    min-width: 0;
+    padding: 9px 10px;
+
+    border:
+        1px solid
+        rgba(76, 123, 194, 0.13);
+
+    border-radius: 9px;
+
+    background:
+        rgba(6, 16, 31, 0.64);
+}
+
+.preview-kpi-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #62728d;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.preview-kpi-value {
+    color: #d9e4f4;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.preview-kpi-line {
+    width: 48px;
+    height: 4px;
+    margin-top: 6px;
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2f8cff,
+            rgba(47, 140, 255, 0.20)
+        );
+}
+
+.preview-main-grid {
+    display: grid;
+
+    grid-template-columns:
+        1.35fr
+        0.65fr;
+
+    gap: 8px;
+}
+
+.preview-chart,
+.preview-donut-card {
+    min-height: 250px;
+    padding: 10px;
+
+    border:
+        1px solid
+        rgba(76, 123, 194, 0.14);
+
+    border-radius: 10px;
+
+    background:
+        rgba(6, 16, 31, 0.67);
+}
+
+.preview-card-title {
+    color: #b8c8dd;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.preview-card-subtitle {
+    margin-top: 2px;
+    color: #52617a;
+    font-size: 8.5px;
+}
+
+.preview-chart-area {
+    height: 153px;
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 0 7px 3px;
+
+    border-bottom:
+        1px solid
+        rgba(82, 114, 161, 0.15);
+
+    background-image:
+        linear-gradient(
+            rgba(82, 114, 161, 0.07) 1px,
+            transparent 1px
+        );
+
+    background-size: 100% 30px;
+}
+
+.preview-bar {
+    flex: 1;
+    min-width: 7px;
+    max-width: 24px;
+
+    border-radius:
+        4px
+        4px
+        1px
+        1px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #66baff,
+            #356cf1
+        );
+
+    box-shadow:
+        0 0 14px
+        rgba(47, 140, 255, 0.18);
+}
+
+.preview-bar:nth-child(1) {
+    height: 26%;
+}
+
+.preview-bar:nth-child(2) {
+    height: 46%;
+}
+
+.preview-bar:nth-child(3) {
+    height: 34%;
+}
+
+.preview-bar:nth-child(4) {
+    height: 68%;
+}
+
+.preview-bar:nth-child(5) {
+    height: 52%;
+}
+
+.preview-bar:nth-child(6) {
+    height: 82%;
+}
+
+.preview-bar:nth-child(7) {
+    height: 61%;
+}
+
+.preview-donut-area {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-donut {
+    position: relative;
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            #5aa8ff 0deg 116deg,
+            #7868de 116deg 221deg,
+            #37d5ff 221deg 292deg,
+            rgba(69, 88, 120, 0.24) 292deg 360deg
+        );
+
+    box-shadow:
+        0 10px 28px
+        rgba(0, 0, 0, 0.26);
+}
+
+.preview-donut::after {
+    content: "";
+    position: absolute;
+    inset: 26px;
+    border-radius: 50%;
+    background: #081426;
+
+    box-shadow:
+        inset
+        0 0 18px
+        rgba(47, 140, 255, 0.08);
+}
+
+.preview-bottom {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.preview-bottom-card {
+    min-height: 48px;
+    padding: 8px 10px;
+
+    border:
+        1px solid
+        rgba(76, 123, 194, 0.12);
+
+    border-radius: 8px;
+
+    background:
+        rgba(6, 16, 31, 0.56);
+}
+
+.preview-bottom-card span {
+    display: block;
+    color: #566781;
+    font-size: 8px;
+}
+
+.preview-bottom-card strong {
+    display: block;
+    margin-top: 4px;
+    color: #aebfd6;
+    font-size: 10.5px;
+}
+/* Franja inferior */
+
+.public-home .public-feature-strip {
+    padding: 14px !important;
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 0.82fr)
+        )
+        minmax(
+            390px,
+            1.54fr
+        );
+
+    gap: 10px;
+
+    border:
+        1px solid
+        rgba(70, 121, 195, 0.17);
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(9, 22, 39, 0.62),
+            rgba(5, 15, 29, 0.72)
+        );
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.02);
+}
+
+.public-feature-card,
+.public-flow-card {
+    min-width: 0;
+    height: 100%;
+
+    border:
+        1px solid
+        rgba(70, 121, 195, 0.16);
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 24, 45, 0.78),
+            rgba(6, 15, 29, 0.82)
+        );
+}
+
+.public-feature-card {
+    padding: 14px 15px;
+}
+
+.public-feature-icon {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 9px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(47, 140, 255, 0.20);
+
+    border-radius: 8px;
+
+    background:
+        rgba(47, 140, 255, 0.08);
+
+    color: #59aaff;
+}
+
+.public-feature-card h3 {
+    margin: 0 0 4px;
+    color: #dce6f5;
+    font-size: 13px;
+}
+
+.public-feature-card p {
+    margin: 0;
+    color: #657590;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.public-flow-card {
+    padding: 13px 14px;
+    display: grid;
+
+    grid-template-columns:
+        minmax(135px, 0.8fr)
+        minmax(0, 1.7fr);
+
+    gap: 11px;
+    align-items: center;
+}
+
+.public-flow-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #64a8ff;
+    font-size: 10px;
+    font-weight: 760;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.public-flow-copy h3 {
+    margin: 0 0 4px;
+    color: #e2eaf7;
+    font-size: 16px;
+    line-height: 1.12;
+}
+
+.public-flow-copy p {
+    margin: 0;
+    color: #667792;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.public-flow-steps {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 7px;
+}
+
+.public-flow-step {
+    min-width: 0;
+    padding: 10px 10px;
+
+    border:
+        1px solid
+        rgba(76, 123, 194, 0.12);
+
+    border-radius: 8px;
+
+    background:
+        rgba(4, 14, 28, 0.55);
+}
+
+.public-flow-step span {
+    display: block;
+    margin-bottom: 3px;
+    color: #64a8ff;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.public-flow-step strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #d5e1f2;
+    font-size: 11.5px;
+}
+
+.public-flow-step p {
+    margin: 0;
+    color: #566982;
+    font-size: 10px;
+    line-height: 1.32;
+}
+
+/* Pie */
+
+.public-footer {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #53647e;
+    font-size: 8px;
+}
+
+.public-footer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.public-footer-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #37d5ff;
+
+    box-shadow:
+        0 0 8px
+        rgba(55, 213, 255, 0.48);
+}
+
+/* Pantallas de menor altura */
+
+@media (max-height: 800px) and (min-width: 901px) {
+
+    .public-nav {
+        height: 60px;
+    }
+
+    .public-main {
+        height: calc(100vh - 60px);
+
+        padding:
+            7px
+            0
+            6px !important;
+
+        grid-template-rows:
+            minmax(0, 1fr)
+            182px
+            18px;
+
+        gap: 7px;
+    }
+
+    .public-home .public-hero {
+        padding:
+            12px
+            24px !important;
+    }
+
+    .public-kicker {
+        margin-bottom: 10px;
+    }
+
+    .public-hero h1 {
+        margin-bottom: 11px;
+
+        font-size:
+            clamp(
+                43px,
+                4.1vw,
+                60px
+            );
+    }
+
+    .public-hero-description {
+        margin-bottom: 12px;
+        font-size: 12px;
+    }
+
+    .public-value-pill {
+        min-height: 29px;
+    }
+
+    .preview-chart,
+    .preview-donut-card {
+        min-height: 145px;
+    }
+
+    .preview-chart-area {
+        height: 88px;
+    }
+
+    .preview-donut-area {
+        height: 99px;
+    }
+
+    .preview-donut {
+        width: 80px;
+        height: 80px;
+    }
+
+    .preview-donut::after {
+        inset: 20px;
+    }
+
+    .preview-bottom-card {
+        min-height: 40px;
+    }
+
+    .public-feature-card {
+        padding:
+            9px
+            11px;
+    }
+
+    .public-feature-icon {
+        width: 27px;
+        height: 27px;
+        margin-bottom: 5px;
+    }
+}
+
+/* Tablet */
+
+@media (max-width: 1100px) {
+
+    .public-home {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    .public-body {
+        overflow-y: auto;
+    }
+
+    .public-main {
+        width:
+            calc(100vw - 36px) !important;
+
+        height: auto;
+
+        min-height:
+            calc(100vh - 66px);
+
+        margin:
+            0
+            18px !important;
+
+        padding:
+            24px
+            0 !important;
+
+        display:
+            block !important;
+    }
+
+    .public-nav {
+        width:
+            calc(100vw - 36px);
+
+        margin:
+            0
+            18px;
+    }
+
+    .public-home .public-hero {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .public-preview-wrap {
+        max-width: 760px;
+    }
+
+    .public-home .public-feature-strip {
+        margin-top:
+            18px !important;
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+    .public-flow-card {
+        grid-column:
+            1 / -1;
+    }
+
+    .public-footer {
+        margin-top: 18px;
+        padding-bottom: 12px;
+    }
+}
+
+/* Móvil */
+
+@media (max-width: 620px) {
+
+    .public-nav {
+        height: 64px;
+    }
+
+    .public-brand-name {
+        font-size: 23px;
+    }
+
+    .public-nav-actions
+    .public-btn-secondary {
+        display:
+            none !important;
+    }
+
+    .public-home .public-hero {
+        padding:
+            20px
+            17px !important;
+    }
+
+    .public-hero h1 {
+        font-size: 43px;
+    }
+
+    .public-hero-description {
+        font-size: 13px;
+    }
+
+    .preview-kpis,
+    .preview-bottom,
+    .preview-main-grid,
+    .public-home .public-feature-strip,
+    .public-flow-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .public-flow-card {
+        grid-template-columns: 1fr;
+    }
+
+    .public-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+</style>
+</head>
+
+<body
+class="
+{% if request.session.usuario_id %}
+dashboard-body
+{% else %}
+public-body
+{% endif %}
+"
+>
+
+{% if request.session.usuario_id %}
+
+<div class="dashboard-app">
+
+    <!-- Sidebar compartido -->
+
+    {% include 'sidebar.html' with activa='dashboard' %}
+
+    <!-- Contenido Dashboard -->
+
+    <main class="dashboard-main">
+
+        <div class="dashboard-header">
+
+            <button
+                class="dashboard-mobile-menu"
+                id="dashboardMobileMenu"
+                type="button"
+                aria-label="Abrir menú"
+            >
+                ☰
+            </button>
+
+            <div
+                class="dashboard-controls"
+                style="margin-left: auto;"
+            >
+
+                <div class="period-selector">
+
+                    <button
+                        type="button"
+                        class="period-button active"
+                        data-period="day"
+                    >
+                        Día
+                    </button>
+
+                    <button
+                        type="button"
+                        class="period-button"
+                        data-period="week"
+                    >
+                        Semana
+                    </button>
+
+                    <button
+                        type="button"
+                        class="period-button"
+                        data-period="month"
+                    >
+                        Mes
+                    </button>
+
+                    <button
+                        type="button"
+                        class="period-button"
+                        data-period="3months"
+                    >
+                        3 Meses
+                    </button>
+
+                </div>
+
+                <div class="dashboard-date">
+
+                    <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <rect
+                            x="3"
+                            y="5"
+                            width="18"
+                            height="16"
+                            rx="2"
+                        />
+
+                        <path d="M16 3v4"/>
+                        <path d="M8 3v4"/>
+                        <path d="M3 10h18"/>
+                    </svg>
+
+                    <span id="dashboardDate">
+                        Cargando fecha...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- KPI -->
+
+        <div class="dashboard-kpi-grid">
+
+            <div
+                class="kpi-card skeleton skeleton-card"
+                id="kpiConsumption"
+            >
+            </div>
+
+            <div
+                class="kpi-card skeleton skeleton-card"
+                id="kpiCost"
+            >
+            </div>
+
+            <div
+                class="kpi-card skeleton skeleton-card"
+                id="kpiDevices"
+            >
+            </div>
+
+            <div
+                class="kpi-card skeleton skeleton-card"
+                id="kpiGoal"
+            >
+            </div>
+
+        </div>
+
+        <!-- Gráficos principales -->
+
+        <div class="dashboard-main-grid">
+
+            <!-- Consumo por hora -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div class="card-title-wrap">
+
+                        <div class="card-icon">
+
+                            <svg
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="9"
+                                />
+
+                                <path d="M12 7v5l3 2"/>
+                            </svg>
+
+                        </div>
+
+                        <h2 class="dashboard-card-title">
+                            Consumo por hora
+                        </h2>
+
+                    </div>
+
+                    <select class="card-select">
+
+                        <option>
+                            Hoy
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div
+                    class="chart-area chart-area-large skeleton skeleton-chart"
+                    id="hourlyChart"
+                >
+                </div>
+
+            </div>
+
+            <!-- Consumo por artefacto -->
+
+            <div class="dashboard-card appliance-card">
+
+                <div class="dashboard-card-header">
+
+                    <div class="card-title-wrap">
+
+                        <div class="card-icon">
+
+                            <svg
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                />
+
+                                <path d="M12 2v4"/>
+                                <path d="M12 18v4"/>
+                                <path d="M2 12h4"/>
+                                <path d="M18 12h4"/>
+                                <path d="M5 5l3 3"/>
+                                <path d="M16 16l3 3"/>
+                            </svg>
+
+                        </div>
+
+                        <h2 class="dashboard-card-title">
+                            Consumo por artefacto
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="appliance-chart-layout skeleton skeleton-chart"
+                    id="applianceChart"
+                >
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Fila inferior -->
+
+        <div class="dashboard-bottom-grid">
+
+            <!-- Tendencia -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div class="card-title-wrap">
+
+                        <div class="card-icon">
+
+                            <svg
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M3 17l6-6 4 4 8-9"/>
+                                <path d="M16 6h5v5"/>
+                            </svg>
+
+                        </div>
+
+                        <h2 class="dashboard-card-title">
+                            Tendencia del consumo
+                        </h2>
+
+                    </div>
+
+                    <select class="card-select">
+
+                        <option>
+                            Últimos 7 días
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div
+                    class="chart-area skeleton skeleton-chart"
+                    id="trendChart"
+                >
+                </div>
+
+            </div>
+
+            <!-- Ranking -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div class="card-title-wrap">
+
+                        <div class="card-icon">
+
+                            <svg
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M4 19V9"/>
+                                <path d="M10 19V5"/>
+                                <path d="M16 19v-7"/>
+                                <path d="M22 19V3"/>
+                            </svg>
+
+                        </div>
+
+                        <h2 class="dashboard-card-title">
+                            Artefactos con mayor consumo
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="skeleton skeleton-chart"
+                    id="topAppliances"
+                >
+                </div>
+
+            </div>
+
+            <!-- Comparación -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div class="card-title-wrap">
+
+                        <div class="card-icon">
+
+                            <svg
+                                width="22"
+                                height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="16"
+                                    rx="2"
+                                />
+
+                                <path d="M16 3v4"/>
+                                <path d="M8 3v4"/>
+                                <path d="M3 10h18"/>
+                            </svg>
+
+                        </div>
+
+                        <h2 class="dashboard-card-title">
+                            Comparación de períodos
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="chart-area skeleton skeleton-chart"
+                    id="comparisonChart"
+                >
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% else %}
+<!-- Landing pública -->
+
+<div class="public-home">
+
+    <nav class="public-nav">
+
+        <div class="public-brand">
+
+            <div class="public-brand-logo">
+
+                <svg
+                    viewBox="0 0 48 58"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="
+                            M28 3
+                            L8 31
+                            H22
+                            L17 54
+                            L40 23
+                            H25
+                            Z
+                        "
+                    />
+                </svg>
+
+            </div>
+
+            <h1 class="public-brand-name">
+                Voltify
+            </h1>
+
+        </div>
+
+        <div class="public-nav-actions">
+
+            <a
+                href="/iniciar-sesion/"
+                class="public-btn public-btn-secondary"
+            >
+                Iniciar sesión
+            </a>
+
+            <a
+                href="/crear-cuenta/"
+                class="public-btn public-btn-primary"
+            >
+                Crear cuenta
+            </a>
+
+        </div>
+
+    </nav>
+
+    <main class="public-main">
+
+        <!-- Hero -->
+
+        <section class="public-hero">
+
+            <div class="public-hero-copy">
+
+                <span class="public-kicker">
+                    Control energético para tu hogar
+                </span>
+
+                <h1>
+                    Entiende tu energía.
+
+                    <span>
+                        Toma el control.
+                    </span>
+                </h1>
+
+                <p class="public-hero-description">
+                    Voltify reúne tus artefactos y sus mediciones
+                    para ayudarte a comprender cómo utilizas la energía
+                    en tu hogar, revisar tu historial y comparar el
+                    consumo a través del tiempo.
+                </p>
+
+                <div class="public-value-line">
+
+                    <span class="public-value-pill">
+
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <rect
+                                x="5"
+                                y="3"
+                                width="14"
+                                height="18"
+                                rx="2"
+                            />
+
+                            <path d="M9 7h6"/>
+                            <path d="M9 17h6"/>
+                        </svg>
+
+                        Inventario actual
+
+                    </span>
+
+                    <span class="public-value-pill">
+
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M4 19V9"/>
+                            <path d="M10 19V5"/>
+                            <path d="M16 19v-7"/>
+                            <path d="M22 19V3"/>
+                        </svg>
+
+                        Historial energético
+
+                    </span>
+
+                    <span class="public-value-pill">
+
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M3 17l6-6 4 4 8-9"/>
+                            <path d="M16 6h5v5"/>
+                        </svg>
+
+                        Comparación temporal
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- Mini Dashboard -->
+
+            <div class="public-preview-wrap">
+
+                <div class="public-preview-glow">
+                </div>
+
+                <div class="public-preview">
+
+                    <div class="preview-topbar">
+
+                        <div class="preview-title">
+
+                            <div class="preview-title-icon">
+
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <path d="M3 11.5L12 4l9 7.5"/>
+                                    <path d="M5 10.5V20h14v-9.5"/>
+                                    <path d="M9 20v-6h6v6"/>
+                                </svg>
+
+                            </div>
+
+                            Vista del panel Voltify
+
+                        </div>
+
+                        <span class="preview-status">
+                            Plataforma disponible
+                        </span>
+
+                    </div>
+
+                    <div class="preview-kpis">
+
+                        <div class="preview-kpi">
+
+                            <span class="preview-kpi-label">
+                                Consumo
+                            </span>
+
+                            <span class="preview-kpi-value">
+                                Historial
+                            </span>
+
+                            <div class="preview-kpi-line">
+                            </div>
+
+                        </div>
+
+                        <div class="preview-kpi">
+
+                            <span class="preview-kpi-label">
+                                Artefactos
+                            </span>
+
+                            <span class="preview-kpi-value">
+                                Inventario
+                            </span>
+
+                            <div class="preview-kpi-line">
+                            </div>
+
+                        </div>
+
+                        <div class="preview-kpi">
+
+                            <span class="preview-kpi-label">
+                                Períodos
+                            </span>
+
+                            <span class="preview-kpi-value">
+                                Comparación
+                            </span>
+
+                            <div class="preview-kpi-line">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="preview-main-grid">
+
+                        <div class="preview-chart">
+
+                            <div class="preview-card-title">
+                                Tendencia de consumo
+                            </div>
+
+                            <div class="preview-card-subtitle">
+                                Lectura visual por período
+                            </div>
+
+                            <div class="preview-chart-area">
+
+                                <div class="preview-bar"></div>
+                                <div class="preview-bar"></div>
+                                <div class="preview-bar"></div>
+                                <div class="preview-bar"></div>
+                                <div class="preview-bar"></div>
+                                <div class="preview-bar"></div>
+                                <div class="preview-bar"></div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="preview-donut-card">
+
+                            <div class="preview-card-title">
+                                Distribución
+                            </div>
+
+                            <div class="preview-card-subtitle">
+                                Consumo por artefacto
+                            </div>
+
+                            <div class="preview-donut-area">
+
+                                <div class="preview-donut">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="preview-bottom">
+
+                        <div class="preview-bottom-card">
+
+                            <span>
+                                Historial
+                            </span>
+
+                            <strong>
+                                Mediciones preservadas
+                            </strong>
+
+                        </div>
+
+                        <div class="preview-bottom-card">
+
+                            <span>
+                                Inventario
+                            </span>
+
+                            <strong>
+                                Artefactos actuales
+                            </strong>
+
+                        </div>
+
+                        <div class="preview-bottom-card">
+
+                            <span>
+                                Períodos
+                            </span>
+
+                            <strong>
+                                Día, semana, mes y 3 meses
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Tarjetas inferiores -->
+
+        <section class="public-feature-strip">
+
+            <article class="public-feature-card">
+
+                <div class="public-feature-icon">
+
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <rect
+                            x="5"
+                            y="3"
+                            width="14"
+                            height="18"
+                            rx="2"
+                        />
+
+                        <path d="M9 7h6"/>
+                        <path d="M9 17h6"/>
+                    </svg>
+
+                </div>
+
+                <h3>
+                    Gestiona tus artefactos
+                </h3>
+
+                <p>
+                    Registra, consulta, edita y retira los dispositivos
+                    eléctricos asociados a tu cuenta.
+                </p>
+
+            </article>
+
+            <article class="public-feature-card">
+
+                <div class="public-feature-icon">
+
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <path d="M4 19V9"/>
+                        <path d="M10 19V5"/>
+                        <path d="M16 19v-7"/>
+                        <path d="M22 19V3"/>
+                    </svg>
+
+                </div>
+
+                <h3>
+                    Conserva tu historial
+                </h3>
+
+                <p>
+                    Las mediciones se conservan hasta la fecha de retiro
+                    del artefacto y quedan disponibles para consultar
+                    y comparar períodos anteriores.
+                </p>
+
+            </article>
+
+            <article class="public-feature-card">
+
+                <div class="public-feature-icon">
+
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <path d="M3 17l6-6 4 4 8-9"/>
+                        <path d="M16 6h5v5"/>
+                    </svg>
+
+                </div>
+
+                <h3>
+                    Analiza tus períodos
+                </h3>
+
+                <p>
+                    Consulta tendencias y compara la información
+                    energética entre diferentes períodos de tiempo.
+                </p>
+
+            </article>
+
+            <!-- Flujo -->
+
+            <article class="public-flow-card">
+
+                <div class="public-flow-copy">
+
+                    <span class="public-flow-label">
+                        Flujo simple
+                    </span>
+
+                    <h3>
+                        Empieza a organizar tu energía
+                    </h3>
+
+                    <p>
+                        Crea tu cuenta, añade tus artefactos
+                        y revisa tu información desde Voltify.
+                    </p>
+
+                </div>
+
+                <div class="public-flow-steps">
+
+                    <div class="public-flow-step">
+
+                        <span>
+                            01
+                        </span>
+
+                        <strong>
+                            Crea tu cuenta
+                        </strong>
+
+                        <p>
+                            Registra tus datos
+                            y configura el perfil.
+                        </p>
+
+                    </div>
+
+                    <div class="public-flow-step">
+
+                        <span>
+                            02
+                        </span>
+
+                        <strong>
+                            Añade tus artefactos
+                        </strong>
+
+                        <p>
+                            Organiza los dispositivos
+                            eléctricos de tu hogar.
+                        </p>
+
+                    </div>
+
+                    <div class="public-flow-step">
+
+                        <span>
+                            03
+                        </span>
+
+                        <strong>
+                            Revisa tus datos
+                        </strong>
+
+                        <p>
+                            Consulta historial,
+                            tendencias y comparaciones.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+        <footer class="public-footer">
+
+            <span class="public-footer-status">
+                Voltify · Gestión inteligente de energía
+            </span>
+
+            <span>
+                Tu energía, más inteligente
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+{% endif %}
+
+{% if request.session.usuario_id %}
+
+    {{ dashboard_data|json_script:"voltify-dashboard-source" }}
+
+    {{ periodo_dashboard|json_script:"voltify-dashboard-period" }}
+
+    <form
+        id="dashboardPreferenceForm"
+        action="{% url 'guardar_preferencia_dashboard' %}"
+        method="post"
+        hidden
+    >
+        {% csrf_token %}
+    </form>
+
+    <script src="{% static 'js/dashboard-data.js' %}">
+    </script>
+
+    <script src="{% static 'js/dashboard.js' %}">
+    </script>
+
+{% endif %}
+
+</body>
+</html>

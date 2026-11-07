@@ -1,0 +1,1313 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Eliminar artefacto | Voltify
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+        .eliminar-page {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 75% 15%,
+                    rgba(47, 140, 255, 0.08),
+                    transparent 28%
+                ),
+                #07101f;
+
+            color: #f4f7ff;
+        }
+
+        .eliminar-page .dashboard-app {
+            width: 100%;
+            max-width: none;
+            min-height: 100vh;
+        }
+
+        .eliminar-page .eliminar-main {
+            width: calc(100% - 188px) !important;
+            max-width: none !important;
+            min-width: 0;
+            min-height: 100vh;
+
+            margin:
+                0
+                0
+                0
+                188px !important;
+
+            padding:
+                28px
+                28px
+                40px !important;
+
+            box-sizing: border-box;
+        }
+
+        .eliminar-header {
+            width: 100%;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 24px;
+
+            margin-bottom: 24px;
+        }
+
+        .eliminar-header h2 {
+            margin: 0;
+
+            color: #f4f7ff;
+
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .eliminar-header p {
+            margin: 8px 0 0;
+
+            color: #7f8da8;
+
+            font-size: 14px;
+        }
+
+        .eliminar-header strong {
+            color: #a9b9d6;
+        }
+
+        .boton-volver {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 auto;
+
+            gap: 8px;
+
+            padding:
+                11px
+                16px;
+
+            border:
+                1px solid
+                rgba(83, 123, 184, 0.26);
+
+            border-radius: 10px;
+
+            background:
+                rgba(8, 18, 35, 0.72);
+
+            color: #9eabc0;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                color 160ms ease,
+                border-color 160ms ease,
+                background 160ms ease,
+                transform 160ms ease;
+        }
+
+        .boton-volver:hover {
+            color: #ffffff;
+
+            border-color:
+                rgba(47, 140, 255, 0.42);
+
+            background:
+                rgba(47, 140, 255, 0.08);
+
+            transform:
+                translateY(-1px);
+        }
+
+        .eliminar-layout {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                330px;
+
+            gap: 22px;
+
+            align-items: start;
+        }
+
+        .eliminar-card,
+        .eliminar-info-card {
+            min-width: 0;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            border:
+                1px solid
+                rgba(64, 132, 255, 0.28);
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(12, 25, 48, 0.96),
+                    rgba(7, 16, 31, 0.98)
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.18),
+                inset
+                0 1px 0
+                rgba(255, 255, 255, 0.02);
+
+            overflow: hidden;
+        }
+
+        .eliminar-card::before,
+        .eliminar-info-card::before {
+            display: none;
+        }
+
+        .eliminar-card {
+            width: 100%;
+        }
+
+        .eliminar-info-card {
+            width: 330px;
+
+            justify-self: end;
+        }
+
+        .eliminar-card-header,
+        .eliminar-info-header {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding:
+                20px
+                22px;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.12);
+        }
+
+        .eliminar-header-icon {
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 40px;
+
+            border-radius: 10px;
+
+            color: #ff6875;
+
+            background:
+                rgba(239, 90, 99, 0.08);
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.20);
+        }
+
+        .eliminar-info-icon {
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 40px;
+
+            border-radius: 10px;
+
+            color: #4b9dff;
+
+            background:
+                rgba(47, 140, 255, 0.10);
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.22);
+        }
+
+        .eliminar-card-header h3,
+        .eliminar-info-header h3 {
+            margin: 0;
+
+            color: #f4f7ff;
+
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+        .eliminar-card-header p,
+        .eliminar-info-header p {
+            margin: 4px 0 0;
+
+            color: #71809c;
+
+            font-size: 12px;
+        }
+
+        .eliminar-contenido {
+            padding:
+                26px
+                26px
+                28px;
+        }
+
+        .alerta-eliminar {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 13px;
+
+            padding: 16px;
+
+            margin-bottom: 22px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.24);
+
+            border-radius: 11px;
+
+            background:
+                rgba(239, 90, 99, 0.065);
+        }
+
+        .alerta-eliminar-icono {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 34px;
+
+            border-radius: 9px;
+
+            color: #ff6875;
+
+            background:
+                rgba(239, 90, 99, 0.10);
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.20);
+        }
+
+        .alerta-eliminar strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #ff8d96;
+
+            font-size: 13px;
+        }
+
+        .alerta-eliminar p {
+            margin: 0;
+
+            color: #9a7b84;
+
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .artefacto-resumen {
+            border:
+                1px solid
+                rgba(80, 120, 180, 0.14);
+
+            border-radius: 12px;
+
+            background:
+                rgba(7, 16, 31, 0.55);
+
+            overflow: hidden;
+        }
+
+        .artefacto-resumen-cabecera {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding:
+                17px
+                18px;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.10);
+        }
+
+        .artefacto-resumen-icono {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 38px;
+
+            border-radius: 9px;
+
+            color: #55b7ff;
+
+            background:
+                rgba(47, 140, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.18);
+        }
+
+        .artefacto-resumen-cabecera strong {
+            display: block;
+
+            color: #f4f7ff;
+
+            font-size: 15px;
+        }
+
+        .artefacto-id {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #657591;
+
+            font-size: 10px;
+        }
+
+        .artefacto-detalles {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+        }
+
+        .detalle-item {
+            min-width: 0;
+
+            padding:
+                15px
+                18px;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.08);
+        }
+
+        .detalle-item:nth-child(odd) {
+            border-right:
+                1px solid
+                rgba(80, 120, 180, 0.08);
+        }
+
+        .detalle-item span {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #657591;
+
+            font-size: 10px;
+            font-weight: 650;
+
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .detalle-item strong {
+            display: block;
+
+            color: #dce7f8;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .form-separador {
+            height: 1px;
+
+            margin:
+                25px
+                0
+                21px;
+
+            background:
+                rgba(80, 120, 180, 0.11);
+        }
+
+        .eliminar-acciones {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 10px;
+        }
+
+        .boton-cancelar {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                0
+                17px;
+
+            border:
+                1px solid
+                rgba(104, 126, 161, 0.22);
+
+            border-radius: 9px;
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+            color: #91a0ba;
+
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            transition:
+                color 160ms ease,
+                border-color 160ms ease,
+                background 160ms ease;
+        }
+
+        .boton-cancelar:hover {
+            color: #ffffff;
+
+            border-color:
+                rgba(75, 157, 255, 0.32);
+
+            background:
+                rgba(47, 140, 255, 0.07);
+        }
+
+        .boton-eliminar-confirmar {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding:
+                0
+                18px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.42);
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #d94655,
+                    #b92f3d
+                );
+
+            color: #ffffff;
+
+            font-family: inherit;
+
+            font-size: 12px;
+            font-weight: 650;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 24px
+                rgba(217, 70, 85, 0.18);
+
+            transition:
+                transform 160ms ease,
+                filter 160ms ease,
+                box-shadow 160ms ease;
+        }
+
+        .boton-eliminar-confirmar:hover {
+            transform:
+                translateY(-1px);
+
+            filter:
+                brightness(1.08);
+
+            box-shadow:
+                0 10px 28px
+                rgba(217, 70, 85, 0.28);
+        }
+
+        .eliminar-info-contenido {
+            padding:
+                20px
+                20px
+                22px;
+        }
+
+        .info-bloque {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 11px;
+
+            padding:
+                14px
+                0;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.10);
+        }
+
+        .info-bloque:first-child {
+            padding-top: 0;
+        }
+
+        .info-bloque:last-child {
+            padding-bottom: 0;
+
+            border-bottom: none;
+        }
+
+        .info-icono {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 32px;
+
+            border-radius: 8px;
+
+            color: #4b9dff;
+
+            background:
+                rgba(47, 140, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.16);
+        }
+
+        .info-texto strong {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: #dce7f8;
+
+            font-size: 12px;
+        }
+
+        .info-texto span {
+            display: block;
+
+            color: #71809c;
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .proteccion-info {
+            margin-top: 18px;
+
+            padding: 14px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.16);
+
+            border-radius: 10px;
+
+            background:
+                rgba(55, 213, 255, 0.045);
+        }
+
+        .proteccion-info strong {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom: 7px;
+
+            color: #78ddf6;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .proteccion-info p {
+            margin: 0;
+
+            color: #71809c;
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .proteccion-info b {
+            color: #aebed7;
+        }
+
+        @media (max-width: 1180px) {
+            .eliminar-layout {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .eliminar-info-card {
+                width: 100%;
+
+                justify-self: stretch;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .eliminar-page .eliminar-main {
+                width: 100% !important;
+
+                margin: 0 !important;
+
+                padding:
+                    22px
+                    16px
+                    30px !important;
+            }
+
+            .eliminar-header {
+                flex-direction: column;
+            }
+
+            .boton-volver {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .artefacto-detalles {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .detalle-item:nth-child(odd) {
+                border-right: none;
+            }
+
+            .eliminar-contenido {
+                padding:
+                    22px
+                    18px;
+            }
+
+            .eliminar-acciones {
+                flex-direction:
+                    column-reverse;
+
+                align-items: stretch;
+            }
+
+            .boton-cancelar,
+            .boton-eliminar-confirmar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body eliminar-page">
+
+<div class="dashboard-app">
+
+    {% include 'sidebar.html' %}
+
+    <main class="eliminar-main">
+
+        <div class="eliminar-header">
+
+            <div>
+
+                <h2>
+                    Eliminar artefacto
+                </h2>
+
+                <p>
+                    Revisa la información antes de continuar.
+
+                    <strong>
+                        {{ usuario.nombre }}
+                    </strong>
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'lista_artefactos' %}"
+                class="boton-volver"
+            >
+
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M19 12H5"/>
+                    <path d="m11 18-6-6 6-6"/>
+                </svg>
+
+                Volver a mis artefactos
+
+            </a>
+
+        </div>
+
+        <div class="eliminar-layout">
+
+            <section class="eliminar-card">
+
+                <div class="eliminar-card-header">
+
+                    <div class="eliminar-header-icon">
+
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M3 6h18"/>
+                            <path d="M8 6V4h8v2"/>
+                            <path d="M19 6l-1 14H6L5 6"/>
+                            <path d="M10 11v5"/>
+                            <path d="M14 11v5"/>
+                        </svg>
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Confirmar eliminación
+                        </h3>
+
+                        <p>
+                            El artefacto dejará de formar parte
+                            de tu inventario activo.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="eliminar-contenido">
+
+                    <div class="alerta-eliminar">
+
+                        <div class="alerta-eliminar-icono">
+
+                            <svg
+                                width="19"
+                                height="19"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M12 9v4"/>
+                                <path d="M12 17h.01"/>
+
+                                <path
+                                    d="
+                                        M10.3 3.6
+                                        2.3 17.5
+                                        A2 2 0 0 0 4 20.5
+                                        h16
+                                        a2 2 0 0 0 1.7-3
+                                        L13.7 3.6
+                                        a2 2 0 0 0-3.4 0
+                                        z
+                                    "
+                                />
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                ¿Estás seguro de que deseas eliminar definitivamente este artefacto?
+                            </strong>
+
+                            <p>
+                                El artefacto desaparecerá inmediatamente de
+                                tu lista, dejará de ser monitoreado y no podrá
+                                recibir nuevas mediciones. Sus consumos
+                                anteriores permanecerán disponibles para
+                                conservar el historial y las comparaciones.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="artefacto-resumen">
+
+                        <div class="artefacto-resumen-cabecera">
+
+                            <div class="artefacto-resumen-icono">
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <rect
+                                        x="4"
+                                        y="5"
+                                        width="16"
+                                        height="12"
+                                        rx="2"
+                                    />
+
+                                    <path d="M12 17v3"/>
+                                    <path d="M8 20h8"/>
+                                </svg>
+
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    {{ artefacto.nombre_artefacto }}
+                                </strong>
+
+                                <span class="artefacto-id">
+                                    ID #{{ artefacto.id_artefacto }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="artefacto-detalles">
+
+                            <div class="detalle-item">
+
+                                <span>
+                                    Categoría
+                                </span>
+
+                                <strong>
+                                    {% if artefacto.categoria %}
+                                        {{ artefacto.categoria.nombre_categoria }}
+                                    {% else %}
+                                        Sin categoría
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                            <div class="detalle-item">
+
+                                <span>
+                                    Marca
+                                </span>
+
+                                <strong>
+                                    {% if artefacto.marca %}
+                                        {{ artefacto.marca }}
+                                    {% else %}
+                                        Sin marca
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                            <div class="detalle-item">
+
+                                <span>
+                                    Modelo
+                                </span>
+
+                                <strong>
+                                    {% if artefacto.modelo %}
+                                        {{ artefacto.modelo }}
+                                    {% else %}
+                                        Sin modelo
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                            <div class="detalle-item">
+
+                                <span>
+                                    Potencia nominal
+                                </span>
+
+                                <strong>
+                                    {% if artefacto.potencia_nominal_w %}
+                                        {{ artefacto.potencia_nominal_w }} W
+                                    {% else %}
+                                        Sin información
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-separador"></div>
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="eliminar-acciones">
+
+                            <a
+                                href="{% url 'lista_artefactos' %}"
+                                class="boton-cancelar"
+                            >
+                                Cancelar
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="boton-eliminar-confirmar"
+                            >
+
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <path d="M3 6h18"/>
+                                    <path d="M8 6V4h8v2"/>
+                                    <path d="M19 6l-1 14H6L5 6"/>
+                                    <path d="M10 11v5"/>
+                                    <path d="M14 11v5"/>
+                                </svg>
+
+                                Sí, eliminar artefacto
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+            <aside class="eliminar-info-card">
+
+                <div class="eliminar-info-header">
+
+                    <div class="eliminar-info-icon">
+
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                            />
+
+                            <path d="M12 11v5"/>
+                            <path d="M12 8h.01"/>
+                        </svg>
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Antes de eliminar
+                        </h3>
+
+                        <p>
+                            Qué ocurrirá con el artefacto
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="eliminar-info-contenido">
+
+                    <div class="info-bloque">
+
+                        <div class="info-icono">
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M3 6h18"/>
+                                <path d="M8 6V4h8v2"/>
+                                <path d="M19 6l-1 14H6L5 6"/>
+                            </svg>
+
+                        </div>
+
+                        <div class="info-texto">
+
+                            <strong>
+                                Inventario actual
+                            </strong>
+
+                            <span>
+                                El artefacto desaparecerá inmediatamente
+                                de tu lista de dispositivos registrados.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-bloque">
+
+                        <div class="info-icono">
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="8"
+                                />
+                                <path d="M12 8v4"/>
+                                <path d="M9 15h6"/>
+                            </svg>
+
+                        </div>
+
+                        <div class="info-texto">
+
+                            <strong>
+                                Monitoreo
+                            </strong>
+
+                            <span>
+                                Su monitoreo se detendrá de inmediato
+                                y no se generarán nuevas mediciones
+                                para este artefacto.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-bloque">
+
+                        <div class="info-icono">
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M4 19V9"/>
+                                <path d="M10 19V5"/>
+                                <path d="M16 19v-7"/>
+                                <path d="M22 19V3"/>
+                            </svg>
+
+                        </div>
+
+                        <div class="info-texto">
+
+                            <strong>
+                                Historial de consumo
+                            </strong>
+
+                            <span>
+                                Las mediciones generadas antes de la eliminación
+                                permanecerán disponibles en el historial del
+                                usuario, aunque el artefacto ya no exista.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-bloque">
+
+                        <div class="info-icono">
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M5 19V9"/>
+                                <path d="M10 19V13"/>
+                                <path d="M15 19V5"/>
+                                <path d="M20 19V10"/>
+                            </svg>
+
+                        </div>
+
+                        <div class="info-texto">
+
+                            <strong>
+                                Comparaciones
+                            </strong>
+
+                            <span>
+                                Sus consumos anteriores podrán seguir apareciendo
+                                en el historial y en las comparaciones,
+                                identificados como artefacto eliminado.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="proteccion-info">
+
+                        <strong>
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="8"
+                                />
+                                <path d="M12 7v5l3 2"/>
+                            </svg>
+
+                            Conservación del historial
+
+                        </strong>
+
+                        <p>
+                            Voltify eliminará físicamente el registro del
+                            artefacto, pero conservará sus consumos históricos
+                            y alertas asociadas para mantener la trazabilidad
+                            de la información del usuario.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,1852 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Reportes | Voltify</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            min-width: 100%;
+            min-height: 100%;
+
+            overflow-x: hidden;
+        }
+
+        .reportes-page {
+            width: 100vw !important;
+            max-width: none !important;
+            min-height: 100vh;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            background:
+                radial-gradient(
+                    circle at 82% 10%,
+                    rgba(47, 140, 255, 0.08),
+                    transparent 30%
+                ),
+                #090d12;
+
+            color: #f4f7ff;
+        }
+
+        .reportes-page,
+        .reportes-page * {
+            box-sizing: border-box;
+        }
+
+        .reportes-page .dashboard-app {
+            display: block !important;
+
+            width: 100vw !important;
+            max-width: 100vw !important;
+            min-height: 100vh;
+
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .reportes-main {
+            position: relative;
+
+            width: calc(100vw - 188px) !important;
+            max-width: calc(100vw - 188px) !important;
+            min-width: 0 !important;
+            min-height: 100vh;
+
+            margin:
+                0
+                0
+                0
+                188px !important;
+
+            padding:
+                26px
+                26px
+                44px !important;
+        }
+
+        .reportes-container {
+            width: 100% !important;
+            max-width: none !important;
+            min-width: 0 !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .reportes-hero {
+            width: 100% !important;
+            max-width: none !important;
+
+            padding:
+                27px
+                30px
+                23px;
+
+            border:
+                1px solid
+                rgba(67, 106, 159, 0.15);
+
+            border-radius: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(12, 23, 36, 0.95),
+                    rgba(8, 17, 28, 0.96)
+                );
+
+            box-shadow:
+                inset 0 1px 0
+                rgba(255, 255, 255, 0.025);
+        }
+
+        .reportes-header {
+            width: 100%;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 28px;
+        }
+
+        .reportes-header-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .reportes-kicker {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 10px;
+
+            color: #67b2ff;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+        }
+
+        .reportes-kicker::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #37d5ff;
+
+            box-shadow:
+                0 0 9px
+                rgba(55, 213, 255, 0.35);
+        }
+
+        .reportes-header h1 {
+            margin:
+                0
+                0
+                10px;
+
+            color: #f4f7ff;
+
+            font-size:
+                clamp(
+                    34px,
+                    4vw,
+                    52px
+                );
+
+            font-weight: 850;
+
+            letter-spacing: -0.05em;
+        }
+
+        .reportes-header p {
+            max-width: 920px;
+
+            margin: 0;
+
+            color: #8ea0b7;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+        .reportes-periodo-actual {
+            flex: 0 0 245px;
+
+            padding:
+                16px
+                18px;
+
+            border:
+                1px solid
+                rgba(75, 130, 210, 0.17);
+
+            border-radius: 15px;
+
+            background:
+                rgba(13, 24, 38, 0.76);
+
+            text-align: center;
+        }
+
+        .reportes-periodo-actual span {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #72859d;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+
+            text-transform: uppercase;
+        }
+
+        .reportes-periodo-actual strong {
+            color: #ebf2fb;
+
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .reportes-divider {
+            width: 100%;
+            height: 1px;
+
+            margin:
+                23px
+                0
+                18px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(47, 140, 255, 0.48),
+                    transparent
+                );
+        }
+
+        .reportes-filtros {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+        .reporte-filtro {
+            padding:
+                10px
+                16px;
+
+            border:
+                1px solid
+                rgba(73, 112, 167, 0.18);
+
+            border-radius: 10px;
+
+            background:
+                rgba(15, 26, 39, 0.72);
+
+            color: #91a5bd;
+
+            font-size: 11px;
+            font-weight: 750;
+
+            text-decoration: none;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .reporte-filtro:hover {
+            transform: translateY(-1px);
+
+            border-color:
+                rgba(47, 140, 255, 0.38);
+
+            background:
+                rgba(47, 140, 255, 0.08);
+
+            color: #79b8ff;
+        }
+
+        .reporte-filtro.active {
+            border-color:
+                rgba(47, 140, 255, 0.60);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(47, 140, 255, 0.24),
+                    rgba(55, 213, 255, 0.07)
+                );
+
+            color: #8bc5ff;
+
+            box-shadow:
+                inset 0 0 0 1px
+                rgba(47, 140, 255, 0.08);
+        }
+
+        .reportes-grid {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    6,
+                    minmax(0, 1fr)
+                );
+
+            gap: 14px;
+
+            margin:
+                20px
+                0
+                22px;
+        }
+
+        .reporte-card {
+            min-width: 0;
+            min-height: 145px;
+
+            padding:
+                19px
+                18px;
+
+            border:
+                1px solid
+                rgba(66, 105, 160, 0.15);
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 26, 40, 0.91),
+                    rgba(10, 18, 28, 0.93)
+                );
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .reporte-card:hover {
+            transform: translateY(-2px);
+
+            border-color:
+                rgba(47, 140, 255, 0.25);
+        }
+
+        .reporte-card-label {
+            display: block;
+
+            margin-bottom: 10px;
+
+            color: #6d8199;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+
+            text-transform: uppercase;
+        }
+
+        .reporte-card strong {
+            display: block;
+
+            margin-bottom: 6px;
+
+            overflow: hidden;
+
+            color: #eef4fb;
+
+            font-size:
+                clamp(
+                    18px,
+                    1.7vw,
+                    27px
+                );
+
+            font-weight: 820;
+
+            letter-spacing: -0.03em;
+
+            text-overflow: ellipsis;
+        }
+
+        .reporte-card p {
+            margin: 0;
+
+            color: #74879f;
+
+            font-size: 10px;
+
+            line-height: 1.55;
+        }
+
+        .reporte-card--highlight strong {
+            color: #69b7ff;
+        }
+
+        .reportes-doble-grid {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+        }
+
+        .reportes-panel {
+            width: 100% !important;
+            max-width: none !important;
+            min-width: 0;
+
+            border:
+                1px solid
+                rgba(66, 105, 160, 0.15);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(14, 24, 37, 0.90),
+                    rgba(9, 18, 28, 0.93)
+                );
+
+            overflow: hidden;
+        }
+
+        .reportes-panel-header {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding:
+                21px
+                23px;
+
+            border-bottom:
+                1px solid
+                rgba(67, 106, 159, 0.13);
+        }
+
+        .reportes-panel-header h2 {
+            margin:
+                0
+                0
+                5px;
+
+            color: #e8eff8;
+
+            font-size: 17px;
+            font-weight: 780;
+        }
+
+        .reportes-panel-header p {
+            margin: 0;
+
+            color: #70839b;
+
+            font-size: 11px;
+        }
+
+        .reporte-badge {
+            flex: 0 0 auto;
+
+            padding:
+                8px
+                11px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.15);
+
+            border-radius: 9px;
+
+            background:
+                rgba(55, 213, 255, 0.05);
+
+            color: #6ed2ff;
+
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .comparacion-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 14px;
+
+            padding:
+                21px
+                23px
+                23px;
+        }
+
+        .comparacion-card {
+            min-width: 0;
+
+            padding:
+                17px
+                17px
+                16px;
+
+            border:
+                1px solid
+                rgba(67, 106, 159, 0.13);
+
+            border-radius: 13px;
+
+            background:
+                rgba(16, 28, 42, 0.66);
+        }
+
+        .comparacion-card span {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #6f839c;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+
+            text-transform: uppercase;
+        }
+
+        .comparacion-card strong {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #edf4fb;
+
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .comparacion-card p {
+            margin:
+                4px
+                0
+                0;
+
+            color: #778ba3;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+        }
+
+        .estado-subio {
+            color: #ff9393 !important;
+        }
+
+        .estado-bajo {
+            color: #57d2ff !important;
+        }
+
+        .estado-igual {
+            color: #d9e4f2 !important;
+        }
+
+        .reportes-tabla-contenedor {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+        .reportes-tabla {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        .reportes-tabla th {
+            padding:
+                14px
+                17px;
+
+            border-bottom:
+                1px solid
+                rgba(66, 104, 158, 0.13);
+
+            background:
+                rgba(10, 19, 30, 0.55);
+
+            color: #6f849e;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.07em;
+
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .reportes-tabla td {
+            padding:
+                15px
+                17px;
+
+            border-bottom:
+                1px solid
+                rgba(66, 104, 158, 0.09);
+
+            color: #a7b7ca;
+
+            font-size: 11px;
+
+            vertical-align: middle;
+        }
+
+        .reportes-tabla tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .reportes-tabla tbody tr:hover {
+            background:
+                rgba(47, 140, 255, 0.035);
+        }
+
+        .reportes-tabla tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .reporte-artefacto {
+            color: #e2eaf5;
+
+            font-weight: 700;
+        }
+
+        .reporte-categoria {
+            display: inline-block;
+
+            padding:
+                6px
+                9px;
+
+            border:
+                1px solid
+                rgba(78, 121, 180, 0.14);
+
+            border-radius: 7px;
+
+            background:
+                rgba(19, 33, 49, 0.65);
+
+            color: #91a8c3;
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .reporte-consumo {
+            color: #68b5ff;
+
+            font-weight: 750;
+        }
+
+        .reporte-costo {
+            color: #dce7f5;
+
+            font-weight: 700;
+        }
+
+        .alerta-tipo {
+            display: inline-block;
+
+            padding:
+                6px
+                10px;
+
+            border:
+                1px solid
+                rgba(255, 120, 120, 0.20);
+
+            border-radius: 999px;
+
+            background:
+                rgba(255, 70, 70, 0.08);
+
+            color: #ff9f9f;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.05em;
+
+            text-transform: uppercase;
+        }
+
+        .alerta-estado {
+            display: inline-block;
+
+            padding:
+                6px
+                10px;
+
+            border-radius: 999px;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.05em;
+
+            text-transform: uppercase;
+        }
+
+        .alerta-leida {
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.18);
+
+            background:
+                rgba(55, 213, 255, 0.07);
+
+            color: #7edcff;
+        }
+
+        .alerta-no-leida {
+            border:
+                1px solid
+                rgba(255, 175, 65, 0.20);
+
+            background:
+                rgba(255, 175, 65, 0.07);
+
+            color: #ffd085;
+        }
+
+        .reportes-vacio {
+            width: 100%;
+
+            padding:
+                50px
+                24px;
+
+            text-align: center;
+        }
+
+        .reportes-vacio-icon {
+            width: 55px;
+            height: 55px;
+
+            margin:
+                0
+                auto
+                15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.17);
+
+            border-radius: 14px;
+
+            background:
+                rgba(47, 140, 255, 0.06);
+
+            color: #60adff;
+        }
+
+        .reportes-vacio h3 {
+            margin:
+                0
+                0
+                7px;
+
+            color: #e3ebf6;
+
+            font-size: 15px;
+        }
+
+        .reportes-vacio p {
+            max-width: 440px;
+
+            margin: 0 auto;
+
+            color: #6f839b;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+        .reportes-info {
+            width: 100%;
+
+            margin-top: 21px;
+
+            padding:
+                16px
+                18px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.12);
+
+            border-radius: 12px;
+
+            background:
+                rgba(55, 213, 255, 0.035);
+        }
+
+        .reportes-info strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #6fd1ff;
+
+            font-size: 11px;
+        }
+
+        .reportes-info p {
+            margin: 0;
+
+            color: #70839b;
+
+            font-size: 10px;
+
+            line-height: 1.55;
+        }
+
+        @media (max-width: 1380px) {
+
+            .reportes-grid {
+                grid-template-columns:
+                    repeat(
+                        3,
+                        minmax(0, 1fr)
+                    );
+            }
+        }
+
+        @media (max-width: 1100px) {
+
+            .reportes-doble-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reportes-grid {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+            }
+        }
+
+        @media (max-width: 900px) {
+
+            .reportes-main {
+                width: 100vw !important;
+                max-width: 100vw !important;
+
+                margin-left: 0 !important;
+
+                padding:
+                    20px
+                    14px
+                    36px !important;
+            }
+
+            .reportes-header {
+                flex-direction: column;
+            }
+
+            .reportes-periodo-actual {
+                width: 100%;
+
+                flex-basis: auto;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .reportes-grid,
+            .comparacion-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reportes-hero {
+                padding:
+                    21px
+                    17px;
+            }
+
+            .reportes-panel-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body class="dashboard-body reportes-page">
+
+    <div class="dashboard-app">
+
+        {% include 'sidebar.html' %}
+
+        <main class="reportes-main">
+
+            <div class="reportes-container">
+
+                <section class="reportes-hero">
+
+                    <header class="reportes-header">
+
+                        <div class="reportes-header-copy">
+
+                            <span class="reportes-kicker">
+                                Análisis de consumo
+                            </span>
+
+                            <h1>
+                                Reportes
+                            </h1>
+
+                            <p>
+                                Revisa tus consumos por período, identifica
+                                los artefactos con mayor impacto, compara
+                                resultados y consulta el historial de alertas
+                                con fecha y hora.
+                            </p>
+
+                        </div>
+
+                        <div class="reportes-periodo-actual">
+
+                            <span>
+                                Período seleccionado
+                            </span>
+
+                            <strong>
+                                {{ periodo_texto }}
+                            </strong>
+
+                        </div>
+
+                    </header>
+
+                    <div class="reportes-divider"></div>
+
+                    <nav class="reportes-filtros">
+
+                        <a
+                            href="{% url 'reportes' %}?periodo=hoy"
+                            class="reporte-filtro {% if periodo == 'hoy' %}active{% endif %}"
+                        >
+                            Hoy
+                        </a>
+
+                        <a
+                            href="{% url 'reportes' %}?periodo=semana"
+                            class="reporte-filtro {% if periodo == 'semana' %}active{% endif %}"
+                        >
+                            Últimos 7 días
+                        </a>
+
+                        <a
+                            href="{% url 'reportes' %}?periodo=mes"
+                            class="reporte-filtro {% if periodo == 'mes' %}active{% endif %}"
+                        >
+                            Mes actual
+                        </a>
+
+                        <a
+                            href="{% url 'reportes' %}?periodo=tres_meses"
+                            class="reporte-filtro {% if periodo == 'tres_meses' %}active{% endif %}"
+                        >
+                            Últimos 3 meses
+                        </a>
+
+                    </nav>
+
+                </section>
+
+                <section class="reportes-grid">
+
+                    <article class="reporte-card reporte-card--highlight">
+
+                        <span class="reporte-card-label">
+                            Consumo total
+                        </span>
+
+                        <strong>
+                            {{ consumo_total|floatformat:2 }} kWh
+                        </strong>
+
+                        <p>
+                            Energía registrada durante
+                            {{ periodo_texto|lower }}.
+                        </p>
+
+                    </article>
+
+                    <article class="reporte-card">
+
+                        <span class="reporte-card-label">
+                            Costo estimado
+                        </span>
+
+                        {% if tarifa_disponible %}
+
+                            <strong>
+                                ${{ costo_total|floatformat:0 }}
+                            </strong>
+
+                            {% if meses_cargo_fijo > 0 %}
+
+                                <p>
+                                    Energía ${{ costo_energia|floatformat:0 }}
+                                    + cargo fijo ${{ cargo_fijo_aplicado|floatformat:0 }}.
+                                </p>
+
+                            {% else %}
+
+                                <p>
+                                    Costo energético según la tarifa actual.
+                                </p>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <strong>
+                                -
+                            </strong>
+
+                            <p>
+                                Configura una tarifa para calcular costos.
+                            </p>
+
+                        {% endif %}
+
+                    </article>
+
+                    <article class="reporte-card">
+
+                        <span class="reporte-card-label">
+                            Registros
+                        </span>
+
+                        <strong>
+                            {{ cantidad_registros }}
+                        </strong>
+
+                        <p>
+                            Mediciones encontradas dentro del período.
+                        </p>
+
+                    </article>
+
+                    <article class="reporte-card">
+
+                        <span class="reporte-card-label">
+                            Promedio diario
+                        </span>
+
+                        <strong>
+                            {{ promedio_diario|floatformat:2 }} kWh
+                        </strong>
+
+                        <p>
+                            Promedio de consumo diario del período.
+                        </p>
+
+                    </article>
+
+                    <article class="reporte-card">
+
+                        <span class="reporte-card-label">
+                            Mayor consumidor
+                        </span>
+
+                        <strong>
+                            {{ mayor_consumidor_nombre }}
+                        </strong>
+
+                        <p>
+                            {{ mayor_consumidor_kwh|floatformat:2 }}
+                            kWh acumulados.
+                        </p>
+
+                    </article>
+
+                    <article class="reporte-card">
+
+                        <span class="reporte-card-label">
+                            Alertas del período
+                        </span>
+
+                        <strong>
+                            {{ cantidad_alertas }}
+                        </strong>
+
+                        <p>
+                            Alertas detectadas durante
+                            {{ periodo_texto|lower }}.
+                        </p>
+
+                    </article>
+
+                </section>
+
+                <div class="reportes-doble-grid">
+
+                    <section class="reportes-panel">
+
+                        <div class="reportes-panel-header">
+
+                            <div>
+
+                                <h2>
+                                    Comparación del período
+                                </h2>
+
+                                <p>
+                                    {{ comparacion_texto }}.
+                                </p>
+
+                            </div>
+
+                            <span class="reporte-badge">
+                                Comparación
+                            </span>
+
+                        </div>
+
+                        <div class="comparacion-grid">
+
+                            <div class="comparacion-card">
+
+                                <span>
+                                    Consumo
+                                </span>
+
+                                <strong>
+                                    {{ consumo_total|floatformat:2 }} kWh
+                                </strong>
+
+                                {% if comparacion_disponible %}
+
+                                    <p>
+                                        Período anterior:
+                                        {{ consumo_total_anterior|floatformat:2 }} kWh
+                                    </p>
+
+                                    {% if estado_variacion_consumo == 'subio' %}
+
+                                        <p class="estado-subio">
+                                            ↑ Subió
+                                            {{ variacion_consumo|floatformat:1 }}%
+                                        </p>
+
+                                    {% elif estado_variacion_consumo == 'bajo' %}
+
+                                        <p class="estado-bajo">
+                                            ↓ Bajó
+                                            {{ variacion_consumo|floatformat:1 }}%
+                                        </p>
+
+                                    {% else %}
+
+                                        <p class="estado-igual">
+                                            Sin variación
+                                        </p>
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                    <p>
+                                        Período anterior:
+                                        Sin datos suficientes
+                                    </p>
+
+                                    <p class="estado-igual">
+                                        Comparación no disponible
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="comparacion-card">
+
+                                <span>
+                                    Costo
+                                </span>
+
+                                {% if tarifa_disponible %}
+
+                                    <strong>
+                                        ${{ costo_total|floatformat:0 }}
+                                    </strong>
+
+                                    {% if comparacion_disponible %}
+
+                                        <p>
+                                            Período anterior:
+                                            ${{ costo_total_anterior|floatformat:0 }}
+                                        </p>
+
+                                        {% if estado_variacion_costo == 'subio' %}
+
+                                            <p class="estado-subio">
+                                                ↑ Subió
+                                                {{ variacion_costo|floatformat:1 }}%
+                                            </p>
+
+                                        {% elif estado_variacion_costo == 'bajo' %}
+
+                                            <p class="estado-bajo">
+                                                ↓ Bajó
+                                                {{ variacion_costo|floatformat:1 }}%
+                                            </p>
+
+                                        {% else %}
+
+                                            <p class="estado-igual">
+                                                Sin variación
+                                            </p>
+
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        <p>
+                                            Período anterior:
+                                            Sin datos suficientes
+                                        </p>
+
+                                        <p class="estado-igual">
+                                            Comparación no disponible
+                                        </p>
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                    <strong>
+                                        -
+                                    </strong>
+
+                                    <p>
+                                        No hay una tarifa configurada
+                                        para comparar costos.
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                    <section class="reportes-panel">
+
+                        <div class="reportes-panel-header">
+
+                            <div>
+
+                                <h2>
+                                    Destacados
+                                </h2>
+
+                                <p>
+                                    Artefactos con mayor impacto.
+                                </p>
+
+                            </div>
+
+                            <span class="reporte-badge">
+                                Análisis
+                            </span>
+
+                        </div>
+
+                        <div class="comparacion-grid">
+
+                            <div class="comparacion-card">
+
+                                <span>
+                                    Mayor consumo
+                                </span>
+
+                                <strong>
+                                    {{ mayor_consumidor_nombre }}
+                                </strong>
+
+                                <p>
+                                    {{ mayor_consumidor_kwh|floatformat:2 }}
+                                    kWh acumulados.
+                                </p>
+
+                            </div>
+
+                            <div class="comparacion-card">
+
+                                <span>
+                                    Mayor costo energético
+                                </span>
+
+                                {% if tarifa_disponible %}
+
+                                    <strong>
+                                        {{ mayor_costo_nombre }}
+                                    </strong>
+
+                                    <p>
+                                        ${{ mayor_costo_total|floatformat:0 }}
+                                        estimados solo por energía.
+                                    </p>
+
+                                {% else %}
+
+                                    <strong>
+                                        Sin tarifa
+                                    </strong>
+
+                                    <p>
+                                        Configura una tarifa para calcular
+                                        este dato.
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+                <section class="reportes-panel">
+
+                    <div class="reportes-panel-header">
+
+                        <div>
+
+                            <h2>
+                                Detalle de consumos
+                            </h2>
+
+                            <p>
+                                Historial detallado con fecha y hora.
+                            </p>
+
+                        </div>
+
+                        <span class="reporte-badge">
+
+                            {{ cantidad_registros }}
+
+                            {% if cantidad_registros == 1 %}
+                                registro
+                            {% else %}
+                                registros
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    {% if detalle_consumos %}
+
+                        <div class="reportes-tabla-contenedor">
+
+                            <table class="reportes-tabla">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Fecha y hora
+                                        </th>
+
+                                        <th>
+                                            Artefacto
+                                        </th>
+
+                                        <th>
+                                            Categoría
+                                        </th>
+
+                                        <th>
+                                            Consumo
+                                        </th>
+
+                                        <th>
+                                            Costo estimado
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    {% for consumo in detalle_consumos %}
+
+                                        <tr>
+
+                                            <td>
+                                                {{ consumo.fecha|date:"d/m/Y H:i" }}
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-artefacto">
+                                                    {{ consumo.artefacto }}
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-categoria">
+                                                    {{ consumo.categoria }}
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-consumo">
+                                                    {{ consumo.consumo_kwh|floatformat:2 }}
+                                                    kWh
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-costo">
+
+                                                    {% if tarifa_disponible %}
+
+                                                        ${{ consumo.costo_estimado|floatformat:0 }}
+
+                                                    {% else %}
+
+                                                        -
+
+                                                    {% endif %}
+
+                                                </span>
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="reportes-vacio">
+
+                            <div class="reportes-vacio-icon">
+
+                                <svg
+                                    width="28"
+                                    height="28"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                >
+                                    <path d="M5 21V9"/>
+                                    <path d="M10 21V3"/>
+                                    <path d="M15 21v-6"/>
+                                    <path d="M20 21v-10"/>
+                                </svg>
+
+                            </div>
+
+                            <h3>
+                                No hay consumos en este período
+                            </h3>
+
+                            <p>
+                                Cuando existan mediciones registradas,
+                                aparecerán automáticamente con su fecha,
+                                hora, consumo y costo estimado.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+                <section
+                    class="reportes-panel"
+                    style="margin-top: 22px;"
+                >
+
+                    <div class="reportes-panel-header">
+
+                        <div>
+
+                            <h2>
+                                Historial de alertas
+                            </h2>
+
+                            <p>
+                                Eventos detectados durante el período
+                                seleccionado.
+                            </p>
+
+                        </div>
+
+                        <span class="reporte-badge">
+
+                            {{ cantidad_alertas }}
+
+                            {% if cantidad_alertas == 1 %}
+                                alerta
+                            {% else %}
+                                alertas
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    {% if alertas_detalle %}
+
+                        <div class="reportes-tabla-contenedor">
+
+                            <table class="reportes-tabla">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Fecha y hora
+                                        </th>
+
+                                        <th>
+                                            Tipo
+                                        </th>
+
+                                        <th>
+                                            Artefacto
+                                        </th>
+
+                                        <th>
+                                            Consumo detectado
+                                        </th>
+
+                                        <th>
+                                            Costo
+                                        </th>
+
+                                        <th>
+                                            Estado
+                                        </th>
+
+                                        <th>
+                                            Mensaje
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    {% for alerta in alertas_detalle %}
+
+                                        <tr>
+
+                                            <td>
+                                                {{ alerta.fecha_alerta|date:"d/m/Y H:i" }}
+                                            </td>
+
+                                            <td>
+
+                                                <span class="alerta-tipo">
+                                                    {{ alerta.tipo_alerta }}
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-artefacto">
+                                                    {{ alerta.artefacto }}
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-consumo">
+                                                    {{ alerta.consumo_kwh|floatformat:2 }}
+                                                    kWh
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="reporte-costo">
+
+                                                    {% if tarifa_disponible %}
+
+                                                        ${{ alerta.costo_estimado|floatformat:0 }}
+
+                                                    {% else %}
+
+                                                        -
+
+                                                    {% endif %}
+
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                {% if alerta.leida %}
+
+                                                    <span class="alerta-estado alerta-leida">
+                                                        Leída
+                                                    </span>
+
+                                                {% else %}
+
+                                                    <span class="alerta-estado alerta-no-leida">
+                                                        Pendiente
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+                                            <td>
+                                                {{ alerta.mensaje }}
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="reportes-vacio">
+
+                            <div class="reportes-vacio-icon">
+
+                                <svg
+                                    width="28"
+                                    height="28"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                >
+                                    <path d="M12 9v4"/>
+                                    <path d="M12 17h.01"/>
+
+                                    <path
+                                        d="
+                                            M10.29 3.86
+                                            1.82 18
+                                            a2 2 0 0 0
+                                            1.71 3
+                                            h16.94
+                                            a2 2 0 0 0
+                                            1.71-3
+                                            L13.71 3.86
+                                            a2 2 0 0 0
+                                            -3.42 0
+                                            z
+                                        "
+                                    />
+
+                                </svg>
+
+                            </div>
+
+                            <h3>
+                                No se registraron alertas
+                            </h3>
+
+                            <p>
+                                Cuando Voltify detecte un evento de consumo
+                                elevado, aparecerá aquí indicando fecha,
+                                hora, artefacto y detalle.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+                <div class="reportes-info">
+
+                    <strong>
+                        Información del reporte
+                    </strong>
+
+                    {% if tarifa_disponible %}
+
+                        <p>
+                            Los consumos se obtienen desde las mediciones
+                            almacenadas en Voltify. Los costos utilizan la
+                            tarifa actual configurada para el usuario:
+                            ${{ tarifa_actual.valor_kwh|floatformat:2 }}
+                            por kWh y un cargo fijo mensual de
+                            ${{ tarifa_actual.cargo_fijo_mensual|floatformat:0 }}.
+
+                            {% if meses_cargo_fijo > 0 %}
+
+                                Para {{ periodo_texto|lower }} se aplican
+                                {{ meses_cargo_fijo }}
+
+                                {% if meses_cargo_fijo == 1 %}
+
+                                    cargo fijo mensual.
+
+                                {% else %}
+
+                                    cargos fijos mensuales.
+
+                                {% endif %}
+
+                            {% else %}
+
+                                En este período no se agrega cargo fijo.
+
+                            {% endif %}
+
+                            Los costos por artefacto, registro y alerta
+                            corresponden solamente al consumo energético;
+                            el cargo fijo se suma una sola vez al total del
+                            hogar por cada mes considerado.
+                        </p>
+
+                    {% else %}
+
+                        <p>
+                            Los consumos se obtienen desde las mediciones
+                            almacenadas en Voltify. Actualmente no existe una
+                            tarifa disponible, por lo que los costos no pueden
+                            calcularse hasta configurar una tarifa automática
+                            local o manual.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

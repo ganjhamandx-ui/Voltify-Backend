@@ -1,0 +1,54 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Credenciales y configuraciones privadas
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Respaldos y datos privados
+*.sql
+*.sqlite3
+*.bak
+*.backup
+*.dump
+
+# Archivos temporales
+*.log
+*.tmp
+*.temp
+*.py~
+*.orig
+
+# Editor y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Archivos generados
+staticfiles/
+media/
+
+# Respaldos antiguos del proyecto Voltify
+consumos/models_ANTES_DELETE_FISICO_E3.py
+voltify_backend/settings_ANTES_LIMPIEZA_UTF8_E3.py
+voltify_backend/settings_E2_RESPALDO.py
+
+
+# Copias antiguas de archivos del proyecto
+*_ANTES_*.py
+*_ANTES_*.js
+*_ANTES_*.html
+*_RESPALDO.py
+*_RESPALDO.js
+*_RESPALDO.html
+

@@ -1,0 +1,1290 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Editar artefacto | Voltify
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+        .artefacto-form-page {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 75% 15%,
+                    rgba(47, 140, 255, 0.08),
+                    transparent 28%
+                ),
+                #07101f;
+
+            color: #f4f7ff;
+        }
+
+        .artefacto-form-page .dashboard-app {
+            width: 100%;
+            max-width: none;
+            min-height: 100vh;
+        }
+
+        .artefacto-form-page .artefacto-form-main {
+            width: calc(100% - 188px) !important;
+            max-width: none !important;
+            min-width: 0;
+            min-height: 100vh;
+
+            margin:
+                0
+                0
+                0
+                188px !important;
+
+            padding:
+                28px
+                28px
+                40px !important;
+
+            box-sizing: border-box;
+        }
+
+        .form-page-header {
+            width: 100%;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 24px;
+
+            margin-bottom: 24px;
+        }
+
+        .form-page-header h2 {
+            margin: 0;
+
+            color: #f4f7ff;
+
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .form-page-header p {
+            margin: 8px 0 0;
+
+            color: #7f8da8;
+
+            font-size: 14px;
+        }
+
+        .form-page-header strong {
+            color: #a9b9d6;
+        }
+
+        .boton-volver {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 auto;
+
+            gap: 8px;
+
+            padding: 11px 16px;
+
+            border:
+                1px solid
+                rgba(83, 123, 184, 0.26);
+
+            border-radius: 10px;
+
+            background:
+                rgba(8, 18, 35, 0.72);
+
+            color: #9eabc0;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                color 160ms ease,
+                border-color 160ms ease,
+                background 160ms ease,
+                transform 160ms ease;
+        }
+
+        .boton-volver:hover {
+            color: #ffffff;
+
+            border-color:
+                rgba(47, 140, 255, 0.42);
+
+            background:
+                rgba(47, 140, 255, 0.08);
+
+            transform:
+                translateY(-1px);
+        }
+
+        .edicion-layout {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                330px;
+
+            gap: 22px;
+
+            align-items: start;
+        }
+
+        .edicion-card,
+        .edicion-info-card {
+            min-width: 0;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            border:
+                1px solid
+                rgba(64, 132, 255, 0.28);
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(12, 25, 48, 0.96),
+                    rgba(7, 16, 31, 0.98)
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.18),
+                inset
+                0 1px 0
+                rgba(255, 255, 255, 0.02);
+
+            overflow: hidden;
+        }
+
+        .edicion-card::before,
+        .edicion-info-card::before {
+            display: none;
+        }
+
+        .edicion-card {
+            width: 100%;
+        }
+
+        .edicion-info-card {
+            width: 330px;
+
+            justify-self: end;
+        }
+
+        .edicion-card-header,
+        .edicion-info-header {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 20px 22px;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.12);
+        }
+
+        .edicion-header-icon {
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 40px;
+
+            border-radius: 10px;
+
+            color: #4b9dff;
+
+            background:
+                rgba(47, 140, 255, 0.10);
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.22);
+        }
+
+        .edicion-card-header h3,
+        .edicion-info-header h3 {
+            margin: 0;
+
+            color: #f4f7ff;
+
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+        .edicion-card-header p,
+        .edicion-info-header p {
+            margin: 4px 0 0;
+
+            color: #71809c;
+
+            font-size: 12px;
+        }
+
+        .edicion-formulario {
+            padding:
+                26px
+                26px
+                28px;
+        }
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap:
+                22px
+                20px;
+        }
+
+        .campo-formulario {
+            min-width: 0;
+        }
+
+        .campo-completo {
+            grid-column:
+                1 / -1;
+        }
+
+        .campo-formulario label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #a6b4cd;
+
+            font-size: 11px;
+            font-weight: 650;
+
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .campo-formulario input,
+        .campo-formulario select {
+            width: 100%;
+            height: 46px;
+
+            box-sizing: border-box;
+
+            padding:
+                0
+                13px;
+
+            border:
+                1px solid
+                rgba(83, 123, 184, 0.26);
+
+            border-radius: 10px;
+
+            outline: none;
+
+            background:
+                rgba(8, 18, 35, 0.82);
+
+            color: #dfe8f8;
+
+            font-family: inherit;
+            font-size: 13px;
+
+            transition:
+                border-color 160ms ease,
+                box-shadow 160ms ease,
+                background 160ms ease;
+        }
+
+        .campo-formulario input::placeholder {
+            color: #56657f;
+        }
+
+        .campo-formulario select {
+            cursor: pointer;
+        }
+
+        .campo-formulario select option {
+            background: #0b172b;
+
+            color: #e6edf9;
+        }
+
+        .campo-formulario input:focus,
+        .campo-formulario select:focus {
+            border-color:
+                rgba(47, 140, 255, 0.65);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(47, 140, 255, 0.08);
+
+            background:
+                rgba(9, 21, 41, 0.98);
+        }
+
+        .campo-ayuda {
+            display: block;
+
+            margin-top: 7px;
+
+            color: #64738e;
+
+            font-size: 11px;
+
+            line-height: 1.45;
+        }
+
+        .error-campo {
+            display: block;
+
+            margin-top: 7px;
+
+            color: #ff6875;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .errores-generales {
+            margin-bottom: 20px;
+
+            padding:
+                13px
+                15px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.28);
+
+            border-radius: 10px;
+
+            background:
+                rgba(239, 90, 99, 0.07);
+
+            color: #ff8d96;
+
+            font-size: 12px;
+        }
+
+        .errores-generales ul {
+            margin:
+                6px
+                0
+                0;
+
+            padding-left: 18px;
+        }
+
+        .form-separador {
+            height: 1px;
+
+            margin:
+                27px
+                0
+                22px;
+
+            background:
+                rgba(80, 120, 180, 0.11);
+        }
+
+        .form-acciones {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 10px;
+        }
+
+        .boton-cancelar {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                0
+                17px;
+
+            border:
+                1px solid
+                rgba(104, 126, 161, 0.22);
+
+            border-radius: 9px;
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+            color: #91a0ba;
+
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            transition:
+                color 160ms ease,
+                border-color 160ms ease,
+                background 160ms ease;
+        }
+
+        .boton-cancelar:hover {
+            color: #ffffff;
+
+            border-color:
+                rgba(75, 157, 255, 0.32);
+
+            background:
+                rgba(47, 140, 255, 0.07);
+        }
+
+        .boton-guardar {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding:
+                0
+                18px;
+
+            border:
+                1px solid
+                rgba(75, 157, 255, 0.46);
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2f8cff,
+                    #285cf5
+                );
+
+            color: #ffffff;
+
+            font-family: inherit;
+
+            font-size: 12px;
+            font-weight: 650;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 24px
+                rgba(47, 140, 255, 0.18);
+
+            transition:
+                transform 160ms ease,
+                filter 160ms ease,
+                box-shadow 160ms ease;
+        }
+
+        .boton-guardar:hover {
+            transform:
+                translateY(-1px);
+
+            filter:
+                brightness(1.08);
+
+            box-shadow:
+                0 10px 28px
+                rgba(47, 140, 255, 0.27);
+        }
+
+        .edicion-info-contenido {
+            padding:
+                20px
+                20px
+                22px;
+        }
+
+        .artefacto-actual {
+            padding: 15px;
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.16);
+
+            border-radius: 11px;
+
+            background:
+                rgba(47, 140, 255, 0.045);
+        }
+
+        .artefacto-actual-etiqueta {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #71809c;
+
+            font-size: 10px;
+            font-weight: 650;
+
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .artefacto-actual-nombre {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 6px;
+        }
+
+        .artefacto-actual-icono {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 34px;
+
+            border-radius: 8px;
+
+            color: #55b7ff;
+
+            background:
+                rgba(47, 140, 255, 0.09);
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.18);
+        }
+
+        .artefacto-actual-nombre strong {
+            color: #f4f7ff;
+
+            font-size: 14px;
+        }
+
+        .artefacto-actual-id {
+            display: block;
+
+            margin-top: 2px;
+
+            color: #697895;
+
+            font-size: 10px;
+        }
+
+        .detalle-actual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding:
+                12px
+                0;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.10);
+        }
+
+        .detalle-actual:last-child {
+            border-bottom: none;
+
+            padding-bottom: 0;
+        }
+
+        .detalle-actual span {
+            color: #71809c;
+
+            font-size: 11px;
+        }
+
+        .detalle-actual strong {
+            max-width: 180px;
+
+            color: #dce7f8;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            text-align: right;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .edicion-aviso {
+            margin-top: 18px;
+
+            padding: 14px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.16);
+
+            border-radius: 10px;
+
+            background:
+                rgba(55, 213, 255, 0.045);
+        }
+
+        .edicion-aviso strong {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom: 7px;
+
+            color: #78ddf6;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .edicion-aviso p {
+            margin: 0;
+
+            color: #71809c;
+
+            font-size: 11px;
+
+            line-height: 1.55;
+        }
+
+        .edicion-aviso b {
+            color: #aebed7;
+        }
+
+        @media (max-width: 1180px) {
+            .edicion-layout {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .edicion-info-card {
+                width: 100%;
+
+                justify-self: stretch;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .artefacto-form-page .artefacto-form-main {
+                width: 100% !important;
+
+                margin: 0 !important;
+
+                padding:
+                    22px
+                    16px
+                    30px !important;
+            }
+
+            .form-page-header {
+                flex-direction: column;
+            }
+
+            .boton-volver {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .form-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .campo-completo {
+                grid-column:
+                    auto;
+            }
+
+            .edicion-formulario {
+                padding:
+                    22px
+                    18px;
+            }
+
+            .form-acciones {
+                flex-direction:
+                    column-reverse;
+
+                align-items: stretch;
+            }
+
+            .boton-cancelar,
+            .boton-guardar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+
+<body class="dashboard-body artefacto-form-page">
+
+<div class="dashboard-app">
+
+    {% include 'sidebar.html' %}
+
+
+    <main class="artefacto-form-main">
+
+        <div class="form-page-header">
+
+            <div>
+
+                <h2>
+                    Editar artefacto
+                </h2>
+
+                <p>
+                    Modifica los datos registrados de
+
+                    <strong>
+                        {{ artefacto.nombre_artefacto }}
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'lista_artefactos' %}"
+                class="boton-volver"
+            >
+
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M19 12H5"/>
+                    <path d="m11 18-6-6 6-6"/>
+                </svg>
+
+                Volver a mis artefactos
+
+            </a>
+
+        </div>
+
+
+        <div class="edicion-layout">
+
+            <section class="edicion-card">
+
+                <div class="edicion-card-header">
+
+                    <div class="edicion-header-icon">
+
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M12 20h9"/>
+
+                            <path
+                                d="
+                                    M16.5 3.5
+                                    a2.1 2.1 0 0 1 3 3
+                                    L8 18
+                                    l-4 1
+                                    1-4
+                                    Z
+                                "
+                            />
+                        </svg>
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Modificar datos
+                        </h3>
+
+                        <p>
+                            Actualiza únicamente la información
+                            que necesites cambiar.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    class="edicion-formulario"
+                >
+
+                    {% csrf_token %}
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="errores-generales">
+
+                            <strong>
+                                Revisa la información ingresada.
+                            </strong>
+
+                            {{ form.non_field_errors }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="form-grid">
+
+                        <div class="campo-formulario">
+
+                            <label
+                                for="{{ form.nombre_artefacto.id_for_label }}"
+                            >
+                                {{ form.nombre_artefacto.label }}
+                            </label>
+
+                            {{ form.nombre_artefacto }}
+
+                            <span class="campo-ayuda">
+                                Nombre utilizado para identificar
+                                el dispositivo dentro de Voltify.
+                            </span>
+
+                            {% for error in form.nombre_artefacto.errors %}
+
+                                <span class="error-campo">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="campo-formulario">
+
+                            <label
+                                for="{{ form.categoria.id_for_label }}"
+                            >
+                                {{ form.categoria.label }}
+                            </label>
+
+                            {{ form.categoria }}
+
+                            <span class="campo-ayuda">
+                                Puedes cambiar la categoría
+                                asociada al artefacto.
+                            </span>
+
+                            {% for error in form.categoria.errors %}
+
+                                <span class="error-campo">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="campo-formulario">
+
+                            <label
+                                for="{{ form.marca.id_for_label }}"
+                            >
+                                {{ form.marca.label }}
+                            </label>
+
+                            {{ form.marca }}
+
+                            <span class="campo-ayuda">
+                                Marca actual del dispositivo.
+                            </span>
+
+                            {% for error in form.marca.errors %}
+
+                                <span class="error-campo">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="campo-formulario">
+
+                            <label
+                                for="{{ form.modelo.id_for_label }}"
+                            >
+                                {{ form.modelo.label }}
+                            </label>
+
+                            {{ form.modelo }}
+
+                            <span class="campo-ayuda">
+                                Modelo indicado por el fabricante.
+                            </span>
+
+                            {% for error in form.modelo.errors %}
+
+                                <span class="error-campo">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="campo-formulario campo-completo">
+
+                            <label
+                                for="{{ form.potencia_nominal_w.id_for_label }}"
+                            >
+                                {{ form.potencia_nominal_w.label }}
+                            </label>
+
+                            {{ form.potencia_nominal_w }}
+
+                            <span class="campo-ayuda">
+                                Modifica este valor únicamente
+                                si la potencia nominal registrada
+                                no corresponde al artefacto.
+                            </span>
+
+                            {% for error in form.potencia_nominal_w.errors %}
+
+                                <span class="error-campo">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-separador"></div>
+
+
+                    <div class="form-acciones">
+
+                        <a
+                            href="{% url 'lista_artefactos' %}"
+                            class="boton-cancelar"
+                        >
+                            Cancelar
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="boton-guardar"
+                        >
+
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M5 12l4 4L19 6"/>
+                            </svg>
+
+                            Guardar cambios
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <aside class="edicion-info-card">
+
+                <div class="edicion-info-header">
+
+                    <div class="edicion-header-icon">
+
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                            />
+
+                            <path d="M12 11v5"/>
+                            <path d="M12 8h.01"/>
+                        </svg>
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Artefacto actual
+                        </h3>
+
+                        <p>
+                            Información registrada
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="edicion-info-contenido">
+
+                    <div class="artefacto-actual">
+
+                        <span class="artefacto-actual-etiqueta">
+                            Dispositivo seleccionado
+                        </span>
+
+
+                        <div class="artefacto-actual-nombre">
+
+                            <div class="artefacto-actual-icono">
+
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <rect
+                                        x="4"
+                                        y="5"
+                                        width="16"
+                                        height="12"
+                                        rx="2"
+                                    />
+
+                                    <path d="M12 17v3"/>
+                                    <path d="M8 20h8"/>
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    {{ artefacto.nombre_artefacto }}
+                                </strong>
+
+                                <span class="artefacto-actual-id">
+                                    ID #{{ artefacto.id_artefacto }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="detalle-actual">
+
+                            <span>
+                                Categoría
+                            </span>
+
+                            <strong>
+                                {% if artefacto.categoria %}
+                                    {{ artefacto.categoria.nombre_categoria }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="detalle-actual">
+
+                            <span>
+                                Marca
+                            </span>
+
+                            <strong>
+                                {{ artefacto.marca|default:"—" }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="detalle-actual">
+
+                            <span>
+                                Modelo
+                            </span>
+
+                            <strong>
+                                {{ artefacto.modelo|default:"—" }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="detalle-actual">
+
+                            <span>
+                                Potencia nominal
+                            </span>
+
+                            <strong>
+                                {% if artefacto.potencia_nominal_w %}
+                                    {{ artefacto.potencia_nominal_w }} W
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="edicion-aviso">
+
+                        <strong>
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path d="M12 9v4"/>
+                                <path d="M12 17h.01"/>
+
+                                <path
+                                    d="
+                                        M10.3 3.6
+                                        2.3 17.5
+                                        A2 2 0 0 0 4 20.5
+                                        h16
+                                        a2 2 0 0 0 1.7-3
+                                        L13.7 3.6
+                                        a2 2 0 0 0-3.4 0
+                                        z
+                                    "
+                                />
+                            </svg>
+
+                            Edición del registro
+
+                        </strong>
+
+
+                        <p>
+                            Al guardar, se actualizarán los
+                            datos de este mismo artefacto.
+
+                            <br><br>
+
+                            <b>
+                                No se creará un dispositivo nuevo.
+                            </b>
+
+                            El artefacto conservará su mismo ID
+                            y seguirá asociado a tu cuenta.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

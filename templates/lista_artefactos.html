@@ -1,0 +1,1926 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis artefactos | Voltify</title>
+<link rel="stylesheet" href="{% static 'css/voltify.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+.artefactos-page {
+min-height: 100vh;
+background:
+radial-gradient(
+circle at 75% 15%,
+rgba(47, 140, 255, 0.08),
+transparent 28%
+),
+#07101f;
+color: #f4f7ff;
+}
+.artefactos-page .dashboard-app {
+width: 100%;
+max-width: none;
+min-height: 100vh;
+}
+.artefactos-page .artefactos-main {
+width: calc(100% - 188px) !important;
+max-width: none !important;
+min-width: 0;
+min-height: 100vh;
+margin: 0 0 0 188px !important;
+padding:
+28px
+28px
+40px !important;
+box-sizing: border-box;
+}
+.artefactos-header {
+width: 100%;
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 24px;
+margin-bottom: 24px;
+}
+.artefactos-header-texto {
+min-width: 0;
+}
+.artefactos-header-texto h2 {
+margin: 0;
+color: #f4f7ff;
+font-size: 28px;
+font-weight: 700;
+}
+.artefactos-header-texto p {
+margin: 8px 0 0;
+color: #7f8da8;
+font-size: 14px;
+}
+.artefactos-header-texto strong {
+color: #a9b9d6;
+}
+.boton-agregar-artefacto {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+flex: 0 0 auto;
+gap: 9px;
+padding: 12px 18px;
+border:
+1px solid
+rgba(75, 157, 255, 0.45);
+border-radius: 10px;
+background:
+linear-gradient(
+135deg,
+rgba(47, 140, 255, 0.95),
+rgba(36, 87, 255, 0.92)
+);
+color: #ffffff;
+text-decoration: none;
+font-size: 14px;
+font-weight: 600;
+box-shadow:
+0 8px 28px
+rgba(47, 140, 255, 0.18);
+transition:
+transform 180ms ease,
+box-shadow 180ms ease,
+filter 180ms ease;
+}
+.boton-agregar-artefacto:hover {
+transform: translateY(-2px);
+box-shadow:
+0 10px 32px
+rgba(47, 140, 255, 0.28);
+filter: brightness(1.08);
+}
+.artefactos-layout {
+width: 100%;
+min-width: 0;
+display: grid;
+grid-template-columns:
+minmax(0, 1fr)
+330px;
+gap: 22px;
+align-items: start;
+}
+.artefactos-card,
+.filtros-card {
+min-width: 0;
+margin: 0 !important;
+padding: 0 !important;
+background:
+linear-gradient(
+145deg,
+rgba(12, 25, 48, 0.96),
+rgba(7, 16, 31, 0.98)
+);
+border:
+1px solid
+rgba(64, 132, 255, 0.28);
+border-radius: 16px;
+box-shadow:
+0 12px 35px
+rgba(0, 0, 0, 0.18),
+inset
+0 1px 0
+rgba(255, 255, 255, 0.02);
+overflow: hidden;
+}
+.artefactos-card {
+width: 100%;
+}
+.artefactos-card::before {
+display: none;
+}
+.filtros-card {
+width: 330px;
+justify-self: end;
+}
+.artefactos-card-top,
+.filtros-card-top {
+display: flex;
+align-items: center;
+gap: 11px;
+padding: 18px 20px;
+border-bottom:
+1px solid
+rgba(80, 120, 180, 0.12);
+}
+.artefactos-card-icon,
+.filtros-card-icon {
+width: 38px;
+height: 38px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex: 0 0 38px;
+border-radius: 10px;
+background:
+rgba(47, 140, 255, 0.10);
+border:
+1px solid
+rgba(47, 140, 255, 0.22);
+color: #4b9dff;
+}
+.artefactos-card-top h3,
+.filtros-card-top h3 {
+margin: 0;
+color: #f4f7ff;
+font-size: 16px;
+font-weight: 650;
+}
+.artefactos-card-top p,
+.filtros-card-top p {
+margin: 3px 0 0;
+color: #71809c;
+font-size: 12px;
+}
+.tabla-contenedor {
+width: 100%;
+min-width: 0;
+overflow: hidden;
+}
+.tabla-artefactos {
+width: 100%;
+min-width: 0;
+border-collapse: collapse;
+table-layout: fixed;
+}
+.tabla-artefactos thead {
+background:
+rgba(18, 40, 71, 0.55);
+}
+.tabla-artefactos th {
+padding: 14px 12px;
+box-sizing: border-box;
+text-align: left;
+color: #8291ad;
+font-size: 10px;
+font-weight: 650;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+border-bottom:
+1px solid
+rgba(80, 120, 180, 0.15);
+}
+.tabla-artefactos td {
+padding: 15px 12px;
+box-sizing: border-box;
+vertical-align: middle;
+color: #c7d2e6;
+font-size: 12px;
+border-bottom:
+1px solid
+rgba(80, 120, 180, 0.08);
+}
+.tabla-artefactos tbody tr {
+transition:
+background 160ms ease;
+}
+.tabla-artefactos tbody tr:hover {
+background:
+rgba(47, 140, 255, 0.045);
+}
+.tabla-artefactos tbody tr:last-child td {
+border-bottom: none;
+}
+.tabla-artefactos th:nth-child(1),
+.tabla-artefactos td:nth-child(1) {
+width: 6%;
+}
+.tabla-artefactos th:nth-child(2),
+.tabla-artefactos td:nth-child(2) {
+width: 16%;
+}
+.tabla-artefactos th:nth-child(3),
+.tabla-artefactos td:nth-child(3) {
+width: 13%;
+}
+.tabla-artefactos th:nth-child(4),
+.tabla-artefactos td:nth-child(4) {
+width: 10%;
+}
+.tabla-artefactos th:nth-child(5),
+.tabla-artefactos td:nth-child(5) {
+width: 13%;
+}
+.tabla-artefactos th:nth-child(6),
+.tabla-artefactos td:nth-child(6) {
+width: 9%;
+}
+.tabla-artefactos th:nth-child(7),
+.tabla-artefactos td:nth-child(7) {
+width: 12%;
+}
+.tabla-artefactos th:nth-child(8),
+.tabla-artefactos td:nth-child(8) {
+width: 21%;
+}
+.tabla-artefactos td:not(:last-child) {
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.artefacto-id {
+color: #60718f;
+font-weight: 600;
+}
+.artefacto-nombre {
+min-width: 0;
+display: flex;
+align-items: center;
+gap: 9px;
+}
+.artefacto-mini-icon {
+width: 32px;
+height: 32px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex: 0 0 32px;
+border-radius: 8px;
+color: #4b9dff;
+background:
+rgba(47, 140, 255, 0.08);
+border:
+1px solid
+rgba(47, 140, 255, 0.18);
+}
+.fila-artefacto[data-categoria="Iluminación"]
+.artefacto-mini-icon {
+color: #facc15;
+background:
+rgba(250, 204, 21, 0.09);
+border-color:
+rgba(250, 204, 21, 0.22);
+}
+.fila-artefacto[data-categoria="Climatización y calefacción"]
+.artefacto-mini-icon {
+color: #ef5a63;
+background:
+rgba(239, 90, 99, 0.09);
+border-color:
+rgba(239, 90, 99, 0.22);
+}
+.fila-artefacto[data-categoria="Cocina"]
+.artefacto-mini-icon {
+color: #f4b247;
+background:
+rgba(244, 178, 71, 0.09);
+border-color:
+rgba(244, 178, 71, 0.22);
+}
+.fila-artefacto[data-categoria="Lavado y secado"]
+.artefacto-mini-icon {
+color: #35d7ff;
+background:
+rgba(53, 215, 255, 0.09);
+border-color:
+rgba(53, 215, 255, 0.22);
+}
+.fila-artefacto[data-categoria="Computación y oficina"]
+.artefacto-mini-icon {
+color: #48a8ff;
+background:
+rgba(72, 168, 255, 0.09);
+border-color:
+rgba(72, 168, 255, 0.22);
+}
+.fila-artefacto[data-categoria="Refrigeración"]
+.artefacto-mini-icon {
+color: #49e5c2;
+background:
+rgba(73, 229, 194, 0.09);
+border-color:
+rgba(73, 229, 194, 0.22);
+}
+.fila-artefacto[data-categoria="Entretenimiento"]
+.artefacto-mini-icon {
+color: #8b5cff;
+background:
+rgba(139, 92, 255, 0.09);
+border-color:
+rgba(139, 92, 255, 0.22);
+}
+.artefacto-nombre-principal {
+min-width: 0;
+color: #f1f5ff;
+font-weight: 600;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.categoria-badge {
+display: inline-flex;
+align-items: center;
+max-width: 100%;
+padding: 6px 8px;
+border-radius: 999px;
+background:
+rgba(55, 213, 255, 0.07);
+border:
+1px solid
+rgba(55, 213, 255, 0.18);
+color: #72dff7;
+font-size: 10px;
+font-weight: 600;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.potencia-valor {
+color: #ffffff;
+font-weight: 650;
+}
+.potencia-unidad {
+margin-left: 2px;
+color: #73819b;
+font-size: 10px;
+}
+.monitoreo-control {
+display: flex;
+align-items: center;
+justify-content: flex-start;
+min-width: 0;
+}
+.monitoreo-form {
+display: inline-flex !important;
+width: auto !important;
+min-width: 0 !important;
+min-height: 0 !important;
+margin: 0 !important;
+padding: 0 !important;
+background: transparent !important;
+border: 0 !important;
+border-radius: 0 !important;
+box-shadow: none !important;
+}
+.boton-monitoreo {
+width: auto !important;
+min-width: 0 !important;
+min-height: 32px !important;
+display: inline-flex !important;
+align-items: center;
+justify-content: center;
+gap: 6px;
+padding: 7px 9px !important;
+box-sizing: border-box;
+border-radius: 8px !important;
+font-family: inherit;
+font-size: 10px !important;
+font-weight: 650 !important;
+line-height: 1 !important;
+white-space: nowrap;
+cursor: pointer;
+box-shadow: none !important;
+transition:
+transform 160ms ease,
+background 160ms ease,
+border-color 160ms ease;
+}
+.boton-monitoreo svg {
+width: 12px;
+height: 12px;
+flex: 0 0 12px;
+}
+.boton-monitorear {
+color: #72b6ff !important;
+background:
+rgba(47, 140, 255, 0.08) !important;
+border:
+1px solid
+rgba(47, 140, 255, 0.22) !important;
+}
+.boton-monitorear:hover {
+transform: translateY(-1px);
+background:
+rgba(47, 140, 255, 0.15) !important;
+border-color:
+rgba(75, 157, 255, 0.38) !important;
+}
+.boton-detener {
+color: #ff8992 !important;
+background:
+rgba(239, 90, 99, 0.07) !important;
+border:
+1px solid
+rgba(239, 90, 99, 0.20) !important;
+}
+.boton-detener:hover {
+transform: translateY(-1px);
+background:
+rgba(239, 90, 99, 0.14) !important;
+border-color:
+rgba(239, 90, 99, 0.36) !important;
+}
+.acciones-artefacto {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: nowrap;
+}
+.boton-accion {
+min-height: 34px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+padding: 8px 10px;
+box-sizing: border-box;
+border-radius: 8px;
+text-decoration: none;
+font-size: 11px;
+font-weight: 650;
+white-space: nowrap;
+transition:
+transform 160ms ease,
+background 160ms ease,
+border-color 160ms ease;
+}
+.boton-accion svg {
+flex: 0 0 auto;
+}
+.boton-editar {
+color: #55b7ff;
+background:
+rgba(47, 140, 255, 0.08);
+border:
+1px solid
+rgba(47, 140, 255, 0.22);
+}
+.boton-editar:hover {
+background:
+rgba(47, 140, 255, 0.16);
+border-color:
+rgba(47, 140, 255, 0.38);
+transform: translateY(-1px);
+}
+.boton-eliminar {
+color: #ff6875;
+background:
+rgba(239, 90, 99, 0.07);
+border:
+1px solid
+rgba(239, 90, 99, 0.20);
+}
+.boton-eliminar:hover {
+background:
+rgba(239, 90, 99, 0.15);
+border-color:
+rgba(239, 90, 99, 0.36);
+transform: translateY(-1px);
+}
+.artefactos-vacio {
+padding: 60px 20px;
+text-align: center;
+color: #71809c;
+}
+.artefactos-vacio-icono {
+width: 58px;
+height: 58px;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 auto 14px;
+border-radius: 14px;
+color: #4b9dff;
+background:
+rgba(47, 140, 255, 0.08);
+border:
+1px solid
+rgba(47, 140, 255, 0.18);
+}
+.artefactos-vacio h3 {
+margin: 0 0 7px;
+color: #dfe8f8;
+font-size: 16px;
+}
+.artefactos-vacio p {
+margin: 0;
+font-size: 13px;
+}
+.filtros-contenido {
+padding: 20px;
+}
+.filtro-grupo {
+margin-bottom: 18px;
+}
+.filtro-grupo:last-child {
+margin-bottom: 0;
+}
+.filtro-label {
+display: block;
+margin-bottom: 7px;
+color: #a6b4cd;
+font-size: 11px;
+font-weight: 650;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+}
+.filtro-input-contenedor {
+position: relative;
+}
+.filtro-icono-buscar {
+position: absolute;
+left: 11px;
+top: 50%;
+transform: translateY(-50%);
+color: #60718f;
+pointer-events: none;
+}
+.filtro-input,
+.filtro-select {
+width: 100%;
+height: 42px;
+box-sizing: border-box;
+border:
+1px solid
+rgba(83, 123, 184, 0.24);
+border-radius: 9px;
+background:
+rgba(8, 18, 35, 0.82);
+color: #dfe8f8;
+outline: none;
+font-size: 12px;
+transition:
+border-color 160ms ease,
+box-shadow 160ms ease,
+background 160ms ease;
+}
+.filtro-input {
+padding:
+0
+12px
+0
+36px;
+}
+.filtro-select {
+padding: 0 11px;
+cursor: pointer;
+}
+.filtro-input::placeholder {
+color: #56657f;
+}
+.filtro-input:focus,
+.filtro-select:focus {
+border-color:
+rgba(47, 140, 255, 0.60);
+box-shadow:
+0 0 0 3px
+rgba(47, 140, 255, 0.08);
+background:
+rgba(9, 21, 41, 0.98);
+}
+.filtro-select option {
+background: #0b172b;
+color: #e6edf9;
+}
+.filtros-separador {
+height: 1px;
+margin: 21px 0;
+background:
+rgba(80, 120, 180, 0.11);
+}
+.filtros-resultado {
+padding: 13px 14px;
+border-radius: 10px;
+background:
+rgba(47, 140, 255, 0.055);
+border:
+1px solid
+rgba(47, 140, 255, 0.13);
+}
+.filtros-resultado-etiqueta {
+display: block;
+margin-bottom: 5px;
+color: #71809c;
+font-size: 10px;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+}
+.filtros-resultado-valor {
+color: #dce8fa;
+font-size: 13px;
+font-weight: 650;
+}
+.boton-limpiar-filtros {
+width: 100%;
+margin-top: 12px;
+padding: 11px 14px;
+border:
+1px solid
+rgba(104, 126, 161, 0.22);
+border-radius: 9px;
+background:
+rgba(255, 255, 255, 0.025);
+color: #91a0ba;
+font-size: 12px;
+font-weight: 600;
+cursor: pointer;
+transition:
+color 160ms ease,
+border-color 160ms ease,
+background 160ms ease;
+}
+.boton-limpiar-filtros:hover {
+color: #dfe8f8;
+border-color:
+rgba(75, 157, 255, 0.32);
+background:
+rgba(47, 140, 255, 0.07);
+}
+.sin-resultados-filtro {
+display: none;
+padding: 45px 20px;
+text-align: center;
+color: #71809c;
+font-size: 13px;
+}
+.sin-resultados-filtro strong {
+display: block;
+margin-bottom: 6px;
+color: #dbe5f5;
+font-size: 15px;
+}
+.mensajes-voltify {
+position: fixed;
+top: 24px;
+right: 24px;
+z-index: 9999;
+width: min(390px, calc(100vw - 32px));
+display: flex;
+flex-direction: column;
+gap: 10px;
+pointer-events: none;
+}
+.mensaje-voltify {
+width: 100%;
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 15px 16px;
+box-sizing: border-box;
+border:
+1px solid
+rgba(55, 213, 255, 0.35);
+border-radius: 12px;
+background:
+linear-gradient(
+145deg,
+rgba(10, 31, 54, 0.98),
+rgba(7, 22, 40, 0.98)
+);
+color: #eaf7ff;
+font-size: 13px;
+font-weight: 650;
+line-height: 1.45;
+box-shadow:
+0 18px 45px
+rgba(0, 0, 0, 0.42),
+0 0 24px
+rgba(55, 213, 255, 0.08);
+backdrop-filter: blur(12px);
+animation:
+toastEntrada 260ms ease-out;
+pointer-events: auto;
+}
+.mensaje-voltify.ocultando {
+animation:
+toastSalida 220ms ease-in forwards;
+}
+.mensaje-voltify-icono {
+width: 34px;
+height: 34px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex: 0 0 34px;
+border-radius: 9px;
+background:
+rgba(55, 213, 255, 0.12);
+border:
+1px solid
+rgba(55, 213, 255, 0.28);
+color: #37d5ff;
+box-shadow:
+0 0 18px
+rgba(55, 213, 255, 0.10);
+}
+.mensaje-voltify-icono svg {
+width: 17px;
+height: 17px;
+}
+@keyframes toastEntrada {
+from {
+opacity: 0;
+transform: translateY(-12px) scale(0.98);
+}
+to {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+}
+@keyframes toastSalida {
+from {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+to {
+opacity: 0;
+transform: translateY(-10px) scale(0.98);
+}
+}
+@media (max-width: 1180px) {
+.artefactos-layout {
+grid-template-columns: 1fr;
+}
+.filtros-card {
+width: 100%;
+justify-self: stretch;
+}
+}
+@media (max-width: 900px) {
+.artefactos-page .artefactos-main {
+width: 100% !important;
+margin: 0 !important;
+padding:
+22px
+16px
+30px !important;
+}
+.artefactos-header {
+flex-direction: column;
+}
+.boton-agregar-artefacto {
+width: 100%;
+}
+.tabla-contenedor {
+overflow-x: auto;
+}
+.tabla-artefactos {
+min-width: 1060px;
+table-layout: auto;
+}
+}
+</style>
+</head>
+<body class="dashboard-body artefactos-page">
+<div class="dashboard-app">
+{% include 'sidebar.html' %}
+<main class="artefactos-main">
+<div class="artefactos-header">
+<div class="artefactos-header-texto">
+<h2>
+Mis artefactos
+</h2>
+<p>
+Administra los dispositivos eléctricos
+registrados en tu cuenta.
+{% if usuario %}
+<strong>
+{{ usuario.nombre }}
+</strong>
+{% endif %}
+</p>
+</div>
+<a
+href="{% url 'registrar_artefacto' %}"
+class="boton-agregar-artefacto"
+>
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2"
+>
+<path d="M12 5v14"/>
+<path d="M5 12h14"/>
+</svg>
+Agregar artefacto
+</a>
+</div>
+{% if messages %}
+<div class="mensajes-voltify">
+{% for message in messages %}
+<div
+class="mensaje-voltify"
+role="status"
+>
+<div class="mensaje-voltify-icono">
+<svg
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2"
+stroke-linecap="round"
+stroke-linejoin="round"
+aria-hidden="true"
+>
+<path d="M5 12l4 4L19 6"/>
+</svg>
+</div>
+<span>
+{{ message }}
+</span>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+<div class="artefactos-layout">
+<section class="artefactos-card">
+<div class="artefactos-card-top">
+<div class="artefactos-card-icon">
+<svg
+width="21"
+height="21"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+>
+<rect
+x="5"
+y="3"
+width="14"
+height="18"
+rx="2"
+/>
+<path d="M9 7h6"/>
+<path d="M9 17h6"/>
+</svg>
+</div>
+<div>
+<h3>
+Dispositivos registrados
+</h3>
+<p>
+Artefactos asociados a tu cuenta Voltify
+</p>
+</div>
+</div>
+{% if artefactos %}
+<div class="tabla-contenedor">
+<table
+class="tabla-artefactos"
+id="tablaArtefactos"
+>
+<thead>
+<tr>
+<th>ID</th>
+<th>Artefacto</th>
+<th>Categoría</th>
+<th>Marca</th>
+<th>Modelo</th>
+<th>Potencia</th>
+<th>Monitoreo</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tablaArtefactosBody">
+{% for artefacto in artefactos %}
+<tr
+class="fila-artefacto"
+data-id="{{ artefacto.id_artefacto }}"
+data-nombre="{{ artefacto.nombre_artefacto|default:'' }}"
+data-categoria="{% if artefacto.categoria %}{{ artefacto.categoria.nombre_categoria }}{% endif %}"
+data-marca="{{ artefacto.marca|default:'' }}"
+data-modelo="{{ artefacto.modelo|default:'' }}"
+data-potencia="{{ artefacto.potencia_nominal_w|default:'0' }}"
+data-monitoreando="{% if artefacto.monitoreando %}1{% else %}0{% endif %}"
+>
+<td>
+<span class="artefacto-id">
+#{{ artefacto.id_artefacto }}
+</span>
+</td>
+<td>
+<div class="artefacto-nombre">
+<div class="artefacto-mini-icon">
+{% with nombre_lower=artefacto.nombre_artefacto|lower categoria_lower=artefacto.categoria.nombre_categoria|default:''|lower %}
+{% if 'refriger' in categoria_lower or 'refriger' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<rect
+x="6"
+y="2.5"
+width="12"
+height="19"
+rx="2"
+/>
+<path d="M6 10h12"/>
+<path d="M9 6v2"/>
+<path d="M9 13v3"/>
+</svg>
+{% elif 'entretenimiento' in categoria_lower or 'televisor' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<rect
+x="3.5"
+y="4.5"
+width="17"
+height="12"
+rx="2"
+/>
+<path d="M12 16.5V19"/>
+<path d="M8.5 20h7"/>
+</svg>
+{% elif 'comput' in categoria_lower or 'notebook' in nombre_lower or 'laptop' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<rect
+x="4"
+y="4"
+width="16"
+height="11"
+rx="1.5"
+/>
+<path
+d="
+M2.8 18
+h18.4
+L19.8 20
+H4.2
+z
+"
+/>
+<path d="M9.5 18h5"/>
+</svg>
+{% elif 'lavado' in categoria_lower or 'lavadora' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<rect
+x="4"
+y="3"
+width="16"
+height="18"
+rx="2"
+/>
+<circle
+cx="12"
+cy="13"
+r="5"
+/>
+<circle
+cx="12"
+cy="13"
+r="2.2"
+/>
+<path d="M7 6h1"/>
+<path d="M10 6h1"/>
+</svg>
+{% elif 'climat' in categoria_lower or 'calefactor' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<path
+d="
+M13.4 2.5
+C13.8 5.1 17.2 6.5 17.2 10.2
+c0 2-.9 3.5-2.1 4.6
+.4-2.4-.9-4-2.3-5.3
+-.2 1.8-1.3 2.8-2.3 3.8
+-1 1-1.7 2.1-1.7 3.5
+0 2.4 1.4 4.2 3.4 4.2
+3.5 0 6.5-2.7 6.5-6.7
+0-4.9-3.2-7.5-5.3-11.8
+z
+"
+/>
+</svg>
+{% elif 'ilumin' in categoria_lower or 'ampolleta' in nombre_lower or 'luz' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<path d="M9 18h6"/>
+<path d="M10 21h4"/>
+<path
+d="
+M8 13
+c-1.1-1.2-2-2.6-2-4.5
+a6 6 0 0 1 12 0
+c0 1.9-.9 3.3-2 4.5
+-.9 1-1.3 2-1.5 3
+h-5
+c-.2-1-.6-2-1.5-3
+z
+"
+/>
+</svg>
+{% elif 'microondas' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<rect
+x="2.5"
+y="6"
+width="19"
+height="12"
+rx="2"
+/>
+<rect
+x="5"
+y="8.5"
+width="9"
+height="7"
+rx="1"
+/>
+<path d="M17 9h2"/>
+<path d="M17 11h2"/>
+<circle
+cx="18"
+cy="15"
+r="1"
+/>
+</svg>
+{% elif 'hervidor' in nombre_lower or 'tetera' in nombre_lower %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<path d="M7 8h9l2 9H6z"/>
+<path d="M9 8V5h5v3"/>
+<path
+d="
+M16 10
+c3 0 4 1.4 4 3.2
+0 1.7-1.1 2.8-3 3.1
+"
+/>
+<path d="M8 20h8"/>
+</svg>
+{% else %}
+<svg
+width="18"
+height="18"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<rect
+x="4"
+y="5"
+width="16"
+height="12"
+rx="2"
+/>
+<path d="M12 17v3"/>
+<path d="M8 20h8"/>
+</svg>
+{% endif %}
+{% endwith %}
+</div>
+<span
+class="artefacto-nombre-principal"
+title="{{ artefacto.nombre_artefacto }}"
+>
+{{ artefacto.nombre_artefacto }}
+</span>
+</div>
+</td>
+<td>
+{% if artefacto.categoria %}
+<span
+class="categoria-badge"
+title="{{ artefacto.categoria.nombre_categoria }}"
+>
+{{ artefacto.categoria.nombre_categoria }}
+</span>
+{% else %}
+<span class="categoria-badge">
+Sin categoría
+</span>
+{% endif %}
+</td>
+<td
+title="{{ artefacto.marca|default:'—' }}"
+>
+{{ artefacto.marca|default:"—" }}
+</td>
+<td
+title="{{ artefacto.modelo|default:'—' }}"
+>
+{{ artefacto.modelo|default:"—" }}
+</td>
+<td>
+{% if artefacto.potencia_nominal_w %}
+<span class="potencia-valor">
+{{ artefacto.potencia_nominal_w }}
+</span>
+<span class="potencia-unidad">
+W
+</span>
+{% else %}
+—
+{% endif %}
+</td>
+<td>
+<div class="monitoreo-control">
+{% if artefacto.monitoreando %}
+<form
+method="post"
+action="{% url 'detener_monitoreo' artefacto.id_artefacto %}"
+class="monitoreo-form"
+>
+{% csrf_token %}
+<button
+type="submit"
+class="boton-monitoreo boton-detener"
+title="Detener monitoreo"
+aria-label="Detener monitoreo"
+>
+<svg
+viewBox="0 0 24 24"
+fill="currentColor"
+aria-hidden="true"
+>
+<rect
+x="6"
+y="6"
+width="12"
+height="12"
+rx="1"
+/>
+</svg>
+Detener
+</button>
+</form>
+{% else %}
+<form
+method="post"
+action="{% url 'iniciar_monitoreo' artefacto.id_artefacto %}"
+class="monitoreo-form"
+>
+{% csrf_token %}
+<button
+type="submit"
+class="boton-monitoreo boton-monitorear"
+title="Iniciar monitoreo"
+aria-label="Iniciar monitoreo"
+>
+<svg
+viewBox="0 0 24 24"
+fill="currentColor"
+aria-hidden="true"
+>
+<path d="M8 5v14l11-7z"/>
+</svg>
+Monitorear
+</button>
+</form>
+{% endif %}
+</div>
+</td>
+<td>
+<div class="acciones-artefacto">
+<a
+href="{% url 'editar_artefacto' artefacto.id_artefacto %}"
+class="boton-accion boton-editar"
+title="Editar artefacto"
+>
+<svg
+width="15"
+height="15"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+>
+<path d="M12 20h9"/>
+<path
+d="
+M16.5 3.5
+a2.1 2.1 0 0 1 3 3
+L8 18
+l-4 1
+1-4
+Z
+"
+/>
+</svg>
+Editar
+</a>
+<a
+href="{% url 'eliminar_artefacto' artefacto.id_artefacto %}"
+class="boton-accion boton-eliminar"
+title="Eliminar artefacto"
+>
+<svg
+width="15"
+height="15"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+>
+<path d="M3 6h18"/>
+<path d="M8 6V4h8v2"/>
+<path d="M19 6l-1 14H6L5 6"/>
+<path d="M10 11v5"/>
+<path d="M14 11v5"/>
+</svg>
+Eliminar
+</a>
+</div>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<div
+class="sin-resultados-filtro"
+id="sinResultadosFiltro"
+>
+<strong>
+No se encontraron artefactos
+</strong>
+Prueba cambiando la búsqueda
+o los filtros seleccionados.
+</div>
+{% else %}
+<div class="artefactos-vacio">
+<div class="artefactos-vacio-icono">
+<svg
+width="28"
+height="28"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+>
+<rect
+x="5"
+y="3"
+width="14"
+height="18"
+rx="2"
+/>
+<path d="M9 7h6"/>
+<path d="M9 17h6"/>
+</svg>
+</div>
+<h3>
+Aún no tienes artefactos
+</h3>
+<p>
+Registra tu primer dispositivo
+para comenzar.
+</p>
+</div>
+{% endif %}
+</section>
+<aside class="filtros-card">
+<div class="filtros-card-top">
+<div class="filtros-card-icon">
+<svg
+width="21"
+height="21"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+>
+<circle
+cx="11"
+cy="11"
+r="7"
+/>
+<path d="m20 20-4-4"/>
+</svg>
+</div>
+<div>
+<h3>
+Buscar y filtrar
+</h3>
+<p>
+Organiza tu inventario
+</p>
+</div>
+</div>
+<div class="filtros-contenido">
+<div class="filtro-grupo">
+<label
+for="buscarArtefacto"
+class="filtro-label"
+>
+Buscar artefacto
+</label>
+<div class="filtro-input-contenedor">
+<span class="filtro-icono-buscar">
+<svg
+width="16"
+height="16"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="1.8"
+>
+<circle
+cx="11"
+cy="11"
+r="7"
+/>
+<path d="m20 20-4-4"/>
+</svg>
+</span>
+<input
+type="text"
+id="buscarArtefacto"
+class="filtro-input"
+placeholder="Nombre, marca o modelo..."
+autocomplete="off"
+>
+</div>
+</div>
+<div class="filtro-grupo">
+<label
+for="filtroCategoria"
+class="filtro-label"
+>
+Categoría
+</label>
+<select
+id="filtroCategoria"
+class="filtro-select"
+>
+<option value="">
+Todas las categorías
+</option>
+</select>
+</div>
+<div class="filtro-grupo">
+<label
+for="filtroPotencia"
+class="filtro-label"
+>
+Potencia nominal
+</label>
+<select
+id="filtroPotencia"
+class="filtro-select"
+>
+<option value="">
+Todas las potencias
+</option>
+<option value="0-100">
+Hasta 100 W
+</option>
+<option value="101-500">
+101 a 500 W
+</option>
+<option value="501-1000">
+501 a 1000 W
+</option>
+<option value="1001+">
+Más de 1000 W
+</option>
+</select>
+</div>
+<div class="filtro-grupo">
+<label
+for="ordenArtefactos"
+class="filtro-label"
+>
+Ordenar por
+</label>
+<select
+id="ordenArtefactos"
+class="filtro-select"
+>
+<option value="nombre-asc">
+Nombre A → Z
+</option>
+<option value="nombre-desc">
+Nombre Z → A
+</option>
+<option value="potencia-desc">
+Mayor potencia
+</option>
+<option value="potencia-asc">
+Menor potencia
+</option>
+<option value="id-desc">
+Más reciente
+</option>
+<option value="id-asc">
+Más antiguo
+</option>
+</select>
+</div>
+<div class="filtros-separador"></div>
+<div class="filtros-resultado">
+<span class="filtros-resultado-etiqueta">
+Resultado actual
+</span>
+<span
+class="filtros-resultado-valor"
+id="contadorResultados"
+>
+—
+</span>
+</div>
+<button
+type="button"
+class="boton-limpiar-filtros"
+id="limpiarFiltros"
+>
+Limpiar filtros
+</button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<script>
+document.addEventListener(
+"DOMContentLoaded",
+function () {
+const mensajes =
+document.querySelectorAll(
+".mensaje-voltify"
+);
+mensajes.forEach(
+function (mensaje) {
+setTimeout(
+function () {
+mensaje.classList.add(
+"ocultando"
+);
+setTimeout(
+function () {
+mensaje.remove();
+},
+230
+);
+},
+3500
+);
+}
+);
+}
+);
+</script>
+<script>
+document.addEventListener(
+"DOMContentLoaded",
+function () {
+const body =
+document.getElementById(
+"tablaArtefactosBody"
+);
+if (!body) {
+return;
+}
+const buscar =
+document.getElementById(
+"buscarArtefacto"
+);
+const categoria =
+document.getElementById(
+"filtroCategoria"
+);
+const potencia =
+document.getElementById(
+"filtroPotencia"
+);
+const orden =
+document.getElementById(
+"ordenArtefactos"
+);
+const limpiar =
+document.getElementById(
+"limpiarFiltros"
+);
+const contador =
+document.getElementById(
+"contadorResultados"
+);
+const sinResultados =
+document.getElementById(
+"sinResultadosFiltro"
+);
+const filas =
+Array.from(
+body.querySelectorAll(
+".fila-artefacto"
+)
+);
+function textoLimpio(valor) {
+return String(
+valor || ""
+)
+.toLowerCase()
+.normalize("NFD")
+.replace(
+/[\u0300-\u036f]/g,
+""
+)
+.trim();
+}
+function numeroPotencia(valor) {
+return Number(
+String(
+valor || "0"
+)
+.replace(
+",",
+"."
+)
+.trim()
+) || 0;
+}
+function cargarCategorias() {
+const categorias =
+new Set();
+filas.forEach(
+fila => {
+const valor =
+fila.dataset.categoria
+.trim();
+if (valor) {
+categorias.add(
+valor
+);
+}
+}
+);
+Array.from(
+categorias
+)
+.sort(
+(a, b) =>
+a.localeCompare(
+b,
+"es"
+)
+)
+.forEach(
+valor => {
+const option =
+document.createElement(
+"option"
+);
+option.value =
+valor;
+option.textContent =
+valor;
+categoria.appendChild(
+option
+);
+}
+);
+}
+function cumplePotencia(
+valor,
+filtro
+) {
+if (!filtro) {
+return true;
+}
+if (
+filtro === "0-100"
+) {
+return (
+valor >= 0
+&&
+valor <= 100
+);
+}
+if (
+filtro === "101-500"
+) {
+return (
+valor > 100
+&&
+valor <= 500
+);
+}
+if (
+filtro === "501-1000"
+) {
+return (
+valor > 500
+&&
+valor <= 1000
+);
+}
+if (
+filtro === "1001+"
+) {
+return (
+valor > 1000
+);
+}
+return true;
+}
+function ordenarFilas(
+filasFiltradas
+) {
+const modo =
+orden.value;
+filasFiltradas.sort(
+(a, b) => {
+const nombreA =
+a.dataset.nombre;
+const nombreB =
+b.dataset.nombre;
+const potenciaA =
+numeroPotencia(
+a.dataset.potencia
+);
+const potenciaB =
+numeroPotencia(
+b.dataset.potencia
+);
+const idA =
+Number(
+a.dataset.id
+);
+const idB =
+Number(
+b.dataset.id
+);
+if (
+modo === "nombre-desc"
+) {
+return nombreB.localeCompare(
+nombreA,
+"es"
+);
+}
+if (
+modo === "potencia-desc"
+) {
+return (
+potenciaB
+-
+potenciaA
+);
+}
+if (
+modo === "potencia-asc"
+) {
+return (
+potenciaA
+-
+potenciaB
+);
+}
+if (
+modo === "id-desc"
+) {
+return idB - idA;
+}
+if (
+modo === "id-asc"
+) {
+return idA - idB;
+}
+return nombreA.localeCompare(
+nombreB,
+"es"
+);
+}
+);
+filasFiltradas.forEach(
+fila => {
+body.appendChild(
+fila
+);
+}
+);
+}
+function aplicarFiltros() {
+const textoBuscar =
+textoLimpio(
+buscar.value
+);
+const categoriaElegida =
+textoLimpio(
+categoria.value
+);
+const potenciaElegida =
+potencia.value;
+const visibles =
+[];
+filas.forEach(
+fila => {
+const nombre =
+textoLimpio(
+fila.dataset.nombre
+);
+const marca =
+textoLimpio(
+fila.dataset.marca
+);
+const modelo =
+textoLimpio(
+fila.dataset.modelo
+);
+const categoriaFila =
+textoLimpio(
+fila.dataset.categoria
+);
+const potenciaFila =
+numeroPotencia(
+fila.dataset.potencia
+);
+const contenido =
+[
+nombre,
+marca,
+modelo,
+categoriaFila
+].join(
+" "
+);
+const coincideTexto =
+!textoBuscar
+||
+contenido.includes(
+textoBuscar
+);
+const coincideCategoria =
+!categoriaElegida
+||
+categoriaFila
+===
+categoriaElegida;
+const coincidePotencia =
+cumplePotencia(
+potenciaFila,
+potenciaElegida
+);
+const visible =
+coincideTexto
+&&
+coincideCategoria
+&&
+coincidePotencia;
+fila.style.display =
+visible
+? ""
+: "none";
+if (visible) {
+visibles.push(
+fila
+);
+}
+}
+);
+ordenarFilas(
+visibles
+);
+contador.textContent =
+`Mostrando ${visibles.length} de ${filas.length}`;
+sinResultados.style.display =
+visibles.length === 0
+? "block"
+: "none";
+}
+function limpiarTodo() {
+buscar.value =
+"";
+categoria.value =
+"";
+potencia.value =
+"";
+orden.value =
+"nombre-asc";
+aplicarFiltros();
+}
+cargarCategorias();
+buscar.addEventListener(
+"input",
+aplicarFiltros
+);
+categoria.addEventListener(
+"change",
+aplicarFiltros
+);
+potencia.addEventListener(
+"change",
+aplicarFiltros
+);
+orden.addEventListener(
+"change",
+aplicarFiltros
+);
+limpiar.addEventListener(
+"click",
+limpiarTodo
+);
+aplicarFiltros();
+}
+);
+</script>
+</body>
+</html>

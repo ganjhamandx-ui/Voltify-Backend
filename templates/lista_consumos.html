@@ -1,0 +1,1685 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Consumos | Voltify
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            min-width: 100%;
+            min-height: 100%;
+
+            overflow-x: hidden;
+        }
+
+        .consumos-page {
+            width: 100vw !important;
+            max-width: none !important;
+            min-height: 100vh;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            background:
+                radial-gradient(
+                    circle at 82% 10%,
+                    rgba(47, 140, 255, 0.08),
+                    transparent 30%
+                ),
+                #090d12;
+
+            color: #f4f7ff;
+        }
+
+        .consumos-page,
+        .consumos-page * {
+            box-sizing: border-box;
+        }
+
+        .consumos-page .dashboard-app {
+            display: block !important;
+
+            width: 100vw !important;
+            max-width: 100vw !important;
+            min-height: 100vh;
+
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .consumos-main {
+            position: relative;
+
+            width: calc(100vw - 188px) !important;
+            max-width: calc(100vw - 188px) !important;
+            min-width: 0 !important;
+            min-height: 100vh;
+
+            margin:
+                0
+                0
+                0
+                188px !important;
+
+            padding:
+                26px
+                26px
+                44px !important;
+        }
+
+        .consumos-container {
+            width: 100% !important;
+            max-width: none !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .consumos-hero {
+            width: 100%;
+
+            padding:
+                27px
+                30px
+                22px;
+
+            border:
+                1px solid
+                rgba(67, 106, 159, 0.15);
+
+            border-radius: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(12, 23, 36, 0.95),
+                    rgba(8, 17, 28, 0.96)
+                );
+        }
+
+        .consumos-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 28px;
+        }
+
+        .consumos-header-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .consumos-kicker {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 10px;
+
+            color: #67b2ff;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+        }
+
+        .consumos-kicker::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #37d5ff;
+
+            box-shadow:
+                0 0 10px
+                rgba(55, 213, 255, 0.42);
+        }
+
+        .consumos-header h1 {
+            margin:
+                0
+                0
+                10px;
+
+            color: #f4f7ff;
+
+            font-size:
+                clamp(
+                    34px,
+                    4vw,
+                    52px
+                );
+
+            font-weight: 850;
+
+            letter-spacing: -0.05em;
+        }
+
+        .consumos-header p {
+            max-width: 930px;
+
+            margin: 0;
+
+            color: #8ea0b7;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+        .consumos-periodo {
+            flex: 0 0 245px;
+
+            padding:
+                16px
+                18px;
+
+            border:
+                1px solid
+                rgba(75, 130, 210, 0.17);
+
+            border-radius: 15px;
+
+            background:
+                rgba(13, 24, 38, 0.76);
+
+            text-align: center;
+        }
+
+        .consumos-periodo span {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #72859d;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+
+            text-transform: uppercase;
+        }
+
+        .consumos-periodo strong {
+            color: #ebf2fb;
+
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .consumos-divider {
+            width: 100%;
+            height: 1px;
+
+            margin:
+                23px
+                0
+                18px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(47, 140, 255, 0.48),
+                    transparent
+                );
+        }
+
+        .periodos-consumo {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 9px;
+        }
+
+        .periodo-link {
+            padding:
+                10px
+                15px;
+
+            border:
+                1px solid
+                rgba(73, 112, 167, 0.18);
+
+            border-radius: 10px;
+
+            background:
+                rgba(15, 26, 39, 0.72);
+
+            color: #91a5bd;
+
+            font-size: 11px;
+            font-weight: 750;
+
+            text-decoration: none;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .periodo-link:hover {
+            transform: translateY(-1px);
+
+            border-color:
+                rgba(47, 140, 255, 0.38);
+
+            color: #79b8ff;
+        }
+
+        .periodo-link.active {
+            border-color:
+                rgba(47, 140, 255, 0.60);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(47, 140, 255, 0.24),
+                    rgba(55, 213, 255, 0.07)
+                );
+
+            color: #8bc5ff;
+        }
+
+        .consumos-resumen {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(0, 1fr)
+                );
+
+            gap: 14px;
+
+            margin:
+                20px
+                0;
+        }
+
+        .resumen-card {
+            min-width: 0;
+            min-height: 138px;
+
+            padding:
+                19px
+                18px;
+
+            border:
+                1px solid
+                rgba(66, 105, 160, 0.15);
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 26, 40, 0.91),
+                    rgba(10, 18, 28, 0.93)
+                );
+        }
+
+        .resumen-card span {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #6d8199;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+
+            text-transform: uppercase;
+        }
+
+        .resumen-card strong {
+            display: block;
+
+            color: #edf4fb;
+
+            font-size:
+                clamp(
+                    20px,
+                    1.8vw,
+                    28px
+                );
+
+            font-weight: 820;
+        }
+
+        .resumen-card p {
+            margin:
+                7px
+                0
+                0;
+
+            color: #74879f;
+
+            font-size: 10px;
+
+            line-height: 1.55;
+        }
+
+        .resumen-card.destacado strong {
+            color: #69b7ff;
+        }
+
+        .consumos-panel {
+            width: 100%;
+
+            border:
+                1px solid
+                rgba(66, 105, 160, 0.17);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(14, 24, 37, 0.91),
+                    rgba(9, 18, 28, 0.94)
+                );
+
+            overflow: hidden;
+        }
+
+        .consumos-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding:
+                21px
+                23px;
+
+            border-bottom:
+                1px solid
+                rgba(67, 106, 159, 0.13);
+        }
+
+        .consumos-panel-header h2 {
+            margin:
+                0
+                0
+                5px;
+
+            color: #e8eff8;
+
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .consumos-panel-header p {
+            margin: 0;
+
+            color: #70839b;
+
+            font-size: 11px;
+        }
+
+        .contador-consumos {
+            flex: 0 0 auto;
+
+            padding:
+                8px
+                11px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.15);
+
+            border-radius: 9px;
+
+            background:
+                rgba(55, 213, 255, 0.05);
+
+            color: #6ed2ff;
+
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .consumos-controles {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
+
+            padding:
+                17px
+                22px;
+
+            border-bottom:
+                1px solid
+                rgba(67, 106, 159, 0.11);
+
+            background:
+                rgba(7, 15, 25, 0.30);
+        }
+
+        .estado-filtros {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+        .estado-link {
+            padding:
+                9px
+                13px;
+
+            border:
+                1px solid
+                rgba(73, 112, 167, 0.17);
+
+            border-radius: 9px;
+
+            background:
+                rgba(15, 26, 39, 0.64);
+
+            color: #788da7;
+
+            font-size: 10px;
+            font-weight: 750;
+
+            text-decoration: none;
+        }
+
+        .estado-link.active {
+            border-color:
+                rgba(47, 140, 255, 0.48);
+
+            background:
+                rgba(47, 140, 255, 0.12);
+
+            color: #82c1ff;
+        }
+
+        .busqueda-form {
+            display: flex;
+
+            gap: 8px;
+
+            width: min(
+                440px,
+                100%
+            );
+        }
+
+        .busqueda-input {
+            flex: 1;
+            min-width: 0;
+
+            height: 39px;
+
+            padding:
+                0
+                13px;
+
+            border:
+                1px solid
+                rgba(84, 115, 163, 0.20);
+
+            border-radius: 9px;
+
+            outline: none;
+
+            background:
+                rgba(5, 13, 27, 0.75);
+
+            color: #dce7f8;
+
+            font-family: inherit;
+
+            font-size: 11px;
+        }
+
+        .busqueda-input::placeholder {
+            color: #53627c;
+        }
+
+        .busqueda-input:focus {
+            border-color:
+                rgba(47, 140, 255, 0.45);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(47, 140, 255, 0.07);
+        }
+
+        .busqueda-btn,
+        .limpiar-btn {
+            height: 39px;
+
+            padding:
+                0
+                14px;
+
+            border-radius: 9px;
+
+            font-family: inherit;
+
+            font-size: 10px;
+            font-weight: 750;
+
+            cursor: pointer;
+        }
+
+        .busqueda-btn {
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.52);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2f8cff,
+                    #3976df
+                );
+
+            color: #ffffff;
+        }
+
+        .limpiar-btn {
+            display: inline-flex;
+            align-items: center;
+
+            border:
+                1px solid
+                rgba(83, 111, 151, 0.22);
+
+            background:
+                rgba(16, 27, 40, 0.75);
+
+            color: #8ca0b9;
+
+            text-decoration: none;
+        }
+
+        .tabla-contenedor {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+        .tabla-consumos {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        .tabla-consumos th {
+            padding:
+                14px
+                17px;
+
+            border-bottom:
+                1px solid
+                rgba(66, 104, 158, 0.13);
+
+            background:
+                rgba(10, 19, 30, 0.55);
+
+            color: #6f849e;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            letter-spacing: 0.07em;
+
+            text-align: left;
+            text-transform: uppercase;
+
+            white-space: nowrap;
+        }
+
+        .tabla-consumos td {
+            padding:
+                15px
+                17px;
+
+            border-bottom:
+                1px solid
+                rgba(66, 104, 158, 0.09);
+
+            color: #a7b7ca;
+
+            font-size: 11px;
+
+            vertical-align: middle;
+        }
+
+        .tabla-consumos tbody tr:hover {
+            background:
+                rgba(47, 140, 255, 0.035);
+        }
+
+        .fecha-consumo strong {
+            display: block;
+
+            color: #dce7f5;
+
+            font-size: 11px;
+        }
+
+        .fecha-consumo span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #667990;
+
+            font-size: 9px;
+        }
+
+        .artefacto-cell strong {
+            display: block;
+
+            color: #e4edf8;
+
+            font-size: 11px;
+            font-weight: 750;
+        }
+
+        .artefacto-cell span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #667990;
+
+            font-size: 9px;
+        }
+
+        .categoria-badge {
+            display: inline-block;
+
+            padding:
+                6px
+                9px;
+
+            border:
+                1px solid
+                rgba(78, 121, 180, 0.14);
+
+            border-radius: 7px;
+
+            background:
+                rgba(19, 33, 49, 0.65);
+
+            color: #91a8c3;
+
+            font-size: 9px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .estado-badge {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding:
+                6px
+                9px;
+
+            border-radius: 999px;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+        .estado-badge::before {
+            content: "";
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: currentColor;
+        }
+
+        .estado-activo {
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.18);
+
+            background:
+                rgba(55, 213, 255, 0.07);
+
+            color: #57d5ff;
+        }
+
+        .estado-retirado {
+            border:
+                1px solid
+                rgba(255, 175, 65, 0.18);
+
+            background:
+                rgba(255, 175, 65, 0.07);
+
+            color: #ffc56e;
+        }
+
+        .consumo-kwh {
+            color: #69b7ff;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+        .costo-registro {
+            color: #e0e9f5;
+
+            font-weight: 750;
+
+            white-space: nowrap;
+        }
+
+        .sin-registros {
+            padding:
+                55px
+                24px;
+
+            text-align: center;
+        }
+
+        .sin-registros-icono {
+            width: 54px;
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin:
+                0
+                auto
+                14px;
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.17);
+
+            border-radius: 14px;
+
+            background:
+                rgba(47, 140, 255, 0.06);
+
+            color: #60adff;
+
+            font-size: 22px;
+        }
+
+        .sin-registros h3 {
+            margin:
+                0
+                0
+                7px;
+
+            color: #e3ebf6;
+
+            font-size: 15px;
+        }
+
+        .sin-registros p {
+            max-width: 520px;
+
+            margin: 0 auto;
+
+            color: #6f839b;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+        .paginacion {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+
+            padding:
+                17px
+                22px;
+
+            border-top:
+                1px solid
+                rgba(67, 106, 159, 0.11);
+        }
+
+        .paginacion-info {
+            color: #71849c;
+
+            font-size: 10px;
+        }
+
+        .paginacion-botones {
+            display: flex;
+
+            gap: 7px;
+        }
+
+        .pagina-btn {
+            min-width: 36px;
+            height: 34px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                0
+                11px;
+
+            border:
+                1px solid
+                rgba(75, 112, 165, 0.18);
+
+            border-radius: 8px;
+
+            background:
+                rgba(15, 27, 41, 0.72);
+
+            color: #8ca1bb;
+
+            font-size: 10px;
+            font-weight: 750;
+
+            text-decoration: none;
+        }
+
+        .pagina-btn:hover {
+            border-color:
+                rgba(47, 140, 255, 0.38);
+
+            color: #78bbff;
+        }
+
+        .pagina-actual {
+            border-color:
+                rgba(47, 140, 255, 0.48);
+
+            background:
+                rgba(47, 140, 255, 0.12);
+
+            color: #8bc8ff;
+        }
+
+        .consumos-nota {
+            width: 100%;
+
+            margin-top: 20px;
+
+            padding:
+                15px
+                17px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.12);
+
+            border-radius: 12px;
+
+            background:
+                rgba(55, 213, 255, 0.035);
+        }
+
+        .consumos-nota strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #6fd1ff;
+
+            font-size: 11px;
+        }
+
+        .consumos-nota p {
+            margin: 0;
+
+            color: #70839b;
+
+            font-size: 10px;
+
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1250px) {
+
+            .consumos-resumen {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+            }
+
+        }
+
+        @media (max-width: 1050px) {
+
+            .consumos-controles {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .busqueda-form {
+                width: 100%;
+            }
+
+        }
+
+        @media (max-width: 900px) {
+
+            .consumos-main {
+                width: 100vw !important;
+                max-width: 100vw !important;
+
+                margin-left: 0 !important;
+
+                padding:
+                    20px
+                    14px
+                    36px !important;
+            }
+
+            .consumos-header {
+                flex-direction: column;
+            }
+
+            .consumos-periodo {
+                width: 100%;
+
+                flex-basis: auto;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .consumos-resumen {
+                grid-template-columns: 1fr;
+            }
+
+            .consumos-hero {
+                padding:
+                    21px
+                    17px;
+            }
+
+            .consumos-panel-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+            .busqueda-form {
+                flex-wrap: wrap;
+            }
+
+            .busqueda-input {
+                flex-basis: 100%;
+            }
+
+            .paginacion {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body class="dashboard-body consumos-page">
+
+    <div class="dashboard-app">
+
+        {% include 'sidebar.html' %}
+
+
+        <main class="consumos-main">
+
+            <div class="consumos-container">
+
+
+                <section class="consumos-hero">
+
+                    <header class="consumos-header">
+
+                        <div class="consumos-header-copy">
+
+                            <span class="consumos-kicker">
+                                Mediciones energéticas
+                            </span>
+
+                            <h1>
+                                Consumos
+                            </h1>
+
+                            <p>
+                                Consulta las mediciones almacenadas por
+                                Voltify para tus artefactos. Esta sección
+                                funciona como historial de consumo y no
+                                requiere que ingreses manualmente los kWh.
+                            </p>
+
+                        </div>
+
+
+                        <div class="consumos-periodo">
+
+                            <span>
+                                Período seleccionado
+                            </span>
+
+                            <strong>
+                                {{ periodo_texto }}
+                            </strong>
+
+                        </div>
+
+                    </header>
+
+
+                    <div class="consumos-divider"></div>
+
+
+                    <nav class="periodos-consumo">
+
+                        <a
+                            href="?periodo=hoy&estado={{ estado }}&buscar={{ buscar|urlencode }}"
+                            class="periodo-link {% if periodo == 'hoy' %}active{% endif %}"
+                        >
+                            Hoy
+                        </a>
+
+                        <a
+                            href="?periodo=semana&estado={{ estado }}&buscar={{ buscar|urlencode }}"
+                            class="periodo-link {% if periodo == 'semana' %}active{% endif %}"
+                        >
+                            Últimos 7 días
+                        </a>
+
+                        <a
+                            href="?periodo=mes&estado={{ estado }}&buscar={{ buscar|urlencode }}"
+                            class="periodo-link {% if periodo == 'mes' %}active{% endif %}"
+                        >
+                            Mes actual
+                        </a>
+
+                        <a
+                            href="?periodo=tres_meses&estado={{ estado }}&buscar={{ buscar|urlencode }}"
+                            class="periodo-link {% if periodo == 'tres_meses' %}active{% endif %}"
+                        >
+                            Últimos 3 meses
+                        </a>
+
+                        <a
+                            href="?periodo=todos&estado={{ estado }}&buscar={{ buscar|urlencode }}"
+                            class="periodo-link {% if periodo == 'todos' %}active{% endif %}"
+                        >
+                            Todo el historial
+                        </a>
+
+                    </nav>
+
+                </section>
+
+
+                <section class="consumos-resumen">
+
+                    <article class="resumen-card destacado">
+
+                        <span>
+                            Consumo del período
+                        </span>
+
+                        <strong>
+                            {{ consumo_total|floatformat:2 }} kWh
+                        </strong>
+
+                        <p>
+                            Energía acumulada según los filtros actuales.
+                        </p>
+
+                    </article>
+
+
+                    <article class="resumen-card">
+
+                        <span>
+                            Costo energético
+                        </span>
+
+                        {% if tarifa_disponible %}
+
+                            <strong>
+                                ${{ costo_energia_total|floatformat:0 }}
+                            </strong>
+
+                            <p>
+                                Solo energía. No incluye cargo fijo mensual.
+                            </p>
+
+                        {% else %}
+
+                            <strong>
+                                -
+                            </strong>
+
+                            <p>
+                                No existe una tarifa disponible.
+                            </p>
+
+                        {% endif %}
+
+                    </article>
+
+
+                    <article class="resumen-card">
+
+                        <span>
+                            Registros encontrados
+                        </span>
+
+                        <strong>
+                            {{ cantidad_registros }}
+                        </strong>
+
+                        <p>
+                            Mediciones que cumplen los filtros actuales.
+                        </p>
+
+                    </article>
+
+
+                    <article class="resumen-card">
+
+                        <span>
+                            Artefactos con mediciones
+                        </span>
+
+                        <strong>
+                            {{ artefactos_con_mediciones }}
+                        </strong>
+
+                        {% if ultima_medicion %}
+
+                            <p>
+                                Última medición:
+                                {{ ultima_medicion.fecha|date:"d/m/Y H:i" }}.
+                            </p>
+
+                        {% else %}
+
+                            <p>
+                                No existen mediciones para este filtro.
+                            </p>
+
+                        {% endif %}
+
+                    </article>
+
+                </section>
+
+
+                <section class="consumos-panel">
+
+                    <div class="consumos-panel-header">
+
+                        <div>
+
+                            <h2>
+                                Historial de mediciones
+                            </h2>
+
+                            <p>
+                                Registros de consumo asociados a tus
+                                artefactos.
+                            </p>
+
+                        </div>
+
+
+                        <span class="contador-consumos">
+                            {{ cantidad_registros }}
+                            {% if cantidad_registros == 1 %}
+                                registro
+                            {% else %}
+                                registros
+                            {% endif %}
+                        </span>
+
+                    </div>
+
+
+                    <div class="consumos-controles">
+
+                        <div class="estado-filtros">
+
+                            <a
+                                href="?periodo={{ periodo }}&estado=todos&buscar={{ buscar|urlencode }}"
+                                class="estado-link {% if estado == 'todos' %}active{% endif %}"
+                            >
+                                Todos
+                            </a>
+
+                            <a
+                                href="?periodo={{ periodo }}&estado=activos&buscar={{ buscar|urlencode }}"
+                                class="estado-link {% if estado == 'activos' %}active{% endif %}"
+                            >
+                                Artefactos activos
+                            </a>
+
+                            <a
+                                href="?periodo={{ periodo }}&estado=retirados&buscar={{ buscar|urlencode }}"
+                                class="estado-link {% if estado == 'retirados' %}active{% endif %}"
+                            >
+                                Artefactos eliminados
+                            </a>
+
+                        </div>
+
+
+                        <form
+                            method="get"
+                            class="busqueda-form"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="periodo"
+                                value="{{ periodo }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="estado"
+                                value="{{ estado }}"
+                            >
+
+                            <input
+                                type="text"
+                                name="buscar"
+                                class="busqueda-input"
+                                value="{{ buscar }}"
+                                placeholder="Buscar artefacto, categoría, marca o modelo..."
+                                autocomplete="off"
+                            >
+
+                            <button
+                                type="submit"
+                                class="busqueda-btn"
+                            >
+                                Buscar
+                            </button>
+
+                            {% if buscar %}
+
+                                <a
+                                    href="?periodo={{ periodo }}&estado={{ estado }}"
+                                    class="limpiar-btn"
+                                >
+                                    Limpiar
+                                </a>
+
+                            {% endif %}
+
+                        </form>
+
+                    </div>
+
+
+                    {% if consumos %}
+
+                        <div class="tabla-contenedor">
+
+                            <table class="tabla-consumos">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Fecha y hora
+                                        </th>
+
+                                        <th>
+                                            Artefacto
+                                        </th>
+
+                                        <th>
+                                            Categoría
+                                        </th>
+
+                                        <th>
+                                            Estado
+                                        </th>
+
+                                        <th>
+                                            Consumo
+                                        </th>
+
+                                        <th>
+                                            Costo energético
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    {% for consumo in consumos %}
+
+                                        <tr>
+
+                                            <td>
+
+                                                <div class="fecha-consumo">
+
+                                                    <strong>
+                                                        {{ consumo.fecha|date:"d/m/Y" }}
+                                                    </strong>
+
+                                                    <span>
+                                                        {{ consumo.fecha|date:"H:i" }} hrs
+                                                    </span>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <div class="artefacto-cell">
+
+                                                    <strong>
+                                                        {{ consumo.artefacto_nombre|default:"Artefacto eliminado" }}
+                                                    </strong>
+
+                                                    <span>
+
+                                                        {% if consumo.marca_artefacto %}
+                                                            {{ consumo.marca_artefacto }}
+                                                        {% endif %}
+
+                                                        {% if consumo.modelo_artefacto %}
+                                                            {% if consumo.marca_artefacto %}
+                                                                ·
+                                                            {% endif %}
+                                                            {{ consumo.modelo_artefacto }}
+                                                        {% endif %}
+
+                                                        {% if not consumo.marca_artefacto and not consumo.modelo_artefacto %}
+                                                            Sin marca/modelo informado
+                                                        {% endif %}
+
+                                                    </span>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span class="categoria-badge">
+
+                                                    {% if consumo.categoria_nombre %}
+
+                                                        {{ consumo.categoria_nombre }}
+
+                                                    {% else %}
+
+                                                        Sin categoría
+
+                                                    {% endif %}
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                {% if not consumo.artefacto_eliminado %}
+
+                                                    <span class="estado-badge estado-activo">
+                                                        Activo
+                                                    </span>
+
+                                                {% else %}
+
+                                                    <span class="estado-badge estado-retirado">
+                                                        Eliminado
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span class="consumo-kwh">
+                                                    {{ consumo.consumo_kwh|floatformat:2 }}
+                                                    kWh
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                {% if tarifa_disponible %}
+
+                                                    <span class="costo-registro">
+                                                        ${{ consumo.costo_energia_estimado|floatformat:0 }}
+                                                    </span>
+
+                                                {% else %}
+
+                                                    <span class="costo-registro">
+                                                        -
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        {% if pagina_consumos.paginator.num_pages > 1 %}
+
+                            <div class="paginacion">
+
+                                <div class="paginacion-info">
+
+                                    Página
+                                    {{ pagina_consumos.number }}
+                                    de
+                                    {{ pagina_consumos.paginator.num_pages }}.
+
+                                    Se muestran hasta 30 registros por página.
+
+                                </div>
+
+
+                                <div class="paginacion-botones">
+
+                                    {% if pagina_consumos.has_previous %}
+
+                                        <a
+                                            href="?periodo={{ periodo }}&estado={{ estado }}&buscar={{ buscar|urlencode }}&pagina=1"
+                                            class="pagina-btn"
+                                        >
+                                            «
+                                        </a>
+
+                                        <a
+                                            href="?periodo={{ periodo }}&estado={{ estado }}&buscar={{ buscar|urlencode }}&pagina={{ pagina_consumos.previous_page_number }}"
+                                            class="pagina-btn"
+                                        >
+                                            Anterior
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    <span class="pagina-btn pagina-actual">
+                                        {{ pagina_consumos.number }}
+                                    </span>
+
+
+                                    {% if pagina_consumos.has_next %}
+
+                                        <a
+                                            href="?periodo={{ periodo }}&estado={{ estado }}&buscar={{ buscar|urlencode }}&pagina={{ pagina_consumos.next_page_number }}"
+                                            class="pagina-btn"
+                                        >
+                                            Siguiente
+                                        </a>
+
+                                        <a
+                                            href="?periodo={{ periodo }}&estado={{ estado }}&buscar={{ buscar|urlencode }}&pagina={{ pagina_consumos.paginator.num_pages }}"
+                                            class="pagina-btn"
+                                        >
+                                            »
+                                        </a>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+                    {% else %}
+
+                        <div class="sin-registros">
+
+                            <div class="sin-registros-icono">
+                                ⚡
+                            </div>
+
+                            <h3>
+                                No encontramos mediciones
+                            </h3>
+
+                            <p>
+                                No existen registros que coincidan con
+                                el período, estado o búsqueda seleccionados.
+                                Cuando Voltify reciba nuevas mediciones,
+                                aparecerán automáticamente en este historial.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+
+                <div class="consumos-nota">
+
+                    <strong>
+                        ¿Cómo funciona esta sección?
+                    </strong>
+
+                    <p>
+                        El usuario no debe ingresar manualmente el consumo
+                        eléctrico. Voltify almacena las mediciones asociadas
+                        a cada artefacto y esta pantalla permite consultarlas.
+                        Cuando se integre completamente el sistema IoT,
+                        las nuevas lecturas se incorporarán automáticamente.
+                        El costo mostrado en cada registro corresponde
+                        únicamente al consumo de energía según la tarifa
+                        actual; el cargo fijo mensual no se reparte entre
+                        mediciones ni artefactos.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

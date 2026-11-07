@@ -1,0 +1,2036 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Configuración | Voltify</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+        .configuracion-page {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 75% 15%,
+                    rgba(47, 140, 255, 0.08),
+                    transparent 28%
+                ),
+                #07101f;
+
+            color: #f4f7ff;
+        }
+
+        .configuracion-page .dashboard-app {
+            width: 100% !important;
+            max-width: none !important;
+            min-height: 100vh;
+        }
+
+        .configuracion-main {
+            width: calc(100% - 188px) !important;
+            max-width: none !important;
+            min-width: 0;
+            min-height: 100vh;
+
+            margin: 0 0 0 188px !important;
+
+            padding:
+                28px
+                30px
+                40px !important;
+
+            box-sizing: border-box;
+        }
+
+        .configuracion-header {
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .configuracion-header h2 {
+            margin: 0;
+            color: #f4f7ff;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .configuracion-header p {
+            margin: 8px 0 0;
+            color: #7f8da8;
+            font-size: 14px;
+        }
+
+        .configuracion-header strong {
+            color: #a9b9d6;
+        }
+
+        .configuracion-layout {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                360px;
+
+            gap: 22px;
+
+            align-items: start;
+        }
+
+        .configuracion-card,
+        .configuracion-info-card {
+            min-width: 0;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            border:
+                1px solid
+                rgba(64, 132, 255, 0.28);
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(12, 25, 48, 0.96),
+                    rgba(7, 16, 31, 0.98)
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.18),
+                inset
+                0 1px 0
+                rgba(255, 255, 255, 0.02);
+
+            overflow: hidden;
+        }
+
+        .configuracion-card {
+            width: 100%;
+        }
+
+        .configuracion-info-card {
+            width: 360px;
+            justify-self: end;
+        }
+
+        .configuracion-card::before,
+        .configuracion-info-card::before {
+            display: none;
+        }
+
+        .configuracion-card-top {
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 18px 20px;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.12);
+        }
+
+        .configuracion-card-icon {
+            width: 38px;
+            height: 38px;
+
+            flex: 0 0 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.22);
+
+            border-radius: 10px;
+
+            background:
+                rgba(47, 140, 255, 0.10);
+
+            color: #4b9dff;
+        }
+
+        .configuracion-card-top h3 {
+            margin: 0;
+            color: #f4f7ff;
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+        .configuracion-card-top p {
+            margin: 3px 0 0;
+            color: #71809c;
+            font-size: 12px;
+        }
+
+        .configuracion-form {
+            padding:
+                24px
+                22px
+                22px;
+        }
+
+        .configuracion-form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap:
+                19px
+                18px;
+        }
+
+        .configuracion-field {
+            min-width: 0;
+        }
+
+        .configuracion-field-full {
+            grid-column: 1 / -1;
+        }
+
+        .configuracion-field label {
+            display: flex;
+            align-items: center;
+
+            gap: 6px;
+
+            margin-bottom: 8px;
+
+            color: #a6b4cd;
+
+            font-size: 11px;
+            font-weight: 650;
+
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .configuracion-opcional {
+            color: #60718f;
+
+            font-size: 9px;
+            font-weight: 600;
+
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .configuracion-field input,
+        .configuracion-field select {
+            box-sizing: border-box;
+
+            width: 100% !important;
+            height: 48px !important;
+
+            margin: 0 !important;
+
+            padding:
+                0
+                14px !important;
+
+            border:
+                1px solid
+                rgba(83, 123, 184, 0.24) !important;
+
+            border-radius: 9px !important;
+
+            outline: none !important;
+
+            background:
+                rgba(8, 18, 35, 0.82) !important;
+
+            color: #dfe8f8 !important;
+
+            font-family: inherit !important;
+            font-size: 12px !important;
+
+            box-shadow: none !important;
+
+            transition:
+                border-color 160ms ease,
+                box-shadow 160ms ease,
+                background 160ms ease,
+                opacity 160ms ease;
+        }
+
+        .configuracion-field input::placeholder {
+            color: #56657f !important;
+        }
+
+        .configuracion-field input:focus,
+        .configuracion-field select:focus {
+            border-color:
+                rgba(47, 140, 255, 0.60) !important;
+
+            background:
+                rgba(9, 21, 41, 0.98) !important;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(47, 140, 255, 0.08) !important;
+        }
+
+        .configuracion-field select option {
+            background: #0b172b;
+            color: #e6edf9;
+        }
+
+        .configuracion-error {
+            display: block;
+
+            margin-top: 6px;
+
+            color: #ff7c88;
+
+            font-size: 10px;
+        }
+
+        .configuracion-error-general {
+            grid-column: 1 / -1;
+
+            padding:
+                11px
+                13px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.20);
+
+            border-radius: 9px;
+
+            background:
+                rgba(239, 90, 99, 0.06);
+
+            color: #ff919a;
+
+            font-size: 11px;
+        }
+
+        .tarifa-seccion {
+            grid-column: 1 / -1;
+
+            margin-top: 4px;
+
+            padding-top: 24px;
+
+            border-top:
+                1px solid
+                rgba(80, 120, 180, 0.11);
+        }
+
+        .tarifa-titulo {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 6px;
+        }
+
+        .tarifa-titulo-icono {
+            width: 32px;
+            height: 32px;
+
+            flex: 0 0 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            color: #37d5ff;
+
+            background:
+                rgba(55, 213, 255, 0.07);
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.18);
+        }
+
+        .tarifa-titulo h4 {
+            margin: 0;
+
+            color: #edf5ff;
+
+            font-size: 14px;
+            font-weight: 650;
+        }
+
+        .tarifa-descripcion {
+            margin:
+                0
+                0
+                17px
+                42px;
+
+            color: #71809c;
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .tarifa-estado {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                auto;
+
+            gap: 16px;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+
+            padding:
+                14px
+                15px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.16);
+
+            background:
+                rgba(47, 140, 255, 0.045);
+        }
+
+        .tarifa-estado-info {
+            min-width: 0;
+        }
+
+        .tarifa-estado-label {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: #71809c;
+
+            font-size: 9px;
+            font-weight: 650;
+
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tarifa-estado-titulo {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            color: #dce8f8;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .tarifa-estado-punto {
+            width: 7px;
+            height: 7px;
+
+            flex: 0 0 7px;
+
+            border-radius: 50%;
+
+            background: #60718f;
+        }
+
+        .tarifa-estado-punto.activo {
+            background: #37d5ff;
+
+            box-shadow:
+                0 0 8px
+                rgba(55, 213, 255, 0.55);
+        }
+
+        .tarifa-estado-punto.manual {
+            background: #a78bfa;
+
+            box-shadow:
+                0 0 8px
+                rgba(167, 139, 250, 0.50);
+        }
+
+        .tarifa-estado-detalle {
+            margin-top: 5px;
+
+            color: #65758f;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .tarifa-valores {
+            display: flex;
+            align-items: center;
+
+            gap: 16px;
+
+            flex-wrap: wrap;
+        }
+
+        .tarifa-valor {
+            text-align: right;
+        }
+
+        .tarifa-valor span {
+            display: block;
+
+            color: #65758f;
+
+            font-size: 9px;
+        }
+
+        .tarifa-valor strong {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #f4f7ff;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .tarifa-manual-box {
+            padding:
+                16px
+                16px
+                17px;
+
+            border:
+                1px solid
+                rgba(167, 139, 250, 0.18);
+
+            border-radius: 11px;
+
+            background:
+                rgba(167, 139, 250, 0.035);
+        }
+
+        .tarifa-switch-fila {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
+        }
+                .tarifa-switch-texto {
+            min-width: 0;
+        }
+
+        .tarifa-switch-texto strong {
+            display: block;
+
+            color: #dfe8f8;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .tarifa-switch-texto span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #71809c;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .tarifa-switch {
+            position: relative;
+
+            width: 42px;
+            height: 23px;
+
+            flex: 0 0 42px;
+
+            display: inline-block;
+
+            cursor: pointer;
+        }
+
+        .tarifa-switch input {
+            position: absolute;
+
+            width: 1px !important;
+            height: 1px !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+        .tarifa-switch-control {
+            position: absolute;
+
+            inset: 0;
+
+            border:
+                1px solid
+                rgba(99, 118, 150, 0.35);
+
+            border-radius: 999px;
+
+            background:
+                rgba(64, 78, 104, 0.38);
+
+            transition:
+                background 180ms ease,
+                border-color 180ms ease,
+                box-shadow 180ms ease;
+        }
+
+        .tarifa-switch-control::after {
+            content: "";
+
+            position: absolute;
+
+            top: 3px;
+            left: 3px;
+
+            width: 15px;
+            height: 15px;
+
+            border-radius: 50%;
+
+            background: #aebbd0;
+
+            transition:
+                transform 180ms ease,
+                background 180ms ease;
+        }
+
+        .tarifa-switch input:checked
+        + .tarifa-switch-control {
+            border-color:
+                rgba(167, 139, 250, 0.55);
+
+            background:
+                rgba(124, 92, 255, 0.30);
+
+            box-shadow:
+                0 0 14px
+                rgba(124, 92, 255, 0.13);
+        }
+
+        .tarifa-switch input:checked
+        + .tarifa-switch-control::after {
+            transform: translateX(19px);
+
+            background: #b9a7ff;
+        }
+
+        .tarifa-manual-campos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 16px;
+
+            margin-top: 17px;
+            padding-top: 17px;
+
+            border-top:
+                1px solid
+                rgba(167, 139, 250, 0.10);
+
+            transition:
+                opacity 180ms ease;
+        }
+
+        .tarifa-manual-campos.bloqueado {
+            opacity: 0.38;
+        }
+
+        .tarifa-manual-campos.bloqueado input {
+            cursor: not-allowed !important;
+
+            border-color:
+                rgba(83, 123, 184, 0.12) !important;
+
+            background:
+                rgba(8, 18, 35, 0.45) !important;
+
+            color:
+                #77849a !important;
+
+            box-shadow:
+                none !important;
+        }
+
+        .tarifa-manual-campos.bloqueado input:focus {
+            border-color:
+                rgba(83, 123, 184, 0.12) !important;
+
+            background:
+                rgba(8, 18, 35, 0.45) !important;
+
+            box-shadow:
+                none !important;
+        }
+
+        .tarifa-ayuda {
+            display: block;
+
+            margin-top: 7px;
+
+            color: #61718b;
+
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        .configuracion-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 24px;
+            padding-top: 20px;
+
+            border-top:
+                1px solid
+                rgba(80, 120, 180, 0.11);
+        }
+
+        .configuracion-cancelar {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+
+            height: 44px !important;
+
+            padding:
+                0
+                17px !important;
+
+            border:
+                1px solid
+                rgba(104, 126, 161, 0.22) !important;
+
+            border-radius:
+                9px !important;
+
+            background:
+                rgba(255, 255, 255, 0.025) !important;
+
+            color:
+                #91a0ba !important;
+
+            text-decoration:
+                none !important;
+
+            font-size:
+                12px !important;
+
+            font-weight:
+                600 !important;
+
+            box-shadow:
+                none !important;
+        }
+
+        .configuracion-cancelar:hover {
+            color:
+                #dfe8f8 !important;
+
+            border-color:
+                rgba(75, 157, 255, 0.32) !important;
+
+            background:
+                rgba(47, 140, 255, 0.07) !important;
+        }
+
+        .configuracion-guardar {
+            height: 44px !important;
+
+            margin: 0 !important;
+
+            padding:
+                0
+                19px !important;
+
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            border:
+                1px solid
+                rgba(75, 157, 255, 0.45) !important;
+
+            border-radius:
+                9px !important;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(47, 140, 255, 0.95),
+                    rgba(36, 87, 255, 0.92)
+                ) !important;
+
+            color:
+                #ffffff !important;
+
+            font-family:
+                inherit !important;
+
+            font-size:
+                12px !important;
+
+            font-weight:
+                650 !important;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 28px
+                rgba(47, 140, 255, 0.18) !important;
+        }
+
+        .configuracion-guardar:hover {
+            transform: translateY(-1px);
+
+            filter: brightness(1.08);
+        }
+
+        .configuracion-info-contenido {
+            padding: 20px;
+        }
+
+        .configuracion-perfil {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding-bottom: 18px;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.11);
+        }
+
+        .configuracion-avatar {
+            width: 48px;
+            height: 48px;
+
+            flex: 0 0 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.25);
+
+            border-radius: 12px;
+
+            background:
+                rgba(47, 140, 255, 0.09);
+
+            color: #55a7ff;
+        }
+
+        .configuracion-perfil strong {
+            display: block;
+
+            color: #f1f5ff;
+
+            font-size: 14px;
+        }
+
+        .configuracion-perfil span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #71809c;
+
+            font-size: 11px;
+
+            word-break: break-word;
+        }
+
+        .configuracion-datos {
+            margin-top: 18px;
+        }
+
+        .configuracion-dato {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding: 11px 0;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.07);
+        }
+
+        .configuracion-dato:last-child {
+            border-bottom: none;
+        }
+
+        .configuracion-dato span {
+            color: #71809c;
+
+            font-size: 11px;
+        }
+
+        .configuracion-dato strong {
+            max-width: 190px;
+
+            color: #cbd7ea;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            text-align: right;
+        }
+
+        .resumen-tarifa {
+            margin-top: 20px;
+            padding-top: 18px;
+
+            border-top:
+                1px solid
+                rgba(80, 120, 180, 0.11);
+        }
+
+        .resumen-tarifa-titulo {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 12px;
+
+            color: #dce8f8;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .resumen-tarifa-titulo svg {
+            color: #37d5ff;
+        }
+
+        .resumen-tarifa-estado {
+            padding:
+                12px
+                13px;
+
+            border-radius: 9px;
+
+            background:
+                rgba(47, 140, 255, 0.045);
+
+            border:
+                1px solid
+                rgba(47, 140, 255, 0.13);
+        }
+
+        .resumen-tarifa-estado strong {
+            display: block;
+
+            color: #e3ecfb;
+
+            font-size: 11px;
+        }
+
+        .resumen-tarifa-estado span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #71809c;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .resumen-tarifa-valores {
+            margin-top: 10px;
+        }
+
+        .resumen-tarifa-fila {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding: 8px 0;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.06);
+        }
+
+        .resumen-tarifa-fila:last-child {
+            border-bottom: none;
+        }
+
+        .resumen-tarifa-fila span {
+            color: #71809c;
+
+            font-size: 10px;
+        }
+
+        .resumen-tarifa-fila strong {
+            color: #cbd7ea;
+
+            font-size: 10px;
+            font-weight: 650;
+
+            text-align: right;
+        }
+
+        .cuenta-peligro {
+            margin-top: 20px;
+            padding-top: 18px;
+
+            border-top:
+                1px solid
+                rgba(239, 90, 99, 0.16);
+        }
+
+        .cuenta-peligro-titulo {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 8px;
+
+            color: #ff8b94;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .cuenta-peligro-titulo svg {
+            flex: 0 0 auto;
+            color: #ff6875;
+        }
+
+        .cuenta-peligro-texto {
+            margin: 0;
+
+            color: #7f8da8;
+
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .cuenta-peligro-boton {
+            width: 100%;
+            height: 42px;
+
+            margin-top: 13px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            box-sizing: border-box;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.30);
+
+            border-radius: 9px;
+
+            background:
+                rgba(239, 90, 99, 0.07);
+
+            color: #ff8b94;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 650;
+
+            transition:
+                border-color 160ms ease,
+                background 160ms ease,
+                color 160ms ease,
+                transform 160ms ease;
+        }
+
+        .cuenta-peligro-boton:hover {
+            border-color:
+                rgba(239, 90, 99, 0.52);
+
+            background:
+                rgba(239, 90, 99, 0.12);
+
+            color: #ffb0b6;
+
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 1100px) {
+            .configuracion-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .configuracion-info-card {
+                width: 100%;
+
+                justify-self: stretch;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .configuracion-main {
+                width: 100% !important;
+
+                margin: 0 !important;
+
+                padding:
+                    22px
+                    16px
+                    30px !important;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .configuracion-form-grid,
+            .tarifa-manual-campos {
+                grid-template-columns: 1fr;
+            }
+
+            .configuracion-field-full {
+                grid-column: auto;
+            }
+
+            .tarifa-estado {
+                grid-template-columns: 1fr;
+            }
+
+            .tarifa-valor {
+                text-align: left;
+            }
+
+            .configuracion-actions {
+                flex-direction: column-reverse;
+            }
+
+            .configuracion-cancelar,
+            .configuracion-guardar {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body configuracion-page">
+
+<div class="dashboard-app">
+
+    {% include 'sidebar.html' %}
+
+    <main class="configuracion-main">
+
+        <div class="configuracion-header">
+
+            <h2>
+                Configuración
+            </h2>
+
+            <p>
+                Actualiza los datos asociados a tu cuenta.
+
+                {% if usuario %}
+
+                    <strong>
+                        {{ usuario.nombre }}
+                    </strong>
+
+                {% endif %}
+            </p>
+
+        </div>
+
+        <div class="configuracion-layout">
+
+            <section class="configuracion-card">
+
+                <div class="configuracion-card-top">
+
+                    <div class="configuracion-card-icon">
+
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle
+                                cx="12"
+                                cy="8"
+                                r="4"
+                            />
+
+                            <path
+                                d="M4 21c0-4 3.6-7 8-7s8 3 8 7"
+                            />
+                        </svg>
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Datos de la cuenta
+                        </h3>
+
+                        <p>
+                            Modifica tu información personal y residencial.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <form
+                    method="POST"
+                    class="configuracion-form"
+                    autocomplete="off"
+                >
+
+                    {% csrf_token %}
+
+                    <div class="configuracion-form-grid">
+
+                        {% if form.non_field_errors %}
+
+                            <div class="configuracion-error-general">
+
+                                {% for error in form.non_field_errors %}
+
+                                    {{ error }}
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                        <div class="configuracion-field">
+
+                            <label
+                                for="{{ form.nombre.id_for_label }}"
+                            >
+                                {{ form.nombre.label }}
+                            </label>
+
+                            {{ form.nombre }}
+
+                            {% for error in form.nombre.errors %}
+
+                                <span class="configuracion-error">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="configuracion-field">
+
+                            <label
+                                for="{{ form.correo.id_for_label }}"
+                            >
+                                {{ form.correo.label }}
+                            </label>
+
+                            {{ form.correo }}
+
+                            {% for error in form.correo.errors %}
+
+                                <span class="configuracion-error">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="configuracion-field">
+
+                            <label
+                                for="{{ form.telefono.id_for_label }}"
+                            >
+                                {{ form.telefono.label }}
+
+                                <span class="configuracion-opcional">
+                                    opcional
+                                </span>
+                            </label>
+
+                            {{ form.telefono }}
+
+                            {% for error in form.telefono.errors %}
+
+                                <span class="configuracion-error">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="configuracion-field">
+
+                            <label
+                                for="{{ form.comuna.id_for_label }}"
+                            >
+                                {{ form.comuna.label }}
+                            </label>
+
+                            {{ form.comuna }}
+
+                            {% for error in form.comuna.errors %}
+
+                                <span class="configuracion-error">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <div
+                            class="
+                                configuracion-field
+                                configuracion-field-full
+                            "
+                        >
+                                                    <label
+                                for="{{ form.empresa.id_for_label }}"
+                            >
+                                {{ form.empresa.label }}
+                            </label>
+
+                            {{ form.empresa }}
+
+                            {% for error in form.empresa.errors %}
+
+                                <span class="configuracion-error">
+                                    {{ error }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="tarifa-seccion">
+
+                            <div class="tarifa-titulo">
+
+                                <div class="tarifa-titulo-icono">
+
+                                    <svg
+                                        width="17"
+                                        height="17"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path
+                                            d="M13 2 5 14h6l-1 8 9-13h-6z"
+                                        />
+                                    </svg>
+
+                                </div>
+
+                                <h4>
+                                    Tarifa eléctrica
+                                </h4>
+
+                            </div>
+
+                            <p class="tarifa-descripcion">
+                                Voltify puede utilizar una tarifa local
+                                asociada a tu comuna y empresa eléctrica,
+                                o una tarifa ingresada manualmente.
+                            </p>
+
+                            <div class="tarifa-estado">
+
+                                <div class="tarifa-estado-info">
+
+                                    <span class="tarifa-estado-label">
+                                        Tarifa utilizada actualmente
+                                    </span>
+
+                                    {% if tarifa_actual.fuente == 'manual' %}
+
+                                        <div class="tarifa-estado-titulo">
+
+                                            <span
+                                                class="
+                                                    tarifa-estado-punto
+                                                    manual
+                                                "
+                                            ></span>
+
+                                            Tarifa manual
+                                        </div>
+
+                                        <div class="tarifa-estado-detalle">
+                                            Configurada directamente
+                                            por el usuario.
+                                        </div>
+
+                                    {% elif tarifa_actual.fuente == 'automatica_local' %}
+
+                                        <div class="tarifa-estado-titulo">
+
+                                            <span
+                                                class="
+                                                    tarifa-estado-punto
+                                                    activo
+                                                "
+                                            ></span>
+
+                                            Automática local
+                                        </div>
+
+                                        <div class="tarifa-estado-detalle">
+                                            Obtenida desde las tarifas
+                                            registradas para tu comuna
+                                            y empresa eléctrica.
+                                        </div>
+
+                                    {% else %}
+
+                                        <div class="tarifa-estado-titulo">
+
+                                            <span
+                                                class="tarifa-estado-punto"
+                                            ></span>
+
+                                            Sin tarifa configurada
+                                        </div>
+
+                                        <div class="tarifa-estado-detalle">
+                                            No existe una tarifa local
+                                            vigente para esta combinación.
+                                            Puedes utilizar una tarifa manual.
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+                                {% if tarifa_actual.disponible %}
+
+                                    <div class="tarifa-valores">
+
+                                        <div class="tarifa-valor">
+
+                                            <span>
+                                                Variable
+                                            </span>
+
+                                            <strong>
+                                                ${{ tarifa_actual.valor_kwh|floatformat:2 }}/kWh
+                                            </strong>
+
+                                        </div>
+
+                                        <div class="tarifa-valor">
+
+                                            <span>
+                                                Cargo fijo
+                                            </span>
+
+                                            <strong>
+                                                ${{ tarifa_actual.cargo_fijo_mensual|floatformat:2 }}
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="tarifa-manual-box">
+
+                                <div class="tarifa-switch-fila">
+
+                                    <div class="tarifa-switch-texto">
+
+                                        <strong>
+                                            Usar tarifa manual
+                                        </strong>
+
+                                        <span>
+                                            Actívala si deseas ingresar
+                                            directamente el precio variable
+                                            y el cargo fijo mensual.
+                                        </span>
+
+                                    </div>
+
+                                    <label
+                                        class="tarifa-switch"
+                                        for="{{ form.usar_tarifa_manual.id_for_label }}"
+                                        title="Activar o desactivar tarifa manual"
+                                    >
+
+                                        {{ form.usar_tarifa_manual }}
+
+                                        <span
+                                            class="tarifa-switch-control"
+                                        ></span>
+
+                                    </label>
+
+                                </div>
+
+                                {% for error in form.usar_tarifa_manual.errors %}
+
+                                    <span class="configuracion-error">
+                                        {{ error }}
+                                    </span>
+
+                                {% endfor %}
+
+                                <div
+                                    class="tarifa-manual-campos"
+                                    id="tarifa-manual-campos"
+                                >
+
+                                    <div class="configuracion-field">
+
+                                        <label
+                                            for="{{ form.valor_kwh_manual.id_for_label }}"
+                                        >
+                                            {{ form.valor_kwh_manual.label }}
+                                        </label>
+
+                                        {{ form.valor_kwh_manual }}
+
+                                        <span class="tarifa-ayuda">
+                                            Precio utilizado para calcular
+                                            el costo de cada kWh consumido.
+                                        </span>
+
+                                        {% for error in form.valor_kwh_manual.errors %}
+
+                                            <span class="configuracion-error">
+                                                {{ error }}
+                                            </span>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                    <div class="configuracion-field">
+
+                                        <label
+                                            for="{{ form.cargo_fijo_manual.id_for_label }}"
+                                        >
+                                            {{ form.cargo_fijo_manual.label }}
+                                        </label>
+
+                                        {{ form.cargo_fijo_manual }}
+
+                                        <span class="tarifa-ayuda">
+                                            Monto mensual que se cobra una
+                                            sola vez, independiente del consumo.
+                                        </span>
+
+                                        {% for error in form.cargo_fijo_manual.errors %}
+
+                                            <span class="configuracion-error">
+                                                {{ error }}
+                                            </span>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="configuracion-actions">
+
+                        <a
+                            href="{% url 'inicio' %}"
+                            class="configuracion-cancelar"
+                        >
+                            Cancelar
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="configuracion-guardar"
+                        >
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.9"
+                            >
+                                <path d="M5 3h11l3 3v15H5z"/>
+                                <path d="M8 3v6h8V3"/>
+                                <path d="M8 14h8v7H8z"/>
+                            </svg>
+
+                            Guardar cambios
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <aside class="configuracion-info-card">
+
+                <div class="configuracion-card-top">
+
+                    <div class="configuracion-card-icon">
+
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                            />
+
+                            <path d="M12 11v6"/>
+                            <path d="M12 7h.01"/>
+                        </svg>
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Tu cuenta
+                        </h3>
+
+                        <p>
+                            Información actualmente registrada.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="configuracion-info-contenido">
+
+                    <div class="configuracion-perfil">
+
+                        <div class="configuracion-avatar">
+
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="8"
+                                    r="4"
+                                />
+
+                                <path
+                                    d="M4 21c0-4 3.6-7 8-7s8 3 8 7"
+                                />
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                {{ usuario.nombre }}
+                            </strong>
+
+                            <span>
+                                {{ usuario.correo }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="configuracion-datos">
+
+                        <div class="configuracion-dato">
+
+                            <span>
+                                Celular
+                            </span>
+
+                            <strong>
+                                {{ usuario.telefono|default:"No registrado" }}
+                            </strong>
+
+                        </div>
+
+                        <div class="configuracion-dato">
+
+                            <span>
+                                Comuna
+                            </span>
+
+                            <strong>
+
+                                {% if usuario.comuna %}
+
+                                    {{ usuario.comuna }}
+
+                                {% else %}
+
+                                    No registrada
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="configuracion-dato">
+
+                            <span>
+                                Empresa
+                            </span>
+
+                            <strong>
+
+                                {% if usuario.empresa %}
+
+                                    {{ usuario.empresa }}
+
+                                {% else %}
+
+                                    No registrada
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="resumen-tarifa">
+
+                        <div class="resumen-tarifa-titulo">
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path
+                                    d="M13 2 5 14h6l-1 8 9-13h-6z"
+                                />
+                            </svg>
+
+                            Tarifa eléctrica
+                        </div>
+
+                        <div class="resumen-tarifa-estado">
+
+                            {% if tarifa_actual.fuente == 'manual' %}
+
+                                <strong>
+                                    Manual
+                                </strong>
+
+                                <span>
+                                    Tarifa ingresada por el usuario.
+                                </span>
+
+                            {% elif tarifa_actual.fuente == 'automatica_local' %}
+
+                                <strong>
+                                    Automática local
+                                </strong>
+
+                                <span>
+                                    Tarifa vigente según comuna
+                                    y empresa eléctrica.
+                                </span>
+
+                            {% else %}
+
+                                <strong>
+                                    Sin tarifa disponible
+                                </strong>
+
+                                <span>
+                                    No hay una tarifa vigente
+                                    configurada actualmente.
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+                                                {% if tarifa_actual.disponible %}
+
+                            <div class="resumen-tarifa-valores">
+
+                                <div class="resumen-tarifa-fila">
+
+                                    <span>
+                                        Precio variable
+                                    </span>
+
+                                    <strong>
+                                        ${{ tarifa_actual.valor_kwh|floatformat:2 }}/kWh
+                                    </strong>
+
+                                </div>
+
+                                <div class="resumen-tarifa-fila">
+
+                                    <span>
+                                        Cargo fijo mensual
+                                    </span>
+
+                                    <strong>
+                                        ${{ tarifa_actual.cargo_fijo_mensual|floatformat:2 }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="cuenta-peligro">
+
+                        <div class="cuenta-peligro-titulo">
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M12 9v4"/>
+                                <path d="M12 17h.01"/>
+                                <path d="M10.3 3.6 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/>
+                            </svg>
+
+                            Eliminar cuenta
+                        </div>
+
+                        <p class="cuenta-peligro-texto">
+                            Esta acción eliminará permanentemente
+                            tu cuenta y toda la información asociada.
+                        </p>
+
+                        <a
+                            href="{% url 'eliminar_cuenta' %}"
+                            class="cuenta-peligro-boton"
+                        >
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M3 6h18"/>
+                                <path d="M8 6V4h8v2"/>
+                                <path d="M19 6l-1 14H6L5 6"/>
+                                <path d="M10 11v5"/>
+                                <path d="M14 11v5"/>
+                            </svg>
+
+                            Eliminar mi cuenta
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    document.addEventListener(
+        'DOMContentLoaded',
+        function () {
+            const interruptor = document.getElementById(
+                '{{ form.usar_tarifa_manual.id_for_label }}'
+            );
+
+            const valorKwh = document.getElementById(
+                '{{ form.valor_kwh_manual.id_for_label }}'
+            );
+
+            const cargoFijo = document.getElementById(
+                '{{ form.cargo_fijo_manual.id_for_label }}'
+            );
+
+            const campos = document.getElementById(
+                'tarifa-manual-campos'
+            );
+
+            function actualizarTarifaManual() {
+                if (
+                    !interruptor
+                    ||
+                    !valorKwh
+                    ||
+                    !cargoFijo
+                    ||
+                    !campos
+                ) {
+                    return;
+                }
+
+                const activada = interruptor.checked;
+
+                valorKwh.readOnly = !activada;
+                cargoFijo.readOnly = !activada;
+
+                valorKwh.setAttribute(
+                    'aria-disabled',
+                    activada
+                        ? 'false'
+                        : 'true'
+                );
+
+                cargoFijo.setAttribute(
+                    'aria-disabled',
+                    activada
+                        ? 'false'
+                        : 'true'
+                );
+
+                campos.classList.toggle(
+                    'bloqueado',
+                    !activada
+                );
+
+                if (!activada) {
+                    valorKwh.blur();
+                    cargoFijo.blur();
+                }
+            }
+
+            if (interruptor) {
+                interruptor.addEventListener(
+                    'change',
+                    actualizarTarifaManual
+                );
+            }
+
+            actualizarTarifaManual();
+        }
+    );
+</script>
+
+</body>
+
+</html>

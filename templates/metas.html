@@ -1,0 +1,1232 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Metas | Voltify</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+        .metas-page {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 82% 10%,
+                    rgba(47, 140, 255, 0.08),
+                    transparent 30%
+                ),
+                #090d12;
+
+            color: #f4f7ff;
+        }
+
+        .metas-page,
+        .metas-page * {
+            box-sizing: border-box;
+        }
+
+        .metas-page .dashboard-app {
+            width: 100%;
+            max-width: none;
+            min-height: 100vh;
+        }
+
+        .metas-main {
+            width: calc(100vw - 188px);
+            max-width: none;
+            min-height: 100vh;
+
+            margin-left: 188px;
+
+            padding:
+                30px
+                28px
+                42px;
+        }
+
+        .metas-container {
+            width: 100%;
+            max-width: none;
+
+            margin: 0;
+        }
+
+        .metas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 22px;
+
+            margin-bottom: 26px;
+        }
+
+        .metas-header-copy {
+            max-width: 850px;
+        }
+
+        .metas-kicker {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 10px;
+
+            color: #67b2ff;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+        }
+
+        .metas-kicker::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #37d5ff;
+        }
+
+        .metas-header h1 {
+            margin:
+                0
+                0
+                10px;
+
+            color: #f4f7ff;
+
+            font-size:
+                clamp(
+                    30px,
+                    4vw,
+                    46px
+                );
+
+            font-weight: 820;
+
+            letter-spacing: -0.04em;
+        }
+
+        .metas-header p {
+            margin: 0;
+
+            color: #8d9db4;
+
+            font-size: 14px;
+
+            line-height: 1.65;
+        }
+
+        .metas-periodo {
+            min-width: 220px;
+
+            padding:
+                14px
+                17px;
+
+            border:
+                1px solid
+                rgba(75, 130, 210, 0.16);
+
+            border-radius: 14px;
+
+            background:
+                rgba(13, 24, 38, 0.72);
+
+            text-align: center;
+        }
+
+        .metas-periodo span {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: #6f8199;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .metas-periodo strong {
+            color: #e2ebf7;
+
+            font-size: 14px;
+        }
+
+        .metas-resumen-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 16px;
+
+            margin-bottom: 24px;
+        }
+
+        .meta-resumen-card {
+            padding:
+                22px
+                22px
+                20px;
+
+            border:
+                1px solid
+                rgba(66, 105, 160, 0.15);
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 26, 40, 0.90),
+                    rgba(10, 18, 28, 0.92)
+                );
+        }
+
+        .meta-resumen-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #6d8199;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .meta-resumen-value {
+            margin-bottom: 5px;
+
+            color: #f1f5fb;
+
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .meta-resumen-sub {
+            color: #7d90a8;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        .meta-progress {
+            width: 100%;
+            height: 8px;
+
+            margin-top: 17px;
+
+            border-radius: 20px;
+
+            background: #16222c;
+
+            overflow: hidden;
+        }
+
+        .meta-progress-bar {
+            height: 100%;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2f8cff,
+                    #37d5ff
+                );
+
+            transition: width 0.35s ease;
+        }
+
+        .meta-progress-info {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 9px;
+
+            color: #6f8198;
+
+            font-size: 10px;
+        }
+
+        .metas-content-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.45fr)
+                minmax(360px, 0.8fr);
+
+            gap: 18px;
+        }
+
+        .metas-panel {
+            width: 100%;
+
+            padding: 24px;
+
+            border:
+                1px solid
+                rgba(66, 105, 160, 0.15);
+
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(14, 24, 37, 0.88),
+                    rgba(9, 18, 28, 0.90)
+                );
+        }
+
+        .metas-panel-header {
+            margin-bottom: 19px;
+        }
+
+        .metas-panel-header h2 {
+            margin:
+                0
+                0
+                6px;
+
+            color: #e9f0f9;
+
+            font-size: 18px;
+            font-weight: 780;
+        }
+
+        .metas-panel-header p {
+            margin: 0;
+
+            color: #71849d;
+
+            font-size: 11px;
+
+            line-height: 1.55;
+        }
+
+        .meta-estado {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 13px;
+        }
+
+        .meta-estado-item {
+            padding:
+                17px
+                16px;
+
+            border:
+                1px solid
+                rgba(65, 106, 162, 0.12);
+
+            border-radius: 12px;
+
+            background:
+                rgba(17, 29, 44, 0.72);
+        }
+
+        .meta-estado-item span {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #6f8199;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+        }
+
+        .meta-estado-item strong {
+            color: #e6edf7;
+
+            font-size: 18px;
+        }
+
+        .meta-form-group {
+            margin-bottom: 17px;
+        }
+
+        .meta-form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #b8c6d8;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .meta-form-group input {
+            width: 100%;
+
+            padding:
+                12px
+                13px;
+
+            border:
+                1px solid
+                rgba(79, 119, 175, 0.20);
+
+            border-radius: 10px;
+
+            outline: none;
+
+            background: #0d141c;
+
+            color: #edf3fb;
+
+            font-size: 13px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .meta-form-group input:focus {
+            border-color:
+                rgba(47, 140, 255, 0.60);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(47, 140, 255, 0.08);
+        }
+
+        .meta-form-errors {
+            margin-top: 6px;
+
+            color: #ff8f8f;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+        }
+
+        .meta-form-errors ul {
+            margin: 0;
+            padding-left: 17px;
+        }
+
+        .meta-global-errors {
+            margin-bottom: 17px;
+
+            padding:
+                12px
+                14px;
+
+            border:
+                1px solid
+                rgba(255, 90, 90, 0.22);
+
+            border-radius: 10px;
+
+            background:
+                rgba(255, 90, 90, 0.05);
+
+            color: #ff9b9b;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        .meta-global-errors ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .meta-form-help {
+            margin-top: 7px;
+
+            color: #66798f;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+        }
+
+        .meta-submit {
+            width: 100%;
+
+            margin-top: 4px;
+
+            padding:
+                12px
+                16px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2f8cff,
+                    #4b9dff
+                );
+
+            color: #ffffff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                filter 0.2s ease;
+        }
+
+        .meta-submit:hover {
+            transform: translateY(-1px);
+
+            filter: brightness(1.08);
+        }
+
+        .meta-eliminar-zona {
+            margin-top: 17px;
+
+            padding-top: 17px;
+
+            border-top:
+                1px solid
+                rgba(84, 112, 150, 0.12);
+        }
+
+        .meta-eliminar-ayuda {
+            margin:
+                0
+                0
+                9px;
+
+            color: #755f6b;
+
+            font-size: 10px;
+
+            line-height: 1.55;
+        }
+
+        .meta-eliminar {
+            width: 100%;
+
+            min-height: 40px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding:
+                10px
+                14px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.26);
+
+            border-radius: 10px;
+
+            background:
+                rgba(239, 90, 99, 0.055);
+
+            color: #ff8992;
+
+            text-decoration: none;
+
+            font-size: 11px;
+            font-weight: 750;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .meta-eliminar:hover {
+            transform: translateY(-1px);
+
+            border-color:
+                rgba(239, 90, 99, 0.44);
+
+            background:
+                rgba(239, 90, 99, 0.11);
+
+            color: #ffadb3;
+        }
+
+        .meta-info-box {
+            margin-top: 18px;
+
+            padding:
+                15px
+                16px;
+
+            border:
+                1px solid
+                rgba(55, 213, 255, 0.13);
+
+            border-radius: 11px;
+
+            background:
+                rgba(55, 213, 255, 0.04);
+        }
+
+        .meta-info-box strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #72cfff;
+
+            font-size: 11px;
+        }
+
+        .meta-info-box p {
+            margin: 0;
+
+            color: #74879f;
+
+            font-size: 10px;
+
+            line-height: 1.55;
+        }
+
+        .meta-tarifa-desglose {
+            margin-top: 13px;
+
+            padding-top: 13px;
+
+            border-top:
+                1px solid
+                rgba(74, 116, 171, 0.10);
+
+            display: grid;
+
+            gap: 7px;
+        }
+
+        .meta-tarifa-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 12px;
+
+            color: #71849c;
+
+            font-size: 10px;
+        }
+
+        .meta-tarifa-line strong {
+            margin: 0;
+
+            color: #b9c9dc;
+
+            font-size: 10px;
+        }
+
+        .meta-tarifa-line.total {
+            padding-top: 7px;
+
+            border-top:
+                1px solid
+                rgba(74, 116, 171, 0.10);
+
+            color: #8fa8c5;
+        }
+
+        .meta-tarifa-line.total strong {
+            color: #72cfff;
+
+            font-size: 11px;
+        }
+
+        @media (max-width: 1100px) {
+            .metas-content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metas-header {
+                flex-direction: column;
+            }
+
+            .metas-periodo {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .metas-main {
+                width: 100%;
+                margin-left: 0;
+
+                padding:
+                    24px
+                    16px
+                    40px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .metas-resumen-grid,
+            .meta-estado {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body metas-page">
+
+    <div class="dashboard-app">
+
+        {% include 'sidebar.html' %}
+
+        <main class="metas-main">
+
+            <div class="metas-container">
+
+                <header class="metas-header">
+
+                    <div class="metas-header-copy">
+
+                        <span class="metas-kicker">
+                            Control mensual
+                        </span>
+
+                        <h1>
+                            Metas
+                        </h1>
+
+                        <p>
+                            Define cuánto quieres consumir o gastar durante
+                            el mes y compara tu avance con tus registros reales.
+                        </p>
+
+                    </div>
+
+                    <div class="metas-periodo">
+
+                        <span>
+                            Período actual
+                        </span>
+
+                        <strong>
+                            {{ nombre_mes }} {{ anio }}
+                        </strong>
+
+                    </div>
+
+                </header>
+
+                <section class="metas-resumen-grid">
+
+                    <article class="meta-resumen-card">
+
+                        <span class="meta-resumen-label">
+                            Meta de consumo
+                        </span>
+
+                        {% if meta_consumo_definida %}
+
+                            <div class="meta-resumen-value">
+                                {{ meta.meta_consumo_kwh|floatformat:2 }} kWh
+                            </div>
+
+                            <div class="meta-resumen-sub">
+                                Consumo actual:
+                                {{ consumo_total|floatformat:2 }} kWh
+                            </div>
+
+                            <div class="meta-progress">
+
+                                <div
+                                    class="meta-progress-bar"
+                                    style="
+                                        width:
+                                        {% if porcentaje_consumo > 100 %}
+                                            100
+                                        {% else %}
+                                            {{ porcentaje_consumo }}
+                                        {% endif %}
+                                        %;
+                                    "
+                                ></div>
+
+                            </div>
+
+                            <div class="meta-progress-info">
+
+                                <span>
+                                    {{ porcentaje_consumo|floatformat:1 }}%
+                                </span>
+
+                                <span>
+                                    Objetivo mensual
+                                </span>
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="meta-resumen-value">
+                                Sin definir
+                            </div>
+
+                            <div class="meta-resumen-sub">
+                                No has definido una meta de consumo
+                                para este mes.
+                            </div>
+
+                        {% endif %}
+
+                    </article>
+
+                    <article class="meta-resumen-card">
+
+                        <span class="meta-resumen-label">
+                            Meta de costo
+                        </span>
+
+                        {% if meta_costo_definida %}
+
+                            <div class="meta-resumen-value">
+                                ${{ meta.meta_costo_clp|floatformat:0 }}
+                            </div>
+
+                            {% if tarifa_disponible %}
+
+                                <div class="meta-resumen-sub">
+                                    Costo total estimado:
+                                    ${{ costo_total|floatformat:0 }}
+                                </div>
+
+                                <div class="meta-progress">
+
+                                    <div
+                                        class="meta-progress-bar"
+                                        style="
+                                            width:
+                                            {% if porcentaje_costo > 100 %}
+                                                100
+                                            {% else %}
+                                                {{ porcentaje_costo }}
+                                            {% endif %}
+                                            %;
+                                        "
+                                    ></div>
+
+                                </div>
+
+                                <div class="meta-progress-info">
+
+                                    <span>
+                                        {{ porcentaje_costo|floatformat:1 }}%
+                                    </span>
+
+                                    <span>
+                                        Objetivo mensual
+                                    </span>
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="meta-resumen-sub">
+                                    No hay una tarifa eléctrica configurada
+                                    para calcular el costo actual.
+                                </div>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <div class="meta-resumen-value">
+                                Sin definir
+                            </div>
+
+                            <div class="meta-resumen-sub">
+                                No has definido una meta de costo
+                                para este mes.
+                            </div>
+
+                        {% endif %}
+
+                    </article>
+
+                </section>
+
+                <div class="metas-content-grid">
+
+                    <section class="metas-panel">
+
+                        <div class="metas-panel-header">
+
+                            <h2>
+                                Estado del mes
+                            </h2>
+
+                            <p>
+                                Valores registrados hasta el momento para
+                                {{ nombre_mes }} de {{ anio }}.
+                            </p>
+
+                        </div>
+
+                        <div class="meta-estado">
+
+                            <div class="meta-estado-item">
+
+                                <span>
+                                    Consumo acumulado
+                                </span>
+
+                                <strong>
+                                    {{ consumo_total|floatformat:2 }} kWh
+                                </strong>
+
+                            </div>
+
+                            <div class="meta-estado-item">
+
+                                <span>
+                                    Costo total estimado
+                                </span>
+
+                                {% if tarifa_disponible %}
+
+                                    <strong>
+                                        ${{ costo_total|floatformat:0 }}
+                                    </strong>
+
+                                {% else %}
+
+                                    <strong>
+                                        -
+                                    </strong>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="meta-estado-item">
+
+                                <span>
+                                    Avance consumo
+                                </span>
+
+                                {% if meta_consumo_definida %}
+
+                                    <strong>
+                                        {{ porcentaje_consumo|floatformat:1 }}%
+                                    </strong>
+
+                                {% else %}
+
+                                    <strong>
+                                        -
+                                    </strong>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="meta-estado-item">
+
+                                <span>
+                                    Avance costo
+                                </span>
+
+                                {% if meta_costo_definida and tarifa_disponible %}
+
+                                    <strong>
+                                        {{ porcentaje_costo|floatformat:1 }}%
+                                    </strong>
+
+                                {% else %}
+
+                                    <strong>
+                                        -
+                                    </strong>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="meta-info-box">
+
+                            <strong>
+                                ¿Cómo se calcula?
+                            </strong>
+
+                            <p>
+                                Voltify suma el consumo registrado durante
+                                el mes actual. Para el costo utiliza el precio
+                                variable por kWh configurado y agrega el cargo
+                                fijo mensual una sola vez.
+                            </p>
+
+                            {% if tarifa_disponible %}
+
+                                <div class="meta-tarifa-desglose">
+
+                                    <div class="meta-tarifa-line">
+
+                                        <span>
+                                            Consumo de energía
+                                        </span>
+
+                                        <strong>
+                                            ${{ costo_energia|floatformat:0 }}
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="meta-tarifa-line">
+
+                                        <span>
+                                            Cargo fijo mensual
+                                        </span>
+
+                                        <strong>
+                                            ${{ cargo_fijo_aplicado|floatformat:0 }}
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="meta-tarifa-line total">
+
+                                        <span>
+                                            Total estimado
+                                        </span>
+
+                                        <strong>
+                                            ${{ costo_total|floatformat:0 }}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </section>
+
+                    <section class="metas-panel">
+
+                        <div class="metas-panel-header">
+
+                            {% if meta %}
+
+                                <h2>
+                                    Actualizar metas
+                                </h2>
+
+                                <p>
+                                    Puedes modificar tus objetivos para
+                                    {{ nombre_mes }}. Puedes utilizar una
+                                    meta o ambas.
+                                </p>
+
+                            {% else %}
+
+                                <h2>
+                                    Crear metas
+                                </h2>
+
+                                <p>
+                                    Define al menos un objetivo para
+                                    {{ nombre_mes }}.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                        <form
+                            method="POST"
+                            autocomplete="off"
+                        >
+
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+
+                                <div class="meta-global-errors">
+                                    {{ form.non_field_errors }}
+                                </div>
+
+                            {% endif %}
+
+                            <div class="meta-form-group">
+
+                                <label
+                                    for="{{ form.meta_consumo_kwh.id_for_label }}"
+                                >
+                                    Meta mensual de consumo
+                                </label>
+
+                                {{ form.meta_consumo_kwh }}
+
+                                {% if form.meta_consumo_kwh.errors %}
+
+                                    <div class="meta-form-errors">
+                                        {{ form.meta_consumo_kwh.errors }}
+                                    </div>
+
+                                {% endif %}
+
+                                <div class="meta-form-help">
+                                    Ingresa el máximo de kWh que deseas
+                                    consumir este mes. Puedes dejar este
+                                    campo vacío si solo utilizarás una meta
+                                    económica.
+                                </div>
+
+                            </div>
+
+                            <div class="meta-form-group">
+
+                                <label
+                                    for="{{ form.meta_costo_clp.id_for_label }}"
+                                >
+                                    Meta mensual de costo
+                                </label>
+
+                                {{ form.meta_costo_clp }}
+
+                                {% if form.meta_costo_clp.errors %}
+
+                                    <div class="meta-form-errors">
+                                        {{ form.meta_costo_clp.errors }}
+                                    </div>
+
+                                {% endif %}
+
+                                <div class="meta-form-help">
+                                    Ingresa cuánto deseas gastar como máximo
+                                    durante el mes. Puedes dejar este campo
+                                    vacío si solo utilizarás una meta de
+                                    consumo.
+                                </div>
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="meta-submit"
+                            >
+
+                                {% if meta %}
+                                    Guardar cambios
+                                {% else %}
+                                    Crear metas
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+                        {% if meta %}
+
+                            <div class="meta-eliminar-zona">
+
+                                <p class="meta-eliminar-ayuda">
+                                    Si ya no deseas utilizar una meta para
+                                    {{ nombre_mes }}, puedes eliminarla.
+                                    Tus consumos y artefactos no se borrarán.
+                                </p>
+
+                                <a
+                                    href="{% url 'eliminar_meta' %}"
+                                    class="meta-eliminar"
+                                >
+
+                                    <svg
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                    >
+                                        <path d="M3 6h18"/>
+                                        <path d="M8 6V4h8v2"/>
+                                        <path d="M19 6l-1 14H6L5 6"/>
+                                        <path d="M10 11v5"/>
+                                        <path d="M14 11v5"/>
+                                    </svg>
+
+                                    Eliminar meta mensual
+
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+                    </section>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

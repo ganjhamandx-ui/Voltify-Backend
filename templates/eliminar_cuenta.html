@@ -1,0 +1,697 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Eliminar cuenta | Voltify</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/voltify.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    <style>
+        .eliminar-cuenta-page {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 75% 15%,
+                    rgba(239, 90, 99, 0.08),
+                    transparent 30%
+                ),
+                #07101f;
+
+            color: #f4f7ff;
+        }
+
+        .eliminar-cuenta-page .dashboard-app {
+            width: 100% !important;
+            max-width: none !important;
+            min-height: 100vh;
+        }
+
+        .eliminar-cuenta-main {
+            width: calc(100% - 188px);
+            min-height: 100vh;
+
+            margin-left: 188px;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+
+            box-sizing: border-box;
+
+            padding:
+                42px
+                30px;
+        }
+
+        .eliminar-cuenta-contenedor {
+            width: 100%;
+            max-width: 760px;
+        }
+
+        .eliminar-cuenta-volver {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom: 18px;
+
+            color: #8291ab;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            text-decoration: none;
+
+            transition:
+                color 160ms ease;
+        }
+
+        .eliminar-cuenta-volver:hover {
+            color: #dbe7fa;
+        }
+
+        .eliminar-cuenta-card {
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.28);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(18, 24, 43, 0.98),
+                    rgba(8, 15, 29, 0.99)
+                );
+
+            box-shadow:
+                0 18px 50px
+                rgba(0, 0, 0, 0.24);
+        }
+
+        .eliminar-cuenta-header {
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+
+            padding:
+                24px
+                26px;
+
+            border-bottom:
+                1px solid
+                rgba(239, 90, 99, 0.13);
+        }
+
+        .eliminar-cuenta-icono {
+            width: 48px;
+            height: 48px;
+
+            flex: 0 0 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.30);
+
+            border-radius: 13px;
+
+            background:
+                rgba(239, 90, 99, 0.08);
+
+            color: #ff6f7b;
+        }
+
+        .eliminar-cuenta-header h2 {
+            margin: 0;
+
+            color: #f4f7ff;
+
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .eliminar-cuenta-header p {
+            margin:
+                5px
+                0
+                0;
+
+            color: #7888a4;
+
+            font-size: 12px;
+        }
+
+        .eliminar-cuenta-contenido {
+            padding:
+                26px;
+        }
+
+        .eliminar-cuenta-advertencia {
+            padding:
+                18px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.20);
+
+            border-radius: 12px;
+
+            background:
+                rgba(239, 90, 99, 0.055);
+        }
+
+        .eliminar-cuenta-advertencia strong {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #ff919a;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .eliminar-cuenta-advertencia p {
+            margin: 0;
+
+            color: #a7b3c9;
+
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .eliminar-cuenta-datos {
+            margin-top: 20px;
+
+            padding:
+                16px
+                18px;
+
+            border:
+                1px solid
+                rgba(80, 120, 180, 0.13);
+
+            border-radius: 11px;
+
+            background:
+                rgba(47, 140, 255, 0.035);
+        }
+
+        .eliminar-cuenta-datos-titulo {
+            margin-bottom: 12px;
+
+            color: #8291ab;
+
+            font-size: 10px;
+            font-weight: 650;
+
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .eliminar-cuenta-dato {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 8px 0;
+
+            border-bottom:
+                1px solid
+                rgba(80, 120, 180, 0.07);
+        }
+
+        .eliminar-cuenta-dato:last-child {
+            border-bottom: none;
+        }
+
+        .eliminar-cuenta-dato span {
+            color: #71809c;
+
+            font-size: 11px;
+        }
+
+        .eliminar-cuenta-dato strong {
+            color: #d8e2f2;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            text-align: right;
+
+            word-break: break-word;
+        }
+
+        .eliminar-cuenta-form {
+            margin-top: 24px;
+        }
+
+        .eliminar-cuenta-label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #c0cbdd;
+
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .eliminar-cuenta-label strong {
+            color: #ff7c88;
+        }
+
+        .eliminar-cuenta-input {
+            box-sizing: border-box;
+
+            width: 100%;
+            height: 48px;
+
+            padding:
+                0
+                14px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.25);
+
+            border-radius: 9px;
+
+            outline: none;
+
+            background:
+                rgba(8, 18, 35, 0.88);
+
+            color: #f2f5fb;
+
+            font-family: inherit;
+            font-size: 12px;
+
+            transition:
+                border-color 160ms ease,
+                box-shadow 160ms ease;
+        }
+
+        .eliminar-cuenta-input::placeholder {
+            color: #56657f;
+        }
+
+        .eliminar-cuenta-input:focus {
+            border-color:
+                rgba(239, 90, 99, 0.62);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(239, 90, 99, 0.08);
+        }
+
+        .eliminar-cuenta-ayuda {
+            display: block;
+
+            margin-top: 7px;
+
+            color: #687892;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .eliminar-cuenta-mensaje {
+            margin-bottom: 16px;
+
+            padding:
+                12px
+                14px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.22);
+
+            border-radius: 9px;
+
+            background:
+                rgba(239, 90, 99, 0.065);
+
+            color: #ff919a;
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .eliminar-cuenta-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 24px;
+            padding-top: 20px;
+
+            border-top:
+                1px solid
+                rgba(80, 120, 180, 0.10);
+        }
+
+        .eliminar-cuenta-cancelar,
+        .eliminar-cuenta-confirmar {
+            height: 44px;
+
+            box-sizing: border-box;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                0
+                18px;
+
+            border-radius: 9px;
+
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 650;
+
+            text-decoration: none;
+        }
+
+        .eliminar-cuenta-cancelar {
+            border:
+                1px solid
+                rgba(104, 126, 161, 0.23);
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+            color: #91a0ba;
+        }
+
+        .eliminar-cuenta-cancelar:hover {
+            border-color:
+                rgba(75, 157, 255, 0.32);
+
+            background:
+                rgba(47, 140, 255, 0.06);
+
+            color: #dfe8f8;
+        }
+
+        .eliminar-cuenta-confirmar {
+            gap: 8px;
+
+            border:
+                1px solid
+                rgba(239, 90, 99, 0.48);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(210, 55, 68, 0.96),
+                    rgba(165, 39, 54, 0.96)
+                );
+
+            color: #ffffff;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 26px
+                rgba(190, 45, 58, 0.18);
+        }
+
+        .eliminar-cuenta-confirmar:hover {
+            transform: translateY(-1px);
+
+            filter: brightness(1.08);
+        }
+
+        @media (max-width: 900px) {
+            .eliminar-cuenta-main {
+                width: 100%;
+
+                margin-left: 0;
+
+                padding:
+                    28px
+                    16px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .eliminar-cuenta-header,
+            .eliminar-cuenta-contenido {
+                padding:
+                    20px
+                    17px;
+            }
+
+            .eliminar-cuenta-actions {
+                flex-direction: column-reverse;
+            }
+
+            .eliminar-cuenta-cancelar,
+            .eliminar-cuenta-confirmar {
+                width: 100%;
+            }
+
+            .eliminar-cuenta-dato {
+                align-items: flex-start;
+                flex-direction: column;
+
+                gap: 4px;
+            }
+
+            .eliminar-cuenta-dato strong {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body eliminar-cuenta-page">
+
+<div class="dashboard-app">
+
+    {% include 'sidebar.html' %}
+
+    <main class="eliminar-cuenta-main">
+
+        <div class="eliminar-cuenta-contenedor">
+
+            <a
+                href="{% url 'configuracion' %}"
+                class="eliminar-cuenta-volver"
+            >
+                ← Volver a configuración
+            </a>
+
+            <section class="eliminar-cuenta-card">
+
+                <div class="eliminar-cuenta-header">
+
+                    <div class="eliminar-cuenta-icono">
+
+                        <svg
+                            width="23"
+                            height="23"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M3 6h18"/>
+                            <path d="M8 6V4h8v2"/>
+                            <path d="M19 6l-1 14H6L5 6"/>
+                            <path d="M10 11v5"/>
+                            <path d="M14 11v5"/>
+                        </svg>
+
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Eliminar mi cuenta
+                        </h2>
+
+                        <p>
+                            Eliminación permanente de tu información en Voltify.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="eliminar-cuenta-contenido">
+
+                    {% if messages %}
+
+                        {% for message in messages %}
+
+                            <div class="eliminar-cuenta-mensaje">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                    <div class="eliminar-cuenta-advertencia">
+
+                        <strong>
+                            Advertencia: esta acción es irreversible
+                        </strong>
+
+                        <p>
+                            Al eliminar tu cuenta perderás permanentemente
+                            toda la información almacenada en Voltify,
+                            incluyendo tus artefactos, tu historial de consumo,
+                            todos los consumos registrados, tus metas y demás
+                            información asociada a tu cuenta.
+                            Esta acción no se puede deshacer.
+                        </p>
+
+                    </div>
+
+                    <div class="eliminar-cuenta-datos">
+
+                        <div class="eliminar-cuenta-datos-titulo">
+                            Cuenta que será eliminada
+                        </div>
+
+                        <div class="eliminar-cuenta-dato">
+
+                            <span>
+                                Nombre
+                            </span>
+
+                            <strong>
+                                {{ usuario.nombre }}
+                            </strong>
+
+                        </div>
+
+                        <div class="eliminar-cuenta-dato">
+
+                            <span>
+                                Correo
+                            </span>
+
+                            <strong>
+                                {{ usuario.correo }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <form
+                        method="POST"
+                        class="eliminar-cuenta-form"
+                        autocomplete="off"
+                    >
+
+                        {% csrf_token %}
+
+                        <label
+                            for="confirmacion"
+                            class="eliminar-cuenta-label"
+                        >
+                            Para continuar escribe
+                            <strong>ELIMINAR</strong>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="confirmacion"
+                            name="confirmacion"
+                            class="eliminar-cuenta-input"
+                            placeholder="Escribe ELIMINAR"
+                            autocomplete="off"
+                            required
+                        >
+
+                        <span class="eliminar-cuenta-ayuda">
+                            La palabra debe escribirse exactamente como aparece.
+                        </span>
+
+                        <div class="eliminar-cuenta-actions">
+
+                            <a
+                                href="{% url 'configuracion' %}"
+                                class="eliminar-cuenta-cancelar"
+                            >
+                                Cancelar
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="eliminar-cuenta-confirmar"
+                            >
+
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M3 6h18"/>
+                                    <path d="M8 6V4h8v2"/>
+                                    <path d="M19 6l-1 14H6L5 6"/>
+                                </svg>
+
+                                Eliminar cuenta permanentemente
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
