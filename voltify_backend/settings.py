@@ -24,19 +24,29 @@ def cargar_env(ruta):
             continue
 
         clave, separador, valor = linea.partition("=")
-        if separador and clave.strip() == "DJANGO_SECRET_KEY":
-            os.environ.setdefault(clave.strip(), valor.strip())
+        permitidas = {
+            'DJANGO_SECRET_KEY', 'DJANGO_DEBUG', 'DJANGO_ALLOWED_HOSTS',
+            'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT',
+            'DJANGO_COOKIE_SECURE', 'LOGIN_SECURITY_DB',
+        }
+        if separador and clave.strip() in permitidas:
+            valor = valor.strip()
+            if len(valor) >= 2 and valor[0] == valor[-1] and valor[0] in "\"'":
+                valor = valor[1:-1]
+            os.environ.setdefault(clave.strip(), valor)
 
 cargar_env(BASE_DIR / ".env")
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 
 # Mantiene visibles los errores durante el desarrollo
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
 
 # Define los hosts permitidos para ejecutar el proyecto
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get(
+    'DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost'
+).split(',') if host.strip()]
 
 
 # Aplicaciones instaladas en Django
@@ -99,15 +109,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
 
-        'NAME': 'voltify_e3',
+        'NAME': os.environ.get('DB_NAME', 'voltify_e3'),
 
-        'USER': 'root',
+        'USER': os.environ.get('DB_USER', 'root'),
 
-        'PASSWORD': '',
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
 
-        'HOST': '127.0.0.1',
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
 
-        'PORT': '3306',
+        'PORT': os.environ.get('DB_PORT', '3306'),
 
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -118,8 +128,8 @@ DATABASES = {
 }
 
 
-# Validadores de contraseña de Django
-LOGIN_SECURITY_DB = BASE_DIR / '.runtime' / 'login_security.sqlite3'
+# Contadores compartidos entre procesos locales; no son datos de dominio.
+LOGIN_SECURITY_DB = Path(os.environ.get('LOGIN_SECURITY_DB', BASE_DIR / '.runtime' / 'login_security.sqlite3'))
 LOGIN_MAX_ATTEMPTS = 3
 LOGIN_LOCKOUT_SECONDS = 30 * 60
 LOGIN_ATTEMPT_WINDOW = 24 * 60 * 60
@@ -131,6 +141,7 @@ RECOVERY_WINDOW = 10 * 60
 RECOVERY_LOCKOUT_SECONDS = 30 * 60
 
 
+# Validadores de contraseña de Django
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': (
@@ -201,7 +212,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 # False mientras Voltify se ejecute localmente mediante HTTP
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = os.environ.get('DJANGO_COOKIE_SECURE', 'False').lower() == 'true'
 
 
 # Protección de la cookie CSRF
@@ -209,4 +220,4 @@ CSRF_COOKIE_HTTPONLY = True
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
