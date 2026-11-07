@@ -613,6 +613,10 @@ def iniciar_sesion(request):
                     .first()
                 )
 
+                if usuario_django is None and not check_password(contrasena, usuario.contrasena_hash):
+                    form.add_error(None, 'Correo o contraseña incorrectos.')
+                    return render(request, 'iniciar_sesion.html', {'form': form})
+
                 if usuario_django is None:
                     usuario_django = User(
                         username=usuario.correo.lower(),
@@ -696,6 +700,8 @@ def recuperar_contrasena(request):
         )
 
         if form.is_valid():
+            request._voltify_recovery_attempt = True
+            request.session.pop('recuperacion_verificada', None)
             correo = form.cleaned_data[
                 'correo'
             ]
@@ -706,13 +712,10 @@ def recuperar_contrasena(request):
                 )
 
             except Usuario.DoesNotExist:
-                form.add_error(
-                    'correo',
-                    (
-                        'No existe una cuenta '
-                        'registrada con este correo.'
-                    )
-                )
+                # Misma navegación y coste de hash sin confirmar si existe la cuenta.
+                make_password(secrets.token_hex(16))
+                request.session['recuperacion_id'] = -1
+                return redirect('/verificar-codigo/')
 
             else:
                 # Invalida códigos de recuperación anteriores que sigan pendientes
@@ -830,6 +833,14 @@ def verificar_codigo(request):
         )
 
     except RecuperacionContrasena.DoesNotExist:
+        # La solicitud ficticia muestra el mismo formulario que una real.
+        if recuperacion_id == -1:
+            form = VerificarCodigoForm(request.POST if request.method == 'POST' else None)
+            if request.method == 'POST' and form.is_valid():
+                request._voltify_recovery_attempt = True
+                make_password(form.cleaned_data['codigo'])
+                form.add_error('codigo', 'El código ingresado no es correcto.')
+            return render(request, 'verificar_codigo.html', {'form': form})
         request.session.pop(
             'recuperacion_id',
             None
@@ -868,6 +879,7 @@ def verificar_codigo(request):
         )
 
         if form.is_valid():
+            request._voltify_recovery_attempt = True
             codigo = form.cleaned_data[
                 'codigo'
             ]

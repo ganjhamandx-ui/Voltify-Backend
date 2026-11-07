@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
 from .models import (
     Alerta,
@@ -54,6 +56,16 @@ class EmpresaElectricaAdmin(admin.ModelAdmin):
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
+    # La contraseña se cambia mediante el flujo validado de recuperación.
+    exclude = ('contrasena_hash',)
+
+    def has_add_permission(self, request):
+        # Registro web crea perfil y cuenta nativa de forma atómica.
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        return ('correo',) if obj else ()
+
     list_display = (
         'id_usuario',
         'nombre',
@@ -87,6 +99,14 @@ class UsuarioAdmin(admin.ModelAdmin):
 
 @admin.register(RecuperacionContrasena)
 class RecuperacionContrasenaAdmin(admin.ModelAdmin):
+    exclude = ('token_hash',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
     list_display = (
         'id_recuperacion',
         'usuario',
@@ -286,3 +306,16 @@ class AlertaAdmin(admin.ModelAdmin):
 admin.site.site_header = 'Voltify - Administración'
 admin.site.site_title = 'Voltify Admin'
 admin.site.index_title = 'Administración del sistema Voltify'
+
+
+class CuentaDjangoAdmin(UserAdmin):
+    def get_readonly_fields(self, request, obj=None):
+        campos = super().get_readonly_fields(request, obj)
+        if obj and Usuario.objects.filter(correo__iexact=obj.username).exists():
+            # El formulario de configuración cambia ambos correos atómicamente.
+            return tuple(campos) + ('username', 'email')
+        return campos
+
+
+admin.site.unregister(get_user_model())
+admin.site.register(get_user_model(), CuentaDjangoAdmin)

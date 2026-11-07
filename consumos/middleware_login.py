@@ -15,7 +15,7 @@ from django.dispatch import receiver
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from .forms import LoginUsuarioForm
+from .forms import LoginUsuarioForm, RecuperarContrasenaForm, VerificarCodigoForm
 
 
 @receiver(user_login_failed, dispatch_uid='voltify_login_failed')
@@ -41,11 +41,17 @@ class LoginRateLimitMiddleware:
     @staticmethod
     def respuesta_bloqueo(request, segundos):
         mensaje = 'Demasiados intentos. Intenta nuevamente cuando termine el bloqueo temporal.'
-        if request.path.rstrip('/') == '/iniciar-sesion':
-            form = LoginUsuarioForm(request.POST)
+        formularios = {
+            '/iniciar-sesion': (LoginUsuarioForm, 'iniciar_sesion.html'),
+            '/recuperar-contrasena': (RecuperarContrasenaForm, 'recuperar_contrasena.html'),
+            '/verificar-codigo': (VerificarCodigoForm, 'verificar_codigo.html'),
+        }
+        if request.path.rstrip('/') in formularios:
+            clase_form, template = formularios[request.path.rstrip('/')]
+            form = clase_form(request.POST)
             form.is_valid()
             form.add_error(None, mensaje)
-            respuesta = render(request, 'iniciar_sesion.html', {'form': form}, status=429)
+            respuesta = render(request, template, {'form': form}, status=429)
         else:
             respuesta = HttpResponse(mensaje, status=429, content_type='text/plain; charset=utf-8')
         respuesta['Retry-After'] = str(max(1, math.ceil(segundos)))
@@ -55,16 +61,24 @@ class LoginRateLimitMiddleware:
     def __call__(self, request):
         if request.method != 'POST' or request.path.rstrip('/') not in {
             '/iniciar-sesion', '/admin/login',
+            '/recuperar-contrasena', '/verificar-codigo',
         }:
             return self.get_response(request)
 
         cuenta = (request.POST.get('correo') or request.POST.get('username') or '').strip().lower()
+        recuperacion = request.path.rstrip('/') in {'/recuperar-contrasena', '/verificar-codigo'}
+        alcance = 'recuperacion' if recuperacion else 'login'
+        if request.path.rstrip('/') == '/verificar-codigo':
+            cuenta = str(request.session.get('recuperacion_id', 'sin-solicitud'))
+            alcance = 'codigo'
         ip = request.META.get('REMOTE_ADDR') or 'desconocida'
         # No se confía en X-Forwarded-For enviado por el cliente.
         reglas = [
-            (self.clave('cuenta', cuenta), settings.LOGIN_MAX_ATTEMPTS,
-             settings.LOGIN_ATTEMPT_WINDOW, settings.LOGIN_LOCKOUT_SECONDS),
-            (self.clave('ip', ip), settings.LOGIN_IP_MAX_ATTEMPTS,
+            (self.clave(alcance + ':cuenta', cuenta),
+             settings.RECOVERY_MAX_ATTEMPTS if recuperacion else settings.LOGIN_MAX_ATTEMPTS,
+             settings.RECOVERY_WINDOW if recuperacion else settings.LOGIN_ATTEMPT_WINDOW,
+             settings.RECOVERY_LOCKOUT_SECONDS if recuperacion else settings.LOGIN_LOCKOUT_SECONDS),
+            (self.clave(alcance + ':ip', ip), settings.LOGIN_IP_MAX_ATTEMPTS,
              settings.LOGIN_IP_WINDOW, settings.LOGIN_IP_LOCKOUT_SECONDS),
         ]
         conexion = None
@@ -91,6 +105,8 @@ class LoginRateLimitMiddleware:
 
             respuesta = self.get_response(request)
             resultado = getattr(request, '_voltify_login_result', None)
+            if recuperacion and getattr(request, '_voltify_recovery_attempt', False):
+                resultado = False
             if resultado is True:
                 conexion.execute('DELETE FROM intentos WHERE clave=?', (reglas[0][0],))
             elif resultado is False:
@@ -106,7 +122,8 @@ class LoginRateLimitMiddleware:
                     respuesta = self.respuesta_bloqueo(request, bloqueo_restante)
             conexion.execute('DELETE FROM intentos WHERE bloqueo <= ? AND inicio < ?',
                              (ahora, ahora - max(settings.LOGIN_ATTEMPT_WINDOW, settings.LOGIN_IP_WINDOW,
-                                                  settings.LOGIN_LOCKOUT_SECONDS, settings.LOGIN_IP_LOCKOUT_SECONDS)))
+                                                  settings.LOGIN_LOCKOUT_SECONDS, settings.LOGIN_IP_LOCKOUT_SECONDS,
+                                                  settings.RECOVERY_WINDOW, settings.RECOVERY_LOCKOUT_SECONDS)))
             conexion.commit()
             return respuesta
         except (sqlite3.Error, OSError):
