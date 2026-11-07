@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'consumos.middleware_login.LoginRateLimitMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -118,6 +119,15 @@ DATABASES = {
 
 
 # Validadores de contraseña de Django
+LOGIN_SECURITY_DB = BASE_DIR / '.runtime' / 'login_security.sqlite3'
+LOGIN_MAX_ATTEMPTS = 3
+LOGIN_LOCKOUT_SECONDS = 30 * 60
+LOGIN_ATTEMPT_WINDOW = 24 * 60 * 60
+LOGIN_IP_MAX_ATTEMPTS = 30
+LOGIN_IP_WINDOW = 10 * 60
+LOGIN_IP_LOCKOUT_SECONDS = 5 * 60
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': (

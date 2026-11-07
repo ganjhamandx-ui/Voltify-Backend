@@ -37,6 +37,7 @@ Thumbs.db
 # Archivos generados
 staticfiles/
 media/
+.runtime/
 
 # Respaldos antiguos del proyecto Voltify
 consumos/models_ANTES_DELETE_FISICO_E3.py

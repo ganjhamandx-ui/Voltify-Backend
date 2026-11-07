@@ -575,6 +575,8 @@ def iniciar_sesion(request):
 
         # Procesa las credenciales solamente si el formulario es válido
         if form.is_valid():
+            # Resultado explícito para el limitador, independiente del HTTP.
+            request._voltify_login_result = False
             correo = (
                 form.cleaned_data[
                     'correo'
@@ -594,6 +596,7 @@ def iniciar_sesion(request):
                 )
 
             except Usuario.DoesNotExist:
+                make_password(contrasena)
                 form.add_error(
                     None,
                     'Correo o contraseña incorrectos.'
