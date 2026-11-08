@@ -88,13 +88,71 @@ Lee el mismo SQLite del middleware, abierto en modo de solo lectura. No crea el 
 
 El esquema original solo conservaba clave, contador, inicio de ventana y vencimiento. El middleware incorpora columnas opcionales `ultimo_fallo`, `bloqueo_inicio` y `duracion` al procesar nuevos intentos, sin reiniciar contadores existentes. Los registros anteriores no se reconstruyen: sus metadatos ausentes aparecen como **No disponible**. Se muestran estados acumulado, vigente o expirado cuando existen filas que los acreditan; el almacén no es un inventario de todas las cuentas y la limpieza habitual puede eliminar registros antiguos.
 
-## Codificación: diagnóstico y límite de la corrección
+## Codificación: causa histórica demostrada y estado real
 
-Los archivos activos revisados son UTF-8 válido, los templates declaran UTF-8 y la conexión efectiva usa `utf8mb4` para cliente, conexión y resultados. Se añadieron nombres administrativos españoles mediante metadatos, sin cambiar nombres de tablas, columnas o identificadores.
+La auditoría del 8 de noviembre de 2026 revisó 83 archivos relevantes, incluidos fuentes, migraciones, comandos, scripts de datos, copias locales y SQL históricos, además del estado inicial y actual de Git. Los archivos activos son UTF-8 válido, los documentos HTML declaran UTF-8 y no se encontró recodificación Latin-1/Windows-1252 en el recorrido activo de formularios, vistas, modelos o señales. La codificación usada al calcular hashes de seguridad es intencional y no transforma nombres.
 
-El problema restante está en valores ya almacenados. Las comparaciones binarias detectaron marcadores de texto dañado en 1 comuna, 1 empresa eléctrica, 7 categorías, 2 artefactos y 2.160 consumos. No se corrigieron ni se reescribieron esos datos. Por ello algunos nombres todavía pueden verse dañados en formularios, Admin o gráficos: cambiar el charset de conexión no repara un valor almacenado incorrectamente.
+La causa histórica quedó reproducida, no solo inferida por encontrar texto dañado en MariaDB. El historial local contiene esta secuencia de preparación del SQL:
 
-El siguiente paso requiere autorización: revisar una propuesta por registro y campo, comprobar conversiones reversibles y condiciones sobre el valor original, y validar respaldo/restauración antes de escribir. No aplicar reemplazos globales ni corregir identificadores por razones visuales. Los registros que no tengan una conversión inequívoca deben permanecer pendientes.
+```powershell
+(Get-Content ".\voltify_entrega_final_2026-10-06.sql" -Raw).Replace('`voltify`','`voltify_e3`') | Set-Content ".\voltify_e3_2026-11-01.sql" -Encoding UTF8
+```
+
+**No repetir ese comando.** `Get-Content` sin `-Encoding` en Windows PowerShell 5.1 utilizó Windows-1252 para leer el archivo UTF-8 de origen. El daño ocurrió en esa lectura; guardar después como UTF-8 preservó la interpretación incorrecta, no el texto original. El historial también registra la posterior importación del archivo generado. La transformación en memoria reproduce el **archivo SQL completo**, descontando únicamente el salto de línea final añadido por `Set-Content`. Se comprobó tanto por bytes en Python como mediante el ejecutable Windows PowerShell 5.1 local, cuyo valor predeterminado era Windows-1252. El SQL de octubre contiene los acentos correctos y el SQL derivado de noviembre ya contiene el mojibake.
+
+También se identificó una segunda capa en el SQL local `voltify_e3_ANTES_DELETE_FISICO_E3.sql`: su catálogo coincide exactamente con interpretar como CP850 los bytes UTF-8 del catálogo ya dañado de noviembre. Esto concuerda con el comando histórico que canalizó la salida de `mysqldump` hacia `Out-File -Encoding utf8`. Es evidencia del riesgo de las conversiones de texto en tuberías nativas de PowerShell; no se supone que esa segunda capa afecte a los registros actuales. Los respaldos antiguos se conservaron sin sobrescribirlos y no deben reimportarse sin revisión.
+
+En MariaDB 10.4.32, esquema, 21 tablas y columnas textuales consultadas usan `utf8mb4`/`utf8mb4_general_ci`. Las variables globales y de sesión —servidor, base, cliente, conexión, resultados y collations— fueron comprobadas. Django usa `OPTIONS.charset=utf8mb4`, `DEFAULT_CHARSET=utf-8` y mysqlclient 2.3.0 reporta `utf8mb4`. En muestras de catálogos, `HEX(columna)` coincide exactamente con `valor_ORM.encode('utf-8').hex()`: el controlador devuelve fielmente los caracteres dañados ya almacenados. Los nombres se propagaron a `Consumo` mediante los snapshots existentes de `save()` y el generador de mediciones, no mediante una nueva decodificación en el dashboard. El JSON usa `json_script` y se procesa con `JSON.parse` sin recodificar bytes.
+
+Por tanto, no se cambió arbitrariamente la conexión, servidor, columnas, modelos, templates ni JavaScript. No hay reparación al mostrar o consultar registros. La ausencia de un defecto activo encontrado en fuentes no equivale a certificar una escritura nativa que no pudo completarse: ver la limitación de MariaDB más abajo.
+
+## Prevención en el punto de entrada de SQL
+
+Para exportar, usar el ejecutable `mysqldump` con `--default-character-set=utf8mb4` y `--result-file`, que escribe directamente el archivo; evitar convertir su salida mediante `Out-File`, `Set-Content` o una tubería de texto. Para importar en una base aislada, se comprobó el uso de stdin binario del proceso `mysql` con charset explícito. No cambiar nombres de bases mediante recodificación del contenido SQL: preparar una exportación sin directivas `USE/CREATE DATABASE` y seleccionar explícitamente el destino aislado.
+
+Si se necesita copiar un SQL limpio, hay una herramienta que valida UTF-8 estrictamente y conserva **los mismos bytes**:
+
+```powershell
+python scripts/copiar_sql_utf8.py C:\ruta\origen.sql C:\ruta\copia.sql
+```
+
+No importa SQL, no renombra esquemas, no sobrescribe archivos y rechaza indicios de mojibake en vez de convertirlos silenciosamente. Es una comprobación preventiva, no una prueba semántica universal. No se aplica a ciegas sobre respaldos de datos históricos dañados: esos originales deben conservarse tal cual para la recuperación. Los textos Unicode válidos, incluidos caracteres de cuatro bytes, no se normalizan ni se corrigen al escribir formularios.
+
+## Inventario y recuperación histórica: pendiente de autorización
+
+Se confirmaron **2.171 filas distintas**, **2.713 celdas de texto** y **18 grupos de valores**: 1 comuna, 1 empresa, 7 categorías, 2 artefactos y 2.160 consumos. Una fila puede tener más de una celda dañada. En este inventario las 18 propuestas admiten una inversión única, estricta y reversible de un paso compatible con Latin-1/Windows-1252; para esos caracteres ambos codecs producen el mismo resultado. Los casos parciales, dobles, OEM, con reemplazos irreversibles o colisiones se excluyen en lugar de adivinar.
+
+Antes de preparar la actualización se generó un respaldo nuevo fuera de Git: 304.103 bytes, 21 tablas, salida de `mysqldump` 0 y stderr vacío. Su SHA-256 es `ef337e84a6912ff3e0db50d9c5e855c536de8557facb7c5e4409c03871af9ff5`. Se restauró por stdin binario en una base lógica nueva `voltify_utf8_verificacion_20261108_093704`, en la misma instancia MariaDB. Los conteos y huellas de **todos los valores de las 21 tablas** coincidieron con el origen; se volvió a comprobar que las huellas de `voltify_e3` no habían cambiado. Esto demuestra una restauración realizada, no solo la presencia del archivo. La separación era de datos, no un servidor físicamente independiente.
+
+El inventario privado `plan_utf8.json` conserva tabla, columna, IDs individuales, cantidad, original/propuesto, HEX, confianza y riesgo. `propuesta_utf8.md` agrupa valores idénticos para revisión. Ambos permanecen fuera del repositorio. El SHA-256 del plan preparado es `75ff7ebc9b06e201a8932d9d27fac87c9c980a734891434fdc50f44be5af56f0`.
+
+Para preparar un inventario sin conectar con MariaDB, usando el formato `mysqldump` comprobado:
+
+```powershell
+python manage.py auditar_codificacion --sql C:\ruta\respaldo.sql --salida C:\ruta\privada
+```
+
+El lector no ejecuta sentencias SQL, procesa únicamente tablas permitidas y rechaza formatos/escapes no soportados. Sin `--sql`, el comando consulta la base activa en modo de lectura. Nunca actualiza datos y se niega a escribir inventarios privados dentro del repositorio. No repetirlo contra una instancia detenida o inestable.
+
+Una vez restablecida y validada la estabilidad del servidor, el comando siguiente solo **simula** y verifica que los valores actuales todavía coincidan con el inventario:
+
+```powershell
+python manage.py aplicar_plan_utf8 --plan C:\ruta\privada\plan_utf8.json --sha256 HASH_DEL_PLAN_REVISADO
+```
+
+`--ejecutar` permite la actualización únicamente después de la autorización expresa del responsable. El prompt de auditoría no otorgó esa autorización: **cero filas históricas fueron corregidas**. No se programa ni se invoca el comando desde despliegues, migraciones, vistas o señales.
+
+El aplicador exige el hash del plan, la base prevista, campos textuales de una lista cerrada e IDs exactos. Comprueba los valores originales con comparación Python exacta, bloquea filas en la ejecución y valida todas las precondiciones antes del primer UPDATE. Una diferencia o error revierte la transacción. No modifica IDs, propietarios, relaciones, fechas, kWh, potencias, tarifas, estados, retención, alertas, cuentas ni permisos. Un segundo intento sobre datos ya corregidos se rechaza; no hay doble transformación automática.
+
+`--revertir` invierte el mismo plan, también con simulación predeterminada: solo admite valores que todavía coincidan exactamente con los corregidos. La reversión requiere una decisión explícita, igual que la actualización. Simulación, aplicación, protección de campos y reversión se probaron con datos aislados SQLite; el ensayo de escritura nativa quedó pendiente por la caída descrita a continuación.
+
+## Límite encontrado en la prueba nativa de Unicode
+
+Después de verificar la restauración, se intentó la suite nativa en `voltify_utf8_pruebas_20261108_093704`, una base temporal distinta de la copia restaurada y de producción. Falló **antes de ejecutar los casos**, durante la introspección de restricciones de una migración existente: error 2013, `Lost connection to server during query`. Windows registró un error fatal InnoDB de lectura de página (space 135, página 0) y el proceso MariaDB dejó de estar activo. No se reintentó, reinició, reparó ni limpió la base parcial.
+
+No se emitieron escrituras de prueba hacia `voltify_e3` ni se intervino `voltify`. La prueba nativa de nuevas escrituras y la comprobación de navegador no se declaran aprobadas. También quedan pendientes los reinicios controlados y la validación posterior a una corrección histórica autorizada. El respaldo y su restauración fueron verificados **antes** de este fallo; no se puede certificar el estado posterior completo de la instancia mientras está detenida.
+
+`settings_unicode` exige explícitamente `VOLTIFY_UTF8_DB` con prefijo aislado y fija un nombre de pruebas diferente para impedir usar la base principal. No volver a ejecutar esa suite en esta instancia hasta resolver su estabilidad con autorización independiente; compartir instancia también comparte sus fallos del motor. El código de la aplicación y su configuración normal permanecen intactos.
 
 ## Sesiones, cookies y propiedad de datos
 
@@ -163,9 +221,9 @@ python manage.py makemigrations --check --dry-run
 
 Usar siempre `settings_test` para las pruebas automatizadas de esta entrega. Usa SQLite en memoria y un archivo temporal distinto para los contadores; nunca accede a MariaDB ni usa los registros reales. Solo en esa configuración, las tablas de dominio se construyen desde modelos porque la migración histórica 0012 incluye SQL exclusivo de MariaDB. Por tanto, estas pruebas no certifican la instalación de migraciones desde cero ni el comportamiento específico de MariaDB.
 
-Las 65 pruebas pasaron. La suite cubre bloqueo, expiración, éxito, concurrencia, persistencia de contadores incluso en otro proceso, fallos del almacén, autenticación real, Admin, CSRF, sesiones, CRUD, retención y frontera exacta de 90 días, depuración aislada, conservación del historial, propiedad de objetos, cookies, recuperación, roles, panel exclusivo de superusuarios, codificación y carga de `.env`. El hash rápido MD5 se usa únicamente para acelerar las pruebas; la configuración normal conserva los hashers seguros de Django.
+Las 77 pruebas aisladas SQLite pasaron: las 65 anteriores y 12 regresiones nuevas. Estas verifican formulario HTTP UTF-8, creación/edición, catálogos en Admin, búsquedas, ORM y HEX almacenado, JSON del dashboard, snapshots tras DELETE físico, nueva conexión, copia binaria de SQL, diagnóstico y reversión del plan. Incluyen acentos, ñ, emoji, caracteres CJK y Unicode combinado. La suite anterior cubre bloqueo, persistencia entre procesos, permisos, sesiones, cookies y los 90 días de retención. El hash rápido MD5 se usa únicamente para acelerar las pruebas; la configuración normal conserva los hashers seguros de Django. La suite nativa MariaDB no pasó: falló en preparación, antes de ejecutar casos, como se detalla arriba.
 
-Se comprobó la conexión con `voltify_e3`, sus restricciones de artefactos/consumos y los permisos de los tres grupos existentes. Se aplicaron únicamente las migraciones aditivas descritas, se conservaron los conteos de registros existentes y se ejecutó una simulación de depuración sin eliminaciones. `makemigrations --check --dry-run` no detectó cambios pendientes de generar. Los requisitos instalados coinciden con `requirements.txt`. No se realizó una instalación limpia completa, restauración aislada ni validación visual nueva en un navegador durante esta fase. El diff conserva los CSS y JavaScript; la modificación del sidebar se limita al envío seguro del logout.
+En la fase ES3 previa se comprobaron conexión, restricciones y permisos; se aplicaron las migraciones aditivas descritas, se conservaron los conteos y solo se simuló la depuración. En esa fase `makemigrations --check --dry-run` no detectó cambios pendientes de generar. La auditoría Unicode posterior no cambió modelos ni creó migraciones: añadió diagnósticos, copia binaria validada y regresiones. Sí verificó un respaldo mediante restauración aislada, pero no completó una instalación limpia ni la nueva prueba de navegador por el fallo nativo descrito. `pip check` sigue sin errores. Los CSS, JavaScript y templates de la aplicación no cambiaron en la auditoría Unicode.
 
 ## Correspondencia técnica con los 15 criterios aportados
 
@@ -207,4 +265,4 @@ Se utilizó Codex como apoyo para revisar el código, implementar límites, pane
 
 Para la defensa: MVT separa modelos (`models.py`), vistas Python (`views.py`) y templates existentes. El ORM aplica filtros y relaciones y genera SQL hacia MariaDB. Las señales del ORM registran retención en la misma transacción que el DELETE; un SQL directo no ejecuta ese comportamiento. SQLite se usa por separado para contadores de seguridad y pruebas, no como sustituto de la persistencia principal. El comando de depuración es independiente de la navegación y solo será automático cuando se autorice y configure su programación.
 
-Se conservaron los CSS, JavaScript y la estructura del dashboard y donut 3D. Solo se añadieron vistas nativas de Admin y el formulario POST del control existente de logout. La fase preventiva de respaldo terminó antes de estos cambios. No se incluyen SQL ni datos personales en el repositorio; el respaldo preventivo no tiene restaurabilidad certificada hasta probarlo en un entorno aislado autorizado.
+Se conservaron los CSS, JavaScript y la estructura del dashboard y donut 3D. En la fase previa se añadieron vistas nativas de Admin y el formulario POST del control existente de logout; la auditoría Unicode no modificó esos archivos ni añadió filtros de reparación visual. No se incluyen SQL, inventarios ni datos personales en el repositorio. El nuevo respaldo del 8 de noviembre sí se restauró y comparó en una base aislada; no se extrapola ese resultado a los respaldos anteriores ni a futuras reparaciones de la instancia.
