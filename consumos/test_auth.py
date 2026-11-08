@@ -30,7 +30,7 @@ class AutenticacionTests(TestCase):
         self.assertEqual(self.login().status_code, 302)
         self.assertEqual(self.client.session['usuario_id'], self.perfil.pk)
         self.assertEqual(int(self.client.session['_auth_user_id']), self.user.pk)
-        self.client.get('/cerrar-sesion/')
+        self.client.post('/cerrar-sesion/')
         self.assertNotIn('_auth_user_id', self.client.session)
         self.assertNotIn('usuario_id', self.client.session)
 
@@ -82,3 +82,18 @@ class AutenticacionTests(TestCase):
         self.user.save()
         self.login()
         self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_logout_requiere_post_y_csrf(self):
+        self.login()
+        self.assertEqual(self.client.get('/cerrar-sesion/').status_code, 405)
+        self.assertIn('_auth_user_id', self.client.session)
+        cliente = Client(enforce_csrf_checks=True)
+        cliente.force_login(self.user)
+        self.assertEqual(cliente.post('/cerrar-sesion/').status_code, 403)
+        self.assertIn('_auth_user_id', cliente.session)
+        cliente.get('/iniciar-sesion/')
+        # El formulario público contiene el token incluso si redirige a usuarios autenticados.
+        cliente.get('/admin/login/')
+        token = cliente.cookies['csrftoken'].value
+        self.assertEqual(cliente.post('/cerrar-sesion/', HTTP_X_CSRFTOKEN=token).status_code, 302)
+        self.assertNotIn('_auth_user_id', cliente.session)

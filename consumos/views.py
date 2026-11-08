@@ -682,6 +682,7 @@ def iniciar_sesion(request):
 @login_required(
     login_url='/iniciar-sesion/'
 )
+@require_POST
 def cerrar_sesion(request):
     # logout() elimina la autenticación y limpia la sesión completa
     auth_logout(request)

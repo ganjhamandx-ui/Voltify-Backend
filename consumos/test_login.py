@@ -100,3 +100,31 @@ class LimiteLoginTests(SimpleTestCase):
         with override_settings(LOGIN_SECURITY_DB=Path(self.directorio.name)):
             self.assertEqual(self.intento().status_code, 503)
         self.assertEqual(self.llamadas, 0)
+
+    def test_cuentas_independientes_en_misma_ip(self):
+        for _ in range(3):
+            self.intento('bloqueada@example.com')
+        self.assertEqual(self.intento('otra@example.com').status_code, 200)
+
+    def test_almacen_persiste_al_reiniciar_proceso(self):
+        import os
+        import subprocess
+        import sys
+        for _ in range(3):
+            self.intento()
+        codigo = (
+            'import django; django.setup(); '
+            'from django.conf import settings; '
+            'settings.LOGIN_SECURITY_DB=__import__("os").environ["VOLTIFY_TEST_SECURITY_DB"]; '
+            'from django.test import RequestFactory; '
+            'from django.http import HttpResponse; '
+            'from consumos.middleware_login import LoginRateLimitMiddleware; '
+            'r=LoginRateLimitMiddleware(lambda request: HttpResponse("NO",status=418))('
+            'RequestFactory().post("/iniciar-sesion/", {"correo":"persona@example.com"})); '
+            'print(r.status_code)'
+        )
+        entorno = dict(os.environ, DJANGO_SETTINGS_MODULE='voltify_backend.settings_test',
+                       VOLTIFY_TEST_SECURITY_DB=str(Path(self.directorio.name) / 'seguridad.sqlite3'))
+        proceso = subprocess.run([sys.executable, '-c', codigo], env=entorno,
+                                 capture_output=True, text=True, check=True, timeout=20)
+        self.assertEqual(proceso.stdout.strip(), '429')

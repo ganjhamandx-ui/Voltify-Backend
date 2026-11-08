@@ -12,7 +12,9 @@ class Command(BaseCommand):
         observador, _ = Group.objects.get_or_create(name='Observador Voltify')
         gestor, _ = Group.objects.get_or_create(name='Gestor Voltify')
         permisos = Permission.objects.filter(content_type__app_label='consumos')
-        observador.permissions.set(permisos.filter(codename__startswith='view_'))
+        observador.permissions.set(permisos.filter(codename__startswith='view_').exclude(
+            content_type__model__in=['recuperacioncontrasena', 'retencionartefacto']
+        ))
         modelos_gestion = ['comuna', 'empresaelectrica', 'categoriaartefacto', 'artefacto',
                            'tarifa', 'consumo', 'metamensual', 'alerta']
         gestor.permissions.set(permisos.filter(content_type__model__in=modelos_gestion))
