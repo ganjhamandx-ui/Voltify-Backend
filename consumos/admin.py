@@ -306,6 +306,7 @@ class AlertaAdmin(admin.ModelAdmin):
 admin.site.site_header = 'Voltify - Administración'
 admin.site.site_title = 'Voltify Admin'
 admin.site.index_title = 'Administración del sistema Voltify'
+admin.site.index_template = 'admin/voltify_index.html'
 
 
 class CuentaDjangoAdmin(UserAdmin):

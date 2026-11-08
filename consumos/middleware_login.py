@@ -90,6 +90,10 @@ class LoginRateLimitMiddleware:
                              '(clave TEXT PRIMARY KEY, fallos INTEGER, inicio REAL, bloqueo REAL)')
             # Impide superar el límite mediante solicitudes concurrentes.
             conexion.execute('BEGIN IMMEDIATE')
+            columnas = {fila[1] for fila in conexion.execute('PRAGMA table_info(intentos)')}
+            for nombre, tipo in [('ultimo_fallo', 'REAL'), ('bloqueo_inicio', 'REAL'), ('duracion', 'INTEGER')]:
+                if nombre not in columnas:
+                    conexion.execute(f'ALTER TABLE intentos ADD COLUMN {nombre} {tipo}')
             ahora = time.time()
             estados = {}
             for clave, limite, ventana, duracion in reglas:
@@ -113,9 +117,14 @@ class LoginRateLimitMiddleware:
                 bloqueo_restante = 0
                 for clave, limite, ventana, duracion in reglas:
                     fallos, inicio, _ = estados[clave]
-                    bloqueo = time.time() + duracion if fallos + 1 >= limite else 0
-                    conexion.execute('INSERT OR REPLACE INTO intentos VALUES (?, ?, ?, ?)',
-                                     (clave, fallos + 1, inicio, bloqueo))
+                    ultimo = time.time()
+                    comienzo = ultimo if fallos + 1 >= limite else None
+                    bloqueo = ultimo + duracion if comienzo is not None else 0
+                    conexion.execute('INSERT OR REPLACE INTO intentos '
+                                     '(clave, fallos, inicio, bloqueo, ultimo_fallo, bloqueo_inicio, duracion) '
+                                     'VALUES (?, ?, ?, ?, ?, ?, ?)',
+                                     (clave, fallos + 1, inicio, bloqueo, ultimo, comienzo,
+                                      duracion if comienzo is not None else None))
                     if bloqueo:
                         bloqueo_restante = max(bloqueo_restante, duracion)
                 if bloqueo_restante:

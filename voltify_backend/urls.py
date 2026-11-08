@@ -2,10 +2,12 @@ from django.contrib import admin
 from django.urls import path
 
 from consumos import views
+from consumos.seguridad_admin import seguridad_acceso
 
 
 # Define las rutas principales del proyecto Voltify
 urlpatterns = [
+    path('admin/seguridad-acceso/', admin.site.admin_view(seguridad_acceso), name='seguridad_acceso'),
     # Acceso al administrador de Django
     path(
         'admin/',

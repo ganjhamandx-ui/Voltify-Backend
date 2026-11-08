@@ -1,0 +1,12 @@
+{% extends "admin/index.html" %}
+{% block content %}
+{% if user.is_superuser %}
+<div class="module">
+  <table>
+    <caption>Seguridad de acceso</caption>
+    <tr><th scope="row"><a href="{% url 'seguridad_acceso' %}">Consultar intentos y bloqueos temporales</a></th></tr>
+  </table>
+</div>
+{% endif %}
+{{ block.super }}
+{% endblock %}
