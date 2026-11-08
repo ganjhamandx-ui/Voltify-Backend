@@ -1,3 +1,5 @@
+from datetime import timedelta, timezone as datetime_timezone
+
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
@@ -592,3 +594,24 @@ class Alerta(models.Model):
         db_table = 'alerta'
         verbose_name = 'alerta'
         verbose_name_plural = 'alertas'
+
+
+class RetencionArtefacto(models.Model):
+    """Control mínimo de un DELETE real; no conserva una copia del artefacto."""
+    id = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    artefacto_id_historico = models.PositiveIntegerField()
+    fecha_eliminacion = models.DateTimeField(default=timezone.now, db_index=True)
+
+    @property
+    def vencimiento(self):
+        # 90 días de 24 horas, incluso al cruzar cambios de hora de Santiago.
+        return self.fecha_eliminacion.astimezone(datetime_timezone.utc) + timedelta(days=90)
+
+    class Meta:
+        db_table = 'retencion_artefacto'
+        verbose_name = 'control de retención'
+        verbose_name_plural = 'controles de retención'
+        constraints = [models.UniqueConstraint(
+            fields=['usuario', 'artefacto_id_historico'], name='retencion_usuario_artefacto'
+        )]
