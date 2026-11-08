@@ -25,6 +25,8 @@ class Comuna(models.Model):
 
     class Meta:
         db_table = 'comuna'
+        verbose_name = 'comuna'
+        verbose_name_plural = 'comunas'
 
 
 # Representa las empresas eléctricas disponibles en el sistema
@@ -45,6 +47,8 @@ class EmpresaElectrica(models.Model):
 
     class Meta:
         db_table = 'empresa_electrica'
+        verbose_name = 'empresa eléctrica'
+        verbose_name_plural = 'empresas eléctricas'
 
 
 # Guarda los datos principales de cada usuario de Voltify
@@ -134,6 +138,8 @@ class Usuario(models.Model):
 
     class Meta:
         db_table = 'usuario'
+        verbose_name = 'perfil Voltify'
+        verbose_name_plural = 'perfiles Voltify'
 
 
 # Guarda las solicitudes utilizadas para recuperar una contraseña
@@ -180,6 +186,8 @@ class RecuperacionContrasena(models.Model):
 
     class Meta:
         db_table = 'recuperacion_contrasena'
+        verbose_name = 'solicitud de recuperación de contraseña'
+        verbose_name_plural = 'solicitudes de recuperación de contraseña'
 
 
 # Agrupa los artefactos según su tipo o categoría
@@ -208,6 +216,8 @@ class CategoriaArtefacto(models.Model):
 
     class Meta:
         db_table = 'categoria_artefacto'
+        verbose_name = 'categoría de artefacto'
+        verbose_name_plural = 'categorías de artefactos'
 
 
 # Representa cada artefacto eléctrico registrado por un usuario
@@ -291,6 +301,8 @@ class Artefacto(models.Model):
 
     class Meta:
         db_table = 'artefacto'
+        verbose_name = 'artefacto'
+        verbose_name_plural = 'artefactos'
 
 
 # Guarda las tarifas eléctricas según empresa, comuna y período
@@ -345,6 +357,8 @@ class Tarifa(models.Model):
 
     class Meta:
         db_table = 'tarifa'
+        verbose_name = 'tarifa'
+        verbose_name_plural = 'tarifas'
 
 
 # Guarda cada medición de consumo asociada a un artefacto
@@ -457,6 +471,8 @@ class Consumo(models.Model):
 
     class Meta:
         db_table = 'consumo'
+        verbose_name = 'consumo'
+        verbose_name_plural = 'consumos'
 
 
 # Guarda las metas mensuales de consumo y costo de cada usuario
@@ -518,6 +534,8 @@ class MetaMensual(models.Model):
 
     class Meta:
         db_table = 'meta_mensual'
+        verbose_name = 'meta mensual'
+        verbose_name_plural = 'metas mensuales'
 
         # Impide que un usuario tenga dos metas para el mismo mes y año
         constraints = [
@@ -572,3 +590,5 @@ class Alerta(models.Model):
 
     class Meta:
         db_table = 'alerta'
+        verbose_name = 'alerta'
+        verbose_name_plural = 'alertas'
