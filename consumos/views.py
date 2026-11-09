@@ -24,6 +24,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from .forms import (
+    MENSAJE_CREDENCIALES_INVALIDAS,
     ArtefactoForm,
     RegistroUsuarioForm,
     LoginUsuarioForm,
@@ -599,7 +600,7 @@ def iniciar_sesion(request):
                 make_password(contrasena)
                 form.add_error(
                     None,
-                    'Correo o contraseña incorrectos.'
+                    MENSAJE_CREDENCIALES_INVALIDAS
                 )
 
             else:
@@ -614,7 +615,7 @@ def iniciar_sesion(request):
                 )
 
                 if usuario_django is None and not check_password(contrasena, usuario.contrasena_hash):
-                    form.add_error(None, 'Correo o contraseña incorrectos.')
+                    form.add_error(None, MENSAJE_CREDENCIALES_INVALIDAS)
                     return render(request, 'iniciar_sesion.html', {'form': form})
 
                 if usuario_django is None:
@@ -660,7 +661,7 @@ def iniciar_sesion(request):
 
                 form.add_error(
                     None,
-                    'Correo o contraseña incorrectos.'
+                    MENSAJE_CREDENCIALES_INVALIDAS
                 )
 
     else:

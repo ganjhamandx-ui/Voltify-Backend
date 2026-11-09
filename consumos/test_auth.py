@@ -4,8 +4,10 @@ from tempfile import TemporaryDirectory
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
 from django.test import Client, TestCase, override_settings
 
+from .forms import LoginAdminForm, LoginUsuarioForm, MENSAJE_CREDENCIALES_INVALIDAS
 from .models import Comuna, Usuario
 
 
@@ -97,3 +99,53 @@ class AutenticacionTests(TestCase):
         token = cliente.cookies['csrftoken'].value
         self.assertEqual(cliente.post('/cerrar-sesion/', HTTP_X_CSRFTOKEN=token).status_code, 302)
         self.assertNotIn('_auth_user_id', cliente.session)
+
+    def test_web_mismo_mensaje_para_distintos_fallos(self):
+        inactivo = Usuario.objects.create(nombre='Inactivo', correo='inactivo@example.com',
+            comuna=self.perfil.comuna, contrasena_hash=make_password(self.clave), fecha_registro=date.today())
+        get_user_model().objects.create_user(username=inactivo.correo, password=self.clave, is_active=False)
+        sin_perfil = get_user_model().objects.create_user(username='sinperfil@example.com', password=self.clave)
+        # Perfil legado sin cuenta nativa: la contraseña errónea tampoco crea una cuenta.
+        legado = Usuario.objects.create(nombre='Legado', correo='legado@example.com',
+            comuna=self.perfil.comuna, contrasena_hash=make_password(self.clave), fecha_registro=date.today())
+        for correo, clave in [(self.correo, 'incorrecta'), ('desconocido@example.com', 'incorrecta'),
+                              (inactivo.correo, self.clave), (sin_perfil.username, self.clave),
+                              (legado.correo, 'incorrecta')]:
+            with self.subTest(correo=correo):
+                cliente = Client()
+                respuesta = cliente.post('/iniciar-sesion/', {'correo': correo, 'contrasena': clave})
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertEqual(list(respuesta.context['form'].non_field_errors()), [MENSAJE_CREDENCIALES_INVALIDAS])
+                self.assertNotIn('_auth_user_id', cliente.session)
+        self.assertFalse(get_user_model().objects.filter(username=legado.correo).exists())
+
+    def test_admin_mismo_mensaje_y_limite_para_distintos_rechazos(self):
+        User = get_user_model()
+        staff = User.objects.create_user(username='staff@example.com', password=self.clave, is_staff=True)
+        inactivo = User.objects.create_user(username='inactivo@example.com', password=self.clave, is_staff=True, is_active=False)
+        for nombre, clave in [('desconocido@example.com', 'incorrecta'), (staff.username, 'incorrecta'),
+                              (inactivo.username, self.clave), (self.correo, self.clave)]:
+            with self.subTest(nombre=nombre):
+                cliente = Client()
+                for _ in range(2):
+                    respuesta = cliente.post('/admin/login/', {'username': nombre, 'password': clave})
+                    self.assertEqual(respuesta.status_code, 200)
+                    self.assertEqual(list(respuesta.context['form'].non_field_errors()), [MENSAJE_CREDENCIALES_INVALIDAS])
+                    self.assertNotIn('_auth_user_id', cliente.session)
+                self.assertEqual(cliente.post('/admin/login/', {'username': nombre, 'password': clave}).status_code, 429)
+                self.assertNotIn('_auth_user_id', cliente.session)
+        self.assertEqual(self.login().status_code, 429)
+
+    def test_admin_formulario_conserva_restriccion_inactivo_y_staff(self):
+        formulario = LoginAdminForm()
+        for activo, staff in [(False, True), (True, False)]:
+            usuario = get_user_model()(username='prueba', is_active=activo, is_staff=staff)
+            with self.assertRaises(ValidationError) as error:
+                formulario.confirm_login_allowed(usuario)
+            self.assertEqual(error.exception.messages, [MENSAJE_CREDENCIALES_INVALIDAS])
+
+    def test_login_conserva_validacion_de_formato_y_campos_requeridos(self):
+        formulario = LoginUsuarioForm({'correo': 'sin-formato-correo', 'contrasena': ''})
+        self.assertFalse(formulario.is_valid())
+        self.assertIn('correo', formulario.errors)
+        self.assertIn('contrasena', formulario.errors)

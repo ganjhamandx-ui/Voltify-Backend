@@ -1,10 +1,34 @@
 from django import forms
+from django.contrib.admin.forms import AdminAuthenticationForm
+from django.core.exceptions import ValidationError
 
 from .models import (
     Artefacto,
     MetaMensual,
     Usuario,
 )
+
+
+MENSAJE_CREDENCIALES_INVALIDAS = 'Correo o contraseña incorrectos.'
+
+
+class LoginAdminForm(AdminAuthenticationForm):
+    """Conserva la política nativa sin diferenciar cuentas en los errores."""
+    error_messages = {
+        **AdminAuthenticationForm.error_messages,
+        'invalid_login': MENSAJE_CREDENCIALES_INVALIDAS,
+        'inactive': MENSAJE_CREDENCIALES_INVALIDAS,
+    }
+
+    def confirm_login_allowed(self, user):
+        try:
+            super().confirm_login_allowed(user)
+        except ValidationError:
+            # authenticate() puede aceptar la clave de alguien que no es staff.
+            # El rechazo de Admin también debe contar como intento fallido.
+            if self.request is not None:
+                self.request._voltify_login_result = False
+            raise
 
 
 # Formulario para registrar nuevos usuarios
