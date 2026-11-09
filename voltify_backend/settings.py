@@ -5,6 +5,7 @@ Proyecto Voltify ejecutado con Django 4.1.3.
 """
 
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 
 
 # Define la carpeta principal del proyecto
@@ -27,13 +28,25 @@ def cargar_env(ruta):
         permitidas = {
             'DJANGO_SECRET_KEY', 'DJANGO_DEBUG', 'DJANGO_ALLOWED_HOSTS',
             'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT',
-            'DJANGO_COOKIE_SECURE', 'LOGIN_SECURITY_DB',
+            'DJANGO_COOKIE_SECURE', 'LOGIN_SECURITY_DB', 'LOGIN_LOCKOUT_SECONDS',
         }
         if separador and clave.strip() in permitidas:
             valor = valor.strip()
             if len(valor) >= 2 and valor[0] == valor[-1] and valor[0] in "\"'":
                 valor = valor[1:-1]
             os.environ.setdefault(clave.strip(), valor)
+
+
+def leer_duracion_bloqueo_login():
+    """Configuración local acotada; los bloqueos vigentes conservan su fecha."""
+    mensaje = 'LOGIN_LOCKOUT_SECONDS debe ser un entero entre 1 y 86400 segundos.'
+    try:
+        segundos = int(os.environ.get('LOGIN_LOCKOUT_SECONDS', '1800'))
+    except (TypeError, ValueError):
+        raise ImproperlyConfigured(mensaje) from None
+    if not 1 <= segundos <= 86400:
+        raise ImproperlyConfigured(mensaje)
+    return segundos
 
 cargar_env(BASE_DIR / ".env")
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
@@ -131,7 +144,7 @@ DATABASES = {
 # Contadores compartidos entre procesos locales; no son datos de dominio.
 LOGIN_SECURITY_DB = Path(os.environ.get('LOGIN_SECURITY_DB', BASE_DIR / '.runtime' / 'login_security.sqlite3'))
 LOGIN_MAX_ATTEMPTS = 3
-LOGIN_LOCKOUT_SECONDS = 30 * 60
+LOGIN_LOCKOUT_SECONDS = leer_duracion_bloqueo_login()
 LOGIN_ATTEMPT_WINDOW = 24 * 60 * 60
 LOGIN_IP_MAX_ATTEMPTS = 30
 LOGIN_IP_WINDOW = 10 * 60

@@ -57,14 +57,22 @@ Las migraciones 0013 (etiquetas) y 0014 (tabla técnica de retención) se aplica
 ## Autenticación, bloqueo y recuperación
 
 - Login web: `/iniciar-sesion/`. Django comprueba hashes, estado activo y crea una sesión nativa; se verifica que el perfil corresponda al usuario autenticado.
-- Tres fallos por cuenta dentro de una ventana de 24 horas activan 30 minutos de bloqueo. El tercer fallo responde HTTP 429. Una clave correcta no evita un bloqueo vigente; las recargas no lo prolongan. Tras expirar el bloqueo empieza un contador nuevo; un login exitoso previo al bloqueo borra los fallos de la cuenta.
+- Tres fallos por cuenta dentro de una ventana de 24 horas activan 30 minutos de bloqueo por defecto. El tercer fallo responde HTTP 429. Una clave correcta no evita un bloqueo vigente; las recargas no lo prolongan. Tras expirar el bloqueo empieza un contador nuevo; un login exitoso previo al bloqueo borra los fallos de la cuenta.
 - Protección compartida por cuenta entre login web y `/admin/login/`. IP: 30 fallos en 10 minutos, con bloqueo de 5 minutos, separado del límite de cuenta. Se usa `REMOTE_ADDR`, sin confiar en cabeceras de IP del cliente. Ajustar la arquitectura antes de desplegar detrás de un proxy.
 - Los límites están en `settings.py`: `LOGIN_MAX_ATTEMPTS`, `LOGIN_LOCKOUT_SECONDS`, `LOGIN_ATTEMPT_WINDOW`, `LOGIN_IP_MAX_ATTEMPTS`, `LOGIN_IP_WINDOW` y `LOGIN_IP_LOCKOUT_SECONDS`.
 - Los contadores se guardan en `.runtime/login_security.sqlite3`, excluido de Git. No contiene contraseñas: las claves de cuenta e IP se almacenan como SHA-256. Las transacciones serializan solicitudes entre procesos locales y persisten tras reiniciar Django. El usuario del proceso necesita permiso de escritura en `.runtime/`; si el almacén falla, se rechaza temporalmente el acceso con 503. Esta solución es para una instancia local con disco compartido, no para servidores distribuidos.
-- El resultado del login procede de señales de autenticación y de una marca explícita para cuentas desconocidas; no se decide por el código HTTP.
+- El resultado del login procede de señales de autenticación y de una marca explícita para rechazos sin señal nativa; no se decide por el código HTTP. Web y Admin utilizan «Correo o contraseña incorrectos.» ante credenciales rechazadas, incluidas cuentas inexistentes, inactivas o sin autorización para Admin.
 - Recuperación: cinco solicitudes válidas por correo o cinco verificaciones de código dentro de diez minutos activan un bloqueo de treinta minutos. También se aplica límite por IP. Una solicitud real y una desconocida muestran el mismo recorrido, sin confirmar si existe la cuenta. El código vence en diez minutos, se almacena como hash y solo sirve una vez. El quinto intento puede completar su procesamiento antes de devolver el bloqueo.
 - Las claves se validan con los validadores de Django y se sincronizan entre el perfil y la cuenta nativa, incluso al cambiarlas desde Admin. No editar hashes manualmente.
 - Logout invalida la sesión completa; las sesiones se almacenan en la base, duran como máximo una hora y expiran al cerrar el navegador según su política de sesiones. Cookies de sesión y CSRF: HttpOnly y SameSite=Lax.
+
+### Bloqueo breve para demostración local
+
+La variable `LOGIN_LOCKOUT_SECONDS` admite enteros entre 1 y 86400 segundos. Sin ella, el plazo es **1800 segundos**; `.env.example` conserva ese valor. Para demostrar el vencimiento, establecer `LOGIN_LOCKOUT_SECONDS=30` en el `.env` local, excluido de Git, y reiniciar únicamente el proceso Django. Una variable definida en el entorno del proceso tiene prioridad sobre `.env`. Los límites por IP y los de recuperación no cambian.
+
+El nuevo plazo se aplica al crear bloqueos nuevos. Los ya registrados conservan su vencimiento y el panel Seguridad de acceso muestra su duración almacenada. Utilizar una cuenta ficticia sin bloqueo pendiente; no borrar ni reiniciar contadores existentes. Al tercer fallo comienza el bloqueo; las credenciales correctas se rechazan durante su vigencia y vuelven a admitirse al vencer. Un acceso correcto reinicia los fallos de esa cuenta.
+
+Para volver a la política normal, cambiar la línea local a `LOGIN_LOCKOUT_SECONDS=1800` y reiniciar Django. Si el proceso define esa variable, ajustar también su valor a `1800` o retirarla para permitir que se lea `.env`. No es necesario reiniciar MariaDB. La suite aislada mantiene el plazo normal en `settings_test.py` y comprueba por separado ambos plazos, los mensajes genéricos, el vencimiento y la conservación de bloqueos previos.
 
 ## Roles, permisos y Django Admin
 

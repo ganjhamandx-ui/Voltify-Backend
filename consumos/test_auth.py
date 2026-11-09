@@ -149,3 +149,18 @@ class AutenticacionTests(TestCase):
         self.assertFalse(formulario.is_valid())
         self.assertIn('correo', formulario.errors)
         self.assertIn('contrasena', formulario.errors)
+
+    @override_settings(LOGIN_LOCKOUT_SECONDS=30)
+    def test_demo_login_real_expira_y_no_hereda_fallos(self):
+        from unittest.mock import patch
+        with patch('consumos.middleware_login.time.time', return_value=1000):
+            for esperado in (200, 200, 429):
+                self.assertEqual(self.login('incorrecta').status_code, esperado)
+        with patch('consumos.middleware_login.time.time', return_value=1029):
+            self.assertEqual(self.login().status_code, 429)
+            self.assertNotIn('_auth_user_id', self.client.session)
+        with patch('consumos.middleware_login.time.time', return_value=1030):
+            self.assertEqual(self.login().status_code, 302)
+            self.assertIn('_auth_user_id', self.client.session)
+            self.client.post('/cerrar-sesion/')
+            self.assertEqual(self.login('incorrecta').status_code, 200)
