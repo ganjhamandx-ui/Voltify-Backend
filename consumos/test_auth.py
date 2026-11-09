@@ -1,13 +1,18 @@
+from contextlib import closing
 from datetime import date
 from pathlib import Path
+import sqlite3
 from tempfile import TemporaryDirectory
+import time
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase, override_settings, tag
 
 from .forms import LoginAdminForm, LoginUsuarioForm, MENSAJE_CREDENCIALES_INVALIDAS
+from .middleware_login import LoginRateLimitMiddleware
 from .models import Comuna, Usuario
 
 
@@ -150,8 +155,7 @@ class AutenticacionTests(TestCase):
         self.assertIn('correo', formulario.errors)
         self.assertIn('contrasena', formulario.errors)
 
-    @override_settings(LOGIN_LOCKOUT_SECONDS=30)
-    def test_demo_login_real_expira_y_no_hereda_fallos(self):
+    def test_login_expira_a_los_30_segundos_y_no_hereda_fallos(self):
         from unittest.mock import patch
         with patch('consumos.middleware_login.time.time', return_value=1000):
             for esperado in (200, 200, 429):
@@ -164,3 +168,52 @@ class AutenticacionTests(TestCase):
             self.assertIn('_auth_user_id', self.client.session)
             self.client.post('/cerrar-sesion/')
             self.assertEqual(self.login('incorrecta').status_code, 200)
+
+    def test_admin_expira_a_los_30_segundos_y_comparte_bloqueo_web(self):
+        from unittest.mock import patch
+        self.user.is_staff = True
+        self.user.save()
+        datos = {'username': self.correo, 'password': self.clave}
+        with patch('consumos.middleware_login.time.time', return_value=1000):
+            for esperado in (200, 200, 429):
+                respuesta = self.client.post('/admin/login/', {**datos, 'password': 'incorrecta'})
+                self.assertEqual(respuesta.status_code, esperado)
+            self.assertEqual(respuesta['Retry-After'], '30')
+        with patch('consumos.middleware_login.time.time', return_value=1029):
+            self.assertEqual(self.client.post('/admin/login/', datos).status_code, 429)
+            self.assertEqual(self.login().status_code, 429)
+        with patch('consumos.middleware_login.time.time', return_value=1030):
+            self.assertEqual(self.client.post('/admin/login/', datos).status_code, 302)
+            self.client.post('/cerrar-sesion/')
+            self.assertEqual(self.login('incorrecta').status_code, 200)
+
+    @tag('tiempo_real')
+    def test_flujo_django_expira_30_segundos_con_reloj_real(self):
+        """Cuenta ficticia y dos SQLite temporales; espera real sin simular tiempo."""
+        self.user.is_staff = True
+        self.user.save()
+        datos_admin = {'username': self.correo, 'password': self.clave}
+        self.assertEqual(self.login('incorrecta').status_code, 200)
+        self.assertEqual(self.client.post('/admin/login/', {**datos_admin, 'password': 'incorrecta'}).status_code, 200)
+        bloqueo = self.login('incorrecta')
+        self.assertEqual(bloqueo.status_code, 429)
+        self.assertEqual(bloqueo['Retry-After'], '30')
+        clave = LoginRateLimitMiddleware.clave('login:cuenta', self.correo)
+        with closing(sqlite3.connect(settings.LOGIN_SECURITY_DB)) as conexion:
+            inicio, vencimiento, duracion, fallos = conexion.execute(
+                'SELECT bloqueo_inicio,bloqueo,duracion,fallos FROM intentos WHERE clave=?',
+                (clave,),
+            ).fetchone()
+        self.assertEqual((vencimiento - inicio, duracion, fallos), (30, 30, 3))
+        self.assertEqual(self.login().status_code, 429)
+        self.assertEqual(self.client.post('/admin/login/', datos_admin).status_code, 429)
+        self.assertNotIn('_auth_user_id', self.client.session)
+        time.sleep(max(0, vencimiento - time.time()) + 0.05)
+        self.assertGreaterEqual(time.time(), vencimiento)
+        self.assertEqual(self.login().status_code, 302)
+        self.assertIn('_auth_user_id', self.client.session)
+        self.client.post('/cerrar-sesion/')
+        self.assertEqual(self.login('incorrecta').status_code, 200)
+        self.assertEqual(self.client.post('/admin/login/', datos_admin).status_code, 302)
+        self.client.post('/cerrar-sesion/')
+        self.assertEqual(self.login('incorrecta').status_code, 200)

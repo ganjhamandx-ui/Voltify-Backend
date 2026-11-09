@@ -57,7 +57,7 @@ Las migraciones 0013 (etiquetas) y 0014 (tabla técnica de retención) se aplica
 ## Autenticación, bloqueo y recuperación
 
 - Login web: `/iniciar-sesion/`. Django comprueba hashes, estado activo y crea una sesión nativa; se verifica que el perfil corresponda al usuario autenticado.
-- Tres fallos por cuenta dentro de una ventana de 24 horas activan 30 minutos de bloqueo por defecto. El tercer fallo responde HTTP 429. Una clave correcta no evita un bloqueo vigente; las recargas no lo prolongan. Tras expirar el bloqueo empieza un contador nuevo; un login exitoso previo al bloqueo borra los fallos de la cuenta.
+- Tres fallos por cuenta dentro de una ventana de 24 horas activan exactamente 30 segundos de bloqueo. Es la política única para web y Admin. El tercer fallo responde HTTP 429. Una clave correcta no evita un bloqueo vigente; las recargas no lo prolongan. Tras expirar el bloqueo empieza un contador nuevo; un login exitoso previo al bloqueo borra los fallos de la cuenta.
 - Protección compartida por cuenta entre login web y `/admin/login/`. IP: 30 fallos en 10 minutos, con bloqueo de 5 minutos, separado del límite de cuenta. Se usa `REMOTE_ADDR`, sin confiar en cabeceras de IP del cliente. Ajustar la arquitectura antes de desplegar detrás de un proxy.
 - Los límites están en `settings.py`: `LOGIN_MAX_ATTEMPTS`, `LOGIN_LOCKOUT_SECONDS`, `LOGIN_ATTEMPT_WINDOW`, `LOGIN_IP_MAX_ATTEMPTS`, `LOGIN_IP_WINDOW` y `LOGIN_IP_LOCKOUT_SECONDS`.
 - Los contadores se guardan en `.runtime/login_security.sqlite3`, excluido de Git. No contiene contraseñas: las claves de cuenta e IP se almacenan como SHA-256. Las transacciones serializan solicitudes entre procesos locales y persisten tras reiniciar Django. El usuario del proceso necesita permiso de escritura en `.runtime/`; si el almacén falla, se rechaza temporalmente el acceso con 503. Esta solución es para una instancia local con disco compartido, no para servidores distribuidos.
@@ -66,13 +66,25 @@ Las migraciones 0013 (etiquetas) y 0014 (tabla técnica de retención) se aplica
 - Las claves se validan con los validadores de Django y se sincronizan entre el perfil y la cuenta nativa, incluso al cambiarlas desde Admin. No editar hashes manualmente.
 - Logout invalida la sesión completa; las sesiones se almacenan en la base, duran como máximo una hora y expiran al cerrar el navegador según su política de sesiones. Cookies de sesión y CSRF: HttpOnly y SameSite=Lax.
 
-### Bloqueo breve para demostración local
+### Política única y transición de bloqueos anteriores
 
-La variable `LOGIN_LOCKOUT_SECONDS` admite enteros entre 1 y 86400 segundos. Sin ella, el plazo es **1800 segundos**; `.env.example` conserva ese valor. Para demostrar el vencimiento, establecer `LOGIN_LOCKOUT_SECONDS=30` en el `.env` local, excluido de Git, y reiniciar únicamente el proceso Django. Una variable definida en el entorno del proceso tiene prioridad sobre `.env`. Los límites por IP y los de recuperación no cambian.
+`settings.py` define `LOGIN_LOCKOUT_SECONDS = 30`. El cargador de `.env` ya no admite esa variable y tampoco se lee del entorno del proceso: un valor antiguo no puede cambiar el plazo. `.env.example` no ofrece una configuración alternativa. Reiniciar Django para cargar cambios de código si se ejecuta sin recarga automática. Los límites por IP y los de recuperación conservan sus reglas independientes.
 
-El nuevo plazo se aplica al crear bloqueos nuevos. Los ya registrados conservan su vencimiento y el panel Seguridad de acceso muestra su duración almacenada. Utilizar una cuenta ficticia sin bloqueo pendiente; no borrar ni reiniciar contadores existentes. Al tercer fallo comienza el bloqueo; las credenciales correctas se rechazan durante su vigencia y vuelven a admitirse al vencer. Un acceso correcto reinicia los fallos de esa cuenta.
+El comando `transicionar_bloqueos_login` permite una transición explícita del almacenamiento SQLite anterior. Por defecto solo prepara una copia consistente verificada y un plan, en un directorio obligatorio fuera del repositorio:
 
-Para volver a la política normal, cambiar la línea local a `LOGIN_LOCKOUT_SECONDS=1800` y reiniciar Django. Si el proceso define esa variable, ajustar también su valor a `1800` o retirarla para permitir que se lea `.env`. No es necesario reiniciar MariaDB. La suite aislada mantiene el plazo normal en `settings_test.py` y comprueba por separado ambos plazos, los mensajes genéricos, el vencimiento y la conservación de bloqueos previos.
+```powershell
+python manage.py transicionar_bloqueos_login --directorio-respaldo C:\ruta\fuera_del_repositorio
+```
+
+Solo propone filas `login:cuenta` con duración previa de 1800 segundos, inicio verificable y metadatos coherentes. El nuevo vencimiento es el inicio original más 30 segundos; solo cambian `bloqueo` y `duracion`. Conserva contadores, fechas de inicio, IP y recuperación. Los registros sin inicio verificable se informan y permanecen intactos. Aplicar el plan requiere autorización, `--ejecutar`, `--plan` y `--sha256`; vuelve a contrastar el respaldo y todo el almacenamiento dentro de una transacción, y aborta si hubo cambios. No es una migración automática ni se ejecuta al iniciar Django.
+
+La prueba etiquetada `tiempo_real` recorre el login web y Admin con una cuenta ficticia y SQLite temporales, espera los 30 segundos reales y comprueba el acceso posterior y el reinicio del contador. Está incluida en la suite completa; para correr solo esta comprobación se puede usar `python manage.py test consumos --settings=voltify_backend.settings_test --tag tiempo_real`.
+
+Validación del ajuste el 9 de noviembre de 2026: 99 pruebas aprobadas en SQLite aislado, incluida la espera real; comprobación Django sin incidencias. Las pruebas no crean usuarios ni intentos de acceso en los almacenes reales.
+
+### Textos del historial de Admin
+
+`LogEntry.object_repr` conserva la representación del objeto en el momento de la acción. Corregir después el nombre de ese objeto no regenera entradas anteriores. Las regresiones de `test_admin_historial_utf8.py` verifican nuevas acciones HTTP, representación y mensajes Unicode almacenados, sus bytes y la visualización en Acciones recientes. Los textos históricos requieren inventario, respaldo, simulación y autorización específica; no se sustituyen al visualizarse ni se eliminan entradas.
 
 ## Roles, permisos y Django Admin
 
@@ -260,7 +272,7 @@ Esta tabla organiza la evidencia técnica; no es el informe académico final ni 
 1. Con datos de prueba, crear cuenta y mostrar el registro de perfil y cuenta nativa, con clave cifrada y sin privilegios administrativos.
 2. Iniciar sesión, registrar y editar un artefacto, iniciar/detener monitoreo y revisar consumos y metas. Una segunda cuenta no puede ver ni modificar esos objetos.
 3. Cambiar el período del dashboard, inspeccionar la cookie en el navegador y recargar para demostrar que Python la utiliza. Verificar la conservación del donut 3D y del diseño original.
-4. Con una cuenta de prueba, fallar tres veces: el tercer intento bloquea treinta minutos y devuelve `Retry-After`. Demostrar expiración mediante las pruebas, sin borrar contadores reales ni esperar la media hora durante la exposición.
+4. Con una cuenta ficticia, fallar tres veces: el tercer intento bloquea exactamente treinta segundos y devuelve `Retry-After`. Comprobar el rechazo de credenciales correctas durante el bloqueo y el acceso al vencer, sin borrar contadores reales.
 5. Solicitar recuperación, leer el código de prueba en consola, verificarlo y cambiar la clave. Mostrar vencimiento, uso único y límite de intentos mediante la suite.
 6. Mostrar Admin con superusuario; asignar un observador y un gestor a cuentas de demostración y comprobar lectura frente a modificación. El cliente no accede a Admin.
 7. Cerrar sesión y comprobar que las rutas privadas vuelven al login. Ejecutar la suite y explicar sus límites respecto de MariaDB.

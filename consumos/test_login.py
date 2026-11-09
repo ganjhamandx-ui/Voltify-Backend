@@ -34,7 +34,7 @@ class LimiteLoginTests(SimpleTestCase):
         self.assertEqual(self.intento().status_code, 200)
         respuesta = self.intento()
         self.assertEqual(respuesta.status_code, 429)
-        self.assertEqual(respuesta['Retry-After'], '1800')
+        self.assertEqual(respuesta['Retry-After'], '30')
         self.exito = True
         self.assertEqual(self.intento().status_code, 429)
         self.assertEqual(self.llamadas, 3)
@@ -43,9 +43,9 @@ class LimiteLoginTests(SimpleTestCase):
         with patch('consumos.middleware_login.time.time', return_value=1000):
             for _ in range(3):
                 self.intento()
-        with patch('consumos.middleware_login.time.time', return_value=2799):
+        with patch('consumos.middleware_login.time.time', return_value=1029):
             self.assertEqual(self.intento()['Retry-After'], '1')
-        with patch('consumos.middleware_login.time.time', return_value=2800):
+        with patch('consumos.middleware_login.time.time', return_value=1030):
             self.exito = True
             self.assertEqual(self.intento().status_code, 302)
 
@@ -129,8 +129,7 @@ class LimiteLoginTests(SimpleTestCase):
                                  capture_output=True, text=True, check=True, timeout=20)
         self.assertEqual(proceso.stdout.strip(), '429')
 
-    @override_settings(LOGIN_LOCKOUT_SECONDS=30)
-    def test_demo_bloquea_30_segundos_y_luego_reinicia_cuenta(self):
+    def test_bloquea_30_segundos_y_luego_reinicia_cuenta(self):
         with patch('consumos.middleware_login.time.time', return_value=1000):
             self.assertEqual(self.intento().status_code, 200)
             self.assertEqual(self.intento().status_code, 200)
@@ -148,17 +147,3 @@ class LimiteLoginTests(SimpleTestCase):
             self.assertEqual(self.intento().status_code, 200)
             self.assertEqual(self.intento().status_code, 200)
             self.assertEqual(self.intento().status_code, 429)
-
-    def test_demo_no_acorta_un_bloqueo_previo_de_1800_segundos(self):
-        with patch('consumos.middleware_login.time.time', return_value=1000):
-            for _ in range(3):
-                self.intento()
-        self.exito = True
-        with override_settings(LOGIN_LOCKOUT_SECONDS=30):
-            with patch('consumos.middleware_login.time.time', return_value=1030):
-                self.assertEqual(self.intento()['Retry-After'], '1770')
-                self.assertEqual(self.llamadas, 3)
-            with patch('consumos.middleware_login.time.time', return_value=2799):
-                self.assertEqual(self.intento().status_code, 429)
-            with patch('consumos.middleware_login.time.time', return_value=2800):
-                self.assertEqual(self.intento().status_code, 302)

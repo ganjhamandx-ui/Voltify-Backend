@@ -2,8 +2,6 @@
 from .settings import *  # noqa: F403
 
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': ':memory:'}}
-# El modo local de demostración no cambia las pruebas de la política normal.
-LOGIN_LOCKOUT_SECONDS = 1800
 PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 # Las migraciones históricas incluyen SQL exclusivo de MariaDB. En SQLite

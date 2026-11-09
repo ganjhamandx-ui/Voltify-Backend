@@ -89,15 +89,14 @@ class SeguridadAdminTests(TestCase):
         cuenta = next(registro for registro in registros if registro['tipo'] == 'Cuenta')
         self.assertEqual(cuenta['fallos'], 3)
         self.assertEqual(cuenta['estado'], 'Bloqueo temporal vigente')
-        self.assertEqual(cuenta['duracion'], 1800)
-        self.assertEqual(cuenta['restante'], 1799)
+        self.assertEqual(cuenta['duracion'], 30)
+        self.assertEqual(cuenta['restante'], 29)
         self.assertEqual(str(cuenta['ultimo_fallo'].tzinfo), 'America/Santiago')
-        with patch('consumos.seguridad_admin.time.time', return_value=1794144600):
+        with patch('consumos.seguridad_admin.time.time', return_value=1794142830):
             registros, _ = leer_intentos()
         self.assertEqual(next(registro for registro in registros if registro['tipo'] == 'Cuenta')['estado'], 'Bloqueo expirado')
 
-    @override_settings(LOGIN_LOCKOUT_SECONDS=30)
-    def test_panel_muestra_duracion_guardada_en_modo_demo(self):
+    def test_panel_muestra_duracion_unica_de_30_segundos(self):
         from django.http import HttpResponse
         from django.test import RequestFactory
         from .middleware_login import LoginRateLimitMiddleware
@@ -107,8 +106,7 @@ class SeguridadAdminTests(TestCase):
         with patch('consumos.middleware_login.time.time', return_value=1000):
             for _ in range(3):
                 LoginRateLimitMiddleware(fallo)(RequestFactory().post('/iniciar-sesion/', {'correo': 'demo@example.com'}))
-        # Volver a política normal tampoco prolonga los bloqueos de demo existentes.
-        with override_settings(LOGIN_LOCKOUT_SECONDS=1800), patch('consumos.seguridad_admin.time.time', return_value=1001):
+        with patch('consumos.seguridad_admin.time.time', return_value=1001):
             registros, _ = leer_intentos()
             cuenta = next(registro for registro in registros if registro['tipo'] == 'Cuenta')
             self.assertEqual(cuenta['duracion'], 30)
