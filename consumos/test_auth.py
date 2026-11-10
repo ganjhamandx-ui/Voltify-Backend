@@ -11,7 +11,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.test import Client, TestCase, override_settings, tag
 
-from .forms import LoginAdminForm, LoginUsuarioForm, MENSAJE_CREDENCIALES_INVALIDAS
+from .forms import LoginAdminForm, LoginUsuarioForm
 from .middleware_login import LoginRateLimitMiddleware
 from .models import Comuna, Usuario
 
@@ -120,7 +120,8 @@ class AutenticacionTests(TestCase):
                 cliente = Client()
                 respuesta = cliente.post('/iniciar-sesion/', {'correo': correo, 'contrasena': clave})
                 self.assertEqual(respuesta.status_code, 200)
-                self.assertEqual(list(respuesta.context['form'].non_field_errors()), [MENSAJE_CREDENCIALES_INVALIDAS])
+                self.assertEqual(list(respuesta.context['form'].non_field_errors()), ['Acceso no autorizado.'])
+                self.assertContains(respuesta, 'Acceso no autorizado.')
                 self.assertNotIn('_auth_user_id', cliente.session)
         self.assertFalse(get_user_model().objects.filter(username=legado.correo).exists())
 
@@ -135,7 +136,8 @@ class AutenticacionTests(TestCase):
                 for _ in range(2):
                     respuesta = cliente.post('/admin/login/', {'username': nombre, 'password': clave})
                     self.assertEqual(respuesta.status_code, 200)
-                    self.assertEqual(list(respuesta.context['form'].non_field_errors()), [MENSAJE_CREDENCIALES_INVALIDAS])
+                    self.assertEqual(list(respuesta.context['form'].non_field_errors()), ['Acceso no autorizado.'])
+                    self.assertContains(respuesta, 'Acceso no autorizado.')
                     self.assertNotIn('_auth_user_id', cliente.session)
                 self.assertEqual(cliente.post('/admin/login/', {'username': nombre, 'password': clave}).status_code, 429)
                 self.assertNotIn('_auth_user_id', cliente.session)
@@ -147,7 +149,7 @@ class AutenticacionTests(TestCase):
             usuario = get_user_model()(username='prueba', is_active=activo, is_staff=staff)
             with self.assertRaises(ValidationError) as error:
                 formulario.confirm_login_allowed(usuario)
-            self.assertEqual(error.exception.messages, [MENSAJE_CREDENCIALES_INVALIDAS])
+            self.assertEqual(error.exception.messages, ['Acceso no autorizado.'])
 
     def test_login_conserva_validacion_de_formato_y_campos_requeridos(self):
         formulario = LoginUsuarioForm({'correo': 'sin-formato-correo', 'contrasena': ''})

@@ -9,7 +9,7 @@ from .models import (
 )
 
 
-MENSAJE_CREDENCIALES_INVALIDAS = 'Correo o contraseña incorrectos.'
+MENSAJE_CREDENCIALES_INVALIDAS = 'Acceso no autorizado.'
 
 
 class LoginAdminForm(AdminAuthenticationForm):
