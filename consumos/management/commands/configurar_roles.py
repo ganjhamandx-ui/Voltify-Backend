@@ -21,6 +21,11 @@ class Command(BaseCommand):
         gestor.permissions.set(permisos.filter(content_type__model__in=modelos_gestion))
         # Solo al crear el grupo limitado: no reescribir permisos de grupos existentes.
         if limitado_creado:
-            modelos_limitados = ['artefacto', 'consumo', 'metamensual', 'alerta']
-            limitado.permissions.set(permisos.filter(content_type__model__in=modelos_limitados))
+            modelos_limitados = ['artefacto', 'consumo', 'metamensual']
+            limitado.permissions.set(permisos.filter(
+                content_type__model__in=modelos_limitados,
+                codename__regex=r'^(view|change|delete)_(artefacto|consumo|metamensual)
+        self.stdout.write(self.style.SUCCESS('Roles configurados; asignación de usuarios pendiente en Admin.'))
+,
+            ))
         self.stdout.write(self.style.SUCCESS('Roles configurados; asignación de usuarios pendiente en Admin.'))
