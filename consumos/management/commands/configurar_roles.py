@@ -1,59 +1,62 @@
-"""Configura los roles administrativos sin asignar cuentas ni is_staff."""
+"""Crea roles iniciales sin sobrescribir permisos editados desde Django Admin."""
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 
 class Command(BaseCommand):
-    help = 'Crea y actualiza roles ES3; los consumos son solo lectura.'
+    help = (
+        'Crea roles administrativos con permisos iniciales. '
+        'No restablece los permisos de grupos que ya existen.'
+    )
 
     @transaction.atomic
     def handle(self, *args, **options):
-        observador, _ = Group.objects.get_or_create(name='Observador Voltify')
-        gestor, _ = Group.objects.get_or_create(name='Gestor General Voltify')
+        permisos = Permission.objects.filter(content_type__app_label='consumos')
+
+        # Los valores por defecto se aplican una sola vez. Después, el
+        # superusuario puede gestionar los permisos de forma dinámica en Admin.
+        observador, observador_creado = Group.objects.get_or_create(
+            name='Observador Voltify'
+        )
+        if observador_creado:
+            observador.permissions.set(
+                permisos.filter(codename__startswith='view_').exclude(
+                    content_type__model__in=[
+                        'recuperacioncontrasena', 'retencionartefacto',
+                    ]
+                )
+            )
+
+        general, general_creado = Group.objects.get_or_create(
+            name='Gestor General Voltify'
+        )
+        if general_creado:
+            modelos_crud = [
+                'comuna', 'empresaelectrica', 'categoriaartefacto',
+                'artefacto', 'tarifa', 'metamensual', 'alerta',
+            ]
+            general.permissions.set(
+                permisos.filter(content_type__model__in=modelos_crud)
+                | permisos.filter(
+                    content_type__model='consumo', codename='view_consumo'
+                )
+            )
+
         limitado, limitado_creado = Group.objects.get_or_create(
             name='Gestor Limitado Voltify'
         )
-        permisos = Permission.objects.filter(content_type__app_label='consumos')
-        observador.permissions.set(
-            permisos.filter(codename__startswith='view_').exclude(
-                content_type__model__in=['recuperacioncontrasena', 'retencionartefacto']
-            )
-        )
-
-        modelos_gestion = [
-            'comuna', 'empresaelectrica', 'categoriaartefacto',
-            'artefacto', 'tarifa', 'consumo', 'metamensual', 'alerta',
-        ]
-        # El Gestor General administra otros modelos, pero solo consulta consumos.
-        gestor.permissions.set(
-            permisos.filter(content_type__model__in=modelos_gestion).exclude(
-                content_type__model='consumo'
-            ) | permisos.filter(content_type__model='consumo', codename='view_consumo')
-        )
-
-        # El grupo limitado puede conservar sus permisos particulares de los
-        # otros modelos. En consumos siempre se impone la regla de solo lectura.
         if limitado_creado:
-            modelos_limitados = ['artefacto', 'metamensual']
-            limitado.permissions.set(
-                permisos.filter(
-                    content_type__model__in=modelos_limitados,
-                    codename__regex=r'^(view|change|delete)_(artefacto|metamensual)$',
-                ) | permisos.filter(content_type__model='consumo', codename='view_consumo')
-            )
-        else:
-            prohibidos = permisos.filter(
-                content_type__model='consumo',
-                codename__in=['add_consumo', 'change_consumo', 'delete_consumo'],
-            )
-            limitado.permissions.remove(*prohibidos)
-            vista_consumo = permisos.filter(
-                content_type__model='consumo', codename='view_consumo'
-            ).first()
-            if vista_consumo:
-                limitado.permissions.add(vista_consumo)
+            codigos = [
+                f'{accion}_{modelo}'
+                for modelo in ('artefacto', 'metamensual')
+                for accion in ('view', 'change', 'delete')
+            ]
+            codigos.append('view_consumo')
+            limitado.permissions.set(permisos.filter(codename__in=codigos))
 
+        # Restricciones sensibles se aplican también a nivel de ModelAdmin:
+        # consumos no admiten altas/cambios/bajas; recuperación es superusuario.
         self.stdout.write(self.style.SUCCESS(
-            'Roles configurados: los consumos son de solo lectura.'
+            'Roles listos; los permisos de los grupos existentes se conservaron.'
         ))
