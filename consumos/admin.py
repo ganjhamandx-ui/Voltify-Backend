@@ -230,18 +230,27 @@ class TarifaAdmin(admin.ModelAdmin):
 
 @admin.register(Consumo)
 class ConsumoAdmin(admin.ModelAdmin):
+    """Historial de mediciones: consulta administrativa, sin CRUD manual."""
+
     list_display = (
         'id_consumo',
-        'artefacto',
+        'correo_propietario',
+        'nombre_historico_artefacto',
+        'artefacto_id_historico',
         'tarifa',
         'consumo_kwh',
         'fecha',
     )
 
+    # Permite localizar una cuenta sin conocer su ID, aun con muchos usuarios.
     search_fields = (
-        'artefacto_nombre',
-        'usuario__nombre',
         'usuario__correo',
+        'usuario__nombre',
+        'artefacto_nombre',
+        'artefacto__nombre_artefacto',
+        'categoria_nombre',
+        'marca_artefacto',
+        'modelo_artefacto',
     )
 
     list_filter = (
@@ -250,9 +259,54 @@ class ConsumoAdmin(admin.ModelAdmin):
         'tarifa',
     )
 
+    list_select_related = (
+        'usuario',
+        'artefacto',
+        'tarifa',
+    )
+
+    list_per_page = 50
+    actions = None
+
+    # Los campos historicos siguen en MariaDB, pero nunca son editables.
+    fields = (
+        'usuario',
+        'artefacto',
+        'artefacto_id_historico',
+        'artefacto_nombre',
+        'categoria_nombre',
+        'marca_artefacto',
+        'modelo_artefacto',
+        'tarifa',
+        'consumo_kwh',
+        'fecha',
+    )
+
     ordering = (
         '-fecha',
+        '-id_consumo',
     )
+
+    @admin.display(description='Correo del usuario', ordering='usuario__correo')
+    def correo_propietario(self, obj):
+        return obj.usuario.correo if obj.usuario_id else 'Sin usuario asociado'
+
+    @admin.display(description='Artefacto (histórico)')
+    def nombre_historico_artefacto(self, obj):
+        return (
+            obj.artefacto_nombre
+            or (obj.artefacto.nombre_artefacto if obj.artefacto_id else None)
+            or 'Artefacto eliminado'
+        )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(MetaMensual)
