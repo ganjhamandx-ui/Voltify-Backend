@@ -3,8 +3,7 @@ from datetime import date
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
-from django.contrib.admin.sites import site
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 
 from .models import Artefacto, Comuna, Consumo, Usuario
 
@@ -81,5 +80,5 @@ class FiltrosHistorialConsumosTests(TestCase):
             f'/admin/consumos/consumo/{self.consumo_a.pk}/change/'
         )
         self.assertEqual(respuesta.status_code, 200)
-        self.assertContains(respuesta, '0,20')
+        self.assertContains(respuesta, 'Televisor A')
         self.assertNotContains(respuesta, 'name="_save"')
