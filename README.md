@@ -116,11 +116,11 @@ La eliminación de artefactos debe hacerse mediante Django; un borrado SQL direc
 | --- | --- |
 | **Superusuario** | Acceso completo: registros, usuarios, grupos, permisos y panel de seguridad. |
 | **Gestor General Voltify** | CRUD de comunas, empresas eléctricas, categorías, artefactos, tarifas, consumos, metas y alertas; sin administración de cuentas ni grupos. |
-| **Gestor Limitado Voltify** | CRUD de artefactos, consumos, metas y alertas; sin administración de cuentas ni grupos. |
+| **Gestor Limitado Voltify** | Solo puede consultar, modificar y eliminar artefactos, consumos y metas mensuales. No puede crear registros ni administrar alertas, cuentas o grupos. |
 | **Observador Voltify** | Consulta de información autorizada, sin crear, editar ni eliminar; no accede al panel de bloqueos. |
 | **Cliente web** | Accede a sus propios datos, sin acceso a Django Admin. |
 
-El comando `configurar_roles` configura los grupos **Gestor General Voltify**, **Gestor Limitado Voltify** y **Observador Voltify**; no crea usuarios, no asigna grupos ni activa `is_staff`. En un grupo limitado ya existente conserva sus permisos actuales. Para ingresar a Admin, las cuentas correspondientes necesitan permisos efectivos y acceso `is_staff`. Las restricciones se verifican en el backend, incluso al acceder mediante URL directa.
+El comando `configurar_roles` configura los grupos **Gestor General Voltify**, **Gestor Limitado Voltify** y **Observador Voltify**; no crea usuarios, no asigna grupos ni activa `is_staff`. En un grupo limitado ya existente conserva sus permisos actuales; en uno nuevo asigna únicamente los nueve permisos de consulta, modificación y eliminación sobre artefactos, consumos y metas. Para ingresar a Admin, las cuentas correspondientes necesitan permisos efectivos y acceso `is_staff`. Las restricciones se verifican en el backend, incluso al acceder mediante URL directa.
 
 ## 5. Autenticación y seguridad
 
