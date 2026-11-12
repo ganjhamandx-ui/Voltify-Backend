@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Max
 
 from .forms import LoginAdminForm
 
@@ -228,9 +229,35 @@ class TarifaAdmin(admin.ModelAdmin):
     )
 
 
+class SelectorConsumoOculto(admin.SimpleListFilter):
+    """Acepta parámetros de los selectores sin duplicarlos en la barra lateral."""
+
+    title = 'Selector administrativo'
+    parameter_name = 'selector'
+
+    def lookups(self, request, model_admin):
+        return ()
+
+    def has_output(self):
+        return False
+
+    def queryset(self, request, queryset):
+        return queryset
+
+
+class SelectorCuentaConsumo(SelectorConsumoOculto):
+    parameter_name = 'cuenta_voltify'
+
+
+class SelectorArtefactoConsumo(SelectorConsumoOculto):
+    parameter_name = 'artefacto_voltify'
+
+
 @admin.register(Consumo)
 class ConsumoAdmin(admin.ModelAdmin):
-    """Historial de mediciones: consulta administrativa, sin CRUD manual."""
+    """Historial de mediciones con selección sucesiva cuenta > artefacto."""
+
+    change_list_template = 'admin/consumos/consumo/change_list.html'
 
     list_display = (
         'id_consumo',
@@ -242,7 +269,6 @@ class ConsumoAdmin(admin.ModelAdmin):
         'fecha',
     )
 
-    # Permite localizar una cuenta sin conocer su ID, aun con muchos usuarios.
     search_fields = (
         'usuario__correo',
         'usuario__nombre',
@@ -253,9 +279,11 @@ class ConsumoAdmin(admin.ModelAdmin):
         'modelo_artefacto',
     )
 
+    # Los dos selectores superiores reemplazan el filtro global de artefactos.
     list_filter = (
+        SelectorCuentaConsumo,
+        SelectorArtefactoConsumo,
         'fecha',
-        'artefacto',
         'tarifa',
     )
 
@@ -264,11 +292,9 @@ class ConsumoAdmin(admin.ModelAdmin):
         'artefacto',
         'tarifa',
     )
-
     list_per_page = 50
     actions = None
 
-    # Los campos historicos siguen en MariaDB, pero nunca son editables.
     fields = (
         'usuario',
         'artefacto',
@@ -281,11 +307,7 @@ class ConsumoAdmin(admin.ModelAdmin):
         'consumo_kwh',
         'fecha',
     )
-
-    ordering = (
-        '-fecha',
-        '-id_consumo',
-    )
+    ordering = ('-fecha', '-id_consumo')
 
     @admin.display(description='Correo del usuario', ordering='usuario__correo')
     def correo_propietario(self, obj):
@@ -297,6 +319,98 @@ class ConsumoAdmin(admin.ModelAdmin):
             obj.artefacto_nombre
             or (obj.artefacto.nombre_artefacto if obj.artefacto_id else None)
             or 'Artefacto eliminado'
+        )
+
+    def changelist_view(self, request, extra_context=None):
+        # Se consulta cada perfil por correo; no es necesario conocer su ID.
+        cuentas = list(
+            Usuario.objects.order_by('correo').values('id_usuario', 'correo')
+        )
+        ids_validos = {str(cuenta['id_usuario']) for cuenta in cuentas}
+        cuenta_id = request.GET.get('cuenta_voltify', '')
+        if cuenta_id not in ids_validos:
+            cuenta_id = ''
+
+        monitoreando = []
+        registrados = []
+        historicos = []
+        if cuenta_id:
+            artefactos = Artefacto.objects.filter(
+                usuario_id=int(cuenta_id)
+            ).order_by('-monitoreando', 'nombre_artefacto').values(
+                'id_artefacto', 'nombre_artefacto', 'monitoreando', 'activo'
+            )
+            for artefacto in artefactos:
+                opcion = {
+                    'id': str(artefacto['id_artefacto']),
+                    'nombre': artefacto['nombre_artefacto'],
+                }
+                if artefacto['monitoreando'] and artefacto['activo']:
+                    monitoreando.append(opcion)
+                else:
+                    registrados.append(opcion)
+
+            # Los artefactos eliminados siguen siendo consultables durante
+            # su periodo de retención, gracias al identificador histórico.
+            historicos_bd = (
+                Consumo.objects.filter(
+                    usuario_id=int(cuenta_id), artefacto__isnull=True
+                )
+                .exclude(artefacto_id_historico__isnull=True)
+                .values('artefacto_id_historico')
+                .annotate(nombre=Max('artefacto_nombre'))
+                .order_by('artefacto_id_historico')
+            )
+            historicos = [
+                {
+                    'id': str(registro['artefacto_id_historico']),
+                    'nombre': registro['nombre'] or (
+                        f"Artefacto eliminado #{registro['artefacto_id_historico']}"
+                    ),
+                }
+                for registro in historicos_bd
+            ]
+
+        disponibles = {
+            opcion['id']
+            for grupo in (monitoreando, registrados, historicos)
+            for opcion in grupo
+        }
+        artefacto_id = request.GET.get('artefacto_voltify', '')
+        if artefacto_id not in disponibles:
+            artefacto_id = ''
+
+        contexto = dict(extra_context or {})
+        contexto.update({
+            'voltify_cuentas': cuentas,
+            'voltify_cuenta_id': cuenta_id,
+            'voltify_artefacto_id': artefacto_id,
+            'voltify_monitoreando': monitoreando,
+            'voltify_registrados': registrados,
+            'voltify_historicos': historicos,
+            'voltify_tiene_artefactos': bool(disponibles),
+        })
+        # El listado se filtra aquí, no los detalles individuales.
+        request._voltify_filtrar_consumos = True
+        return super().changelist_view(request, extra_context=contexto)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if not getattr(request, '_voltify_filtrar_consumos', False):
+            return queryset
+
+        cuenta_id = request.GET.get('cuenta_voltify', '')
+        artefacto_id = request.GET.get('artefacto_voltify', '')
+        if not (cuenta_id.isdecimal() and artefacto_id.isdecimal()):
+            return queryset.none()
+
+        # El ID histórico permite recuperar consumos aun después de borrar
+        # el artefacto real. Las filas antiguas pueden conservar solo la FK.
+        from django.db.models import Q
+        return queryset.filter(usuario_id=int(cuenta_id)).filter(
+            Q(artefacto_id_historico=int(artefacto_id))
+            | Q(artefacto_id=int(artefacto_id),
+                artefacto_id_historico__isnull=True)
         )
 
     def has_add_permission(self, request):
