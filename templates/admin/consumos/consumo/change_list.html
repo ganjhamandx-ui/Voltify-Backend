@@ -1,0 +1,60 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block content %}
+<section style="margin: 0 0 18px; padding: 17px 19px; border: 1px solid #b9cbd4; border-radius: 8px; background: #f3f8fa; color: #234452;">
+  <h2 style="margin: 0 0 8px; color: #245c72;">Consulta de consumos por cuenta y artefacto</h2>
+  <p style="margin: 0 0 14px;">Seleccione primero el correo del usuario y después uno de sus artefactos. Las mediciones registradas se muestran en modo de solo lectura.</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end;">
+    <form method="get" style="flex: 1 1 280px; margin: 0;">
+      <label for="voltify-cuenta"><strong>1. Cuenta de usuario (correo)</strong></label>
+      <select name="cuenta_voltify" id="voltify-cuenta" style="display: block; width: 100%; margin-top: 6px; min-height: 38px;" onchange="this.form.submit()">
+        <option value="">— Seleccionar usuario —</option>
+        {% for cuenta in voltify_cuentas %}
+          <option value="{{ cuenta.id_usuario }}" {% if cuenta.id_usuario|stringformat:"s" == voltify_cuenta_id %}selected{% endif %}>{{ cuenta.correo }}</option>
+        {% endfor %}
+      </select>
+      <noscript><button type="submit" style="margin-top: 8px;">Consultar usuario</button></noscript>
+    </form>
+    <form method="get" style="flex: 1 1 280px; margin: 0;">
+      <input type="hidden" name="cuenta_voltify" value="{{ voltify_cuenta_id }}">
+      <label for="voltify-artefacto"><strong>2. Artefacto de la cuenta</strong></label>
+      <select name="artefacto_voltify" id="voltify-artefacto" style="display: block; width: 100%; margin-top: 6px; min-height: 38px;" {% if not voltify_cuenta_id %}disabled{% endif %} onchange="this.form.submit()">
+        <option value="">— Seleccionar artefacto —</option>
+        {% if voltify_monitoreando %}
+          <optgroup label="Monitoreando actualmente">
+            {% for artefacto in voltify_monitoreando %}
+              <option value="{{ artefacto.id }}" {% if artefacto.id == voltify_artefacto_id %}selected{% endif %}>{{ artefacto.nombre }} (ID {{ artefacto.id }})</option>
+            {% endfor %}
+          </optgroup>
+        {% endif %}
+        {% if voltify_registrados %}
+          <optgroup label="Registrados / sin monitoreo">
+            {% for artefacto in voltify_registrados %}
+              <option value="{{ artefacto.id }}" {% if artefacto.id == voltify_artefacto_id %}selected{% endif %}>{{ artefacto.nombre }} (ID {{ artefacto.id }})</option>
+            {% endfor %}
+          </optgroup>
+        {% endif %}
+        {% if voltify_historicos %}
+          <optgroup label="Historial de artefactos eliminados">
+            {% for artefacto in voltify_historicos %}
+              <option value="{{ artefacto.id }}" {% if artefacto.id == voltify_artefacto_id %}selected{% endif %}>{{ artefacto.nombre }} (ID {{ artefacto.id }})</option>
+            {% endfor %}
+          </optgroup>
+        {% endif %}
+      </select>
+      <noscript><button type="submit" style="margin-top: 8px;">Consultar artefacto</button></noscript>
+    </form>
+  </div>
+  {% if not voltify_cuenta_id %}
+    <p style="margin: 12px 0 0;"><strong>Seleccione una cuenta para ver sus artefactos.</strong></p>
+  {% elif not voltify_tiene_artefactos %}
+    <p style="margin: 12px 0 0;"><strong>Esta cuenta no tiene artefactos registrados ni históricos disponibles.</strong></p>
+  {% elif not voltify_artefacto_id %}
+    <p style="margin: 12px 0 0;"><strong>Seleccione un artefacto para mostrar sus consumos.</strong></p>
+  {% else %}
+    <p style="margin: 12px 0 0;">Se muestran únicamente las mediciones del usuario y artefacto seleccionados.</p>
+  {% endif %}
+</section>
+{{ block.super }}
+{% endblock %}
