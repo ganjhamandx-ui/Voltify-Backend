@@ -191,14 +191,14 @@ class ES3Tests(TestCase):
     def test_roles_idempotentes_y_admin_aplica_permisos(self):
         call_command('configurar_roles', stdout=StringIO())
         call_command('configurar_roles', stdout=StringIO())
-        self.assertEqual(Group.objects.filter(name__endswith='Voltify').count(), 2)
+        self.assertEqual(Group.objects.filter(name__endswith='Voltify').count(), 3)
         self.user.is_staff = True
         self.user.save()
         self.user.groups.add(Group.objects.get(name='Observador Voltify'))
         self.client.force_login(self.user)
         self.assertEqual(self.client.get('/admin/consumos/artefacto/').status_code, 200)
         self.assertEqual(self.client.get('/admin/consumos/artefacto/add/').status_code, 403)
-        self.user.groups.set([Group.objects.get(name='Gestor Voltify')])
+        self.user.groups.set([Group.objects.get(name='Gestor General Voltify')])
         self.assertEqual(self.client.get('/admin/consumos/artefacto/add/').status_code, 200)
         self.assertEqual(self.client.get('/admin/auth/user/').status_code, 403)
 
