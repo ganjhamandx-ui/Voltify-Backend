@@ -105,7 +105,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'voltify_backend.wsgi.application'
 
 
-# Conexión con MariaDB/MySQL
+# Conexión a MySQL mediante credenciales privadas en .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
